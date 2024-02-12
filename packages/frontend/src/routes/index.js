@@ -8,7 +8,7 @@ import ROUTES from "../constants/routes";
 import SiteLayout from "../pages/public/site-layout/SiteLayout";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
-import { Loading } from "../components/shared";
+import { Loading } from "../components";
 import Home from "../pages/public/home/Home";
 
 const lazyLoad = (component) => {

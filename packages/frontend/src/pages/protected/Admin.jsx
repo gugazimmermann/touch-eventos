@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format, isAfter, isBefore, isSameDay } from "date-fns";
 import { event } from "../../services";
-import { Alert, Loading } from "../../components/shared";
-import { AdminTopNav, DashboardButtons } from "../../components/page";
+import { Alert, Loading } from "../../components";
+import { AdminTopNav, DashboardButtons } from "../../components/layout";
 import { EventCard, EventNewCard } from "../../components/events";
 
 const imagePlaceholder =

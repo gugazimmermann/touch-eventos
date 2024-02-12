@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Title } from "../../shared/components/layout";
+import { Title } from "../../../components";
 
 const PrivacityTerms = () => {
   const { t } = useTranslation("privacityterms");

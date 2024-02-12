@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { handleUpdateCurrentUserPassword } from "../../../services/auth";
-import { Alert, Loading } from "../../../components/shared";
-import { FormButton, InputField } from "../../shared/components/form";
 import { accountPasswordValidate } from "../../../helpers/form-validation";
+import { Alert, Loading } from "../../../components";
+import { FormButton, InputField } from "../../../components/form";
 
 const AccountPassword = ({ confirmEmail }) => {
-  const { t } = useTranslation("admin");
+  const { t } = useTranslation("account");
   const [values, setValues] = useState({
     currentPwd: "",
     newPwd: "",

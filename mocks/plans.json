@@ -59,7 +59,7 @@
         "Item": {
           "planId": { "S": "bab2c6f7-5807-4492-a88a-32ff9c64b076" },
           "order": { "N": "4" },
-          "type": { "S": "Recorrente" },
+          "type": { "S": "Múltiplos Eventos" },
           "duration": { "S": "Semestral" },
           "maxDays": { "N": "30"},
           "maxDiff": { "N": "40"},
@@ -77,7 +77,7 @@
         "Item": {
           "planId": { "S": "d561d358-c0d7-4799-aebb-e1c13fb7ede2" },
           "order": { "N": "5" },
-          "type": { "S": "Recorrente" },
+          "type": { "S": "Múltiplos Eventos" },
           "duration": { "S": "Anual" },
           "maxDays": { "N": "30"},
           "maxDiff": { "N": "40"},

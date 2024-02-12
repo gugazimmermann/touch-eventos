@@ -1,4 +1,4 @@
-import { Folder, FolderOpen } from "../../pages/shared/icons";
+import { Folder, FolderOpen } from "../../icons";
 
 const DashboardButtons = ({ archived, setArchived }) => {
   return (

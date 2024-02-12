@@ -1,5 +1,19 @@
 import { handleFetchAuthSession } from "./auth";
 
+export const saveEventImage = async (data) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/events/image`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const saveEvent = async (data) => {
   try {
     const { accessToken } = await handleFetchAuthSession();

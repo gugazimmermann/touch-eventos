@@ -2,15 +2,15 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { account, auth } from "../../../services";
 import { formatDate, formatValue } from "../../../helpers/format";
-import { AdminTopNav } from "../../../components/page";
-import { Tab } from "../../../components/shared/tab";
-import { TableStatus } from "../../../components/shared/table";
+import { AdminTopNav } from "../../../components/layout";
+import { Tab } from "../../../components/tab";
+import { TableStatus } from "../../../components/table";
 import AccountInfo from "./AccountInfo";
 import AccountPassword from "./AccountPassword";
 import Payments from "./Payments";
 
 const Account = () => {
-  const { t } = useTranslation("admin");
+  const { t } = useTranslation("account");
   const [selectedTab, setSelectedTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);

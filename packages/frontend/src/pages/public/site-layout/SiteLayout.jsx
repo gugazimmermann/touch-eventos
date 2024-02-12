@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { Footer, Header } from "../../shared/components/layout";
+import { Footer, Header } from "../../../components/layout";
 
 const SiteLayout = () => {
   const location = useLocation();

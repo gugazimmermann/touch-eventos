@@ -12,17 +12,17 @@ import { STATESBR } from "../../../constants/states";
 import usePhoneCode from "../../../hooks/usePhoneCode";
 import { maskCep, maskCPF, maskCNPJ, maskPhone } from "../../../helpers/mask";
 import { validateCode } from "../../../helpers/validate";
-import { Alert, Loading } from "../../../components/shared";
+import { accountInfoValidate } from "../../../helpers/form-validation";
+import { Alert, Loading } from "../../../components";
 import {
   FormButton,
   InputField,
   InputFieldAutoComplete,
   SelectField,
-} from "../../shared/components/form";
-import { accountInfoValidate } from "../../../helpers/form-validation";
+} from "../../../components/form";
 
 const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
-  const { t } = useTranslation("admin");
+  const { t } = useTranslation("account");
   const { PhoneCodeSelect } = usePhoneCode();
   const [values, setValues] = useState({
     userId: "",

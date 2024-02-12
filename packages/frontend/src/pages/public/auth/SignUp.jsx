@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ROUTES from "../../../constants/routes";
 import { handleSignUp } from "../../../services/auth";
 import { validateEmail, validatePassword } from "../../../helpers/validate";
-import { FormButton, InputField } from "../../shared/components/form";
-import { Alert, Loading } from "../../../components/shared";
+import { FormButton, InputField } from "../../../components/form";
+import { Alert, Loading } from "../../../components";
 import AuthCard from "./AuthCard";
 
 const SignUp = () => {

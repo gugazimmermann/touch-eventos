@@ -17,15 +17,15 @@ import useDatePicker from "../../hooks/useDatePicker";
 import { STATESBR } from "../../constants/states";
 import { formatValue } from "../../helpers/format";
 import { maskCep } from "../../helpers/mask";
-import { Alert, Loading } from "../../components/shared";
-import { AdminTopNav } from "../../components/page";
+import { newEventValidate } from "../../helpers/form-validation";
+import { Alert, Loading, Toast } from "../../components";
+import { AdminTopNav } from "../../components/layout";
 import {
   FormButton,
   InputField,
   InputFieldAutoComplete,
   SelectField,
-} from "../../pages/shared/components/form";
-import { newEventValidate } from "../../helpers/form-validation";
+} from "../../components/form";
 
 const NewEvent = () => {
   const { t } = useTranslation("admin");
@@ -62,6 +62,7 @@ const NewEvent = () => {
   const [activeVerifications, setActiveVerifications] = useState([]);
   const [cities, setCities] = useState([]);
   const [eventDates, setEventDates] = useState([]);
+  const [isToastVisible, setToastVisible] = useState(false);
 
   const getData = useCallback(async () => {
     setLoading(true);
@@ -81,6 +82,10 @@ const NewEvent = () => {
     }
     setLoading(false);
   }, []);
+
+  const showMessage = () => {
+    if (values.planId) setToastVisible(true);
+  };
 
   const handleCep = async (cep) => {
     setLoading(true);
@@ -176,6 +181,17 @@ const NewEvent = () => {
     getData();
   }, [getData]);
 
+  const RenderPlanToast = () => {
+    const selectedPlan = activePlans.find((p) => p.planId === values.planId);
+    return (
+      <Toast
+        message={selectedPlan.description}
+        isVisible={isToastVisible}
+        onClose={() => setToastVisible(false)}
+      />
+    );
+  };
+
   return (
     <section className="w-full">
       <AdminTopNav title={t("new_event_title")} />
@@ -197,6 +213,7 @@ const NewEvent = () => {
                 value: p.planId,
                 text: `${p.type} - ${p.duration} - ${formatValue(p.price)}`,
               }))}
+              onBlur={() => showMessage()}
             />
             <SelectField
               disabled={loading}
@@ -349,6 +366,7 @@ const NewEvent = () => {
           </div>
         </form>
       </div>
+      {isToastVisible && values.planId && RenderPlanToast()}
     </section>
   );
 };

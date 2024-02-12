@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import ROUTES from '../constants/routes';
 import { handleGetCurrentUser } from "../services/auth";
-import { Footer, Header } from "../pages/shared/components/layout";
+import { Footer, Header } from "../components/layout";
 
 const PublicRoute = () => {
   const navigate = useNavigate();

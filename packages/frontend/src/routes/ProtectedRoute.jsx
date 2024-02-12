@@ -2,8 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import ROUTES from '../constants/routes';
 import { handleGetCurrentUser } from "../services/auth";
-import { AdminFooter } from "../components/page";
-import { Header } from "../pages/shared/components/layout";
+import { Header, AdminFooter } from "../components/layout";
 
 const ProtectedRoute = () => {
   const navigate = useNavigate();

@@ -1,6 +1,7 @@
 import { StackContext, use, Api } from "sst/constructs";
 import { DynamoDBStack } from "./DynamoDBStack";
 import { CognitoStack } from "./CognitoStack";
+import { BucketdStack } from "./BucketStack";
 
 export function ApiStack({ stack }: StackContext) {
   const {
@@ -11,6 +12,7 @@ export function ApiStack({ stack }: StackContext) {
     eventsTable,
   } = use(DynamoDBStack);
   const { cognito } = use(CognitoStack);
+  const { eventsImagesBucket } = use(BucketdStack);
 
   const api = new Api(stack, "Api", {
     authorizers: {
@@ -99,6 +101,15 @@ export function ApiStack({ stack }: StackContext) {
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
           },
           permissions: [eventsTable, plansTable, verificationsTable],
+        },
+      },
+      "POST /events/image": {
+        function: {
+          handler: "packages/functions/src/events/eventImage.handler",
+          environment: {
+            BUCKET: eventsImagesBucket.bucketName,
+          },
+          permissions: [eventsImagesBucket],
         },
       },
     },

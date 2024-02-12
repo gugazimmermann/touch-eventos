@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import ROUTES from "../../../../constants/routes";
+import ROUTES from "../../constants/routes";
 import Logo from "./Logo";
 import Social from "./Social";
 

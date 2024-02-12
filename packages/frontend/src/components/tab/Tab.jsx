@@ -1,4 +1,4 @@
-import Loading from "../../../pages/shared/components/Loading";
+import Loading from "../Loading";
 
 const Tab = ({ loading, size, tabs, selectedTab, onTabClick }) => {
   const tabSize = (s) => {

@@ -1,4 +1,4 @@
-import { ArrowBack, ArrowFoward } from "../../../pages/shared/icons";
+import { ArrowBack, ArrowFoward } from "../../icons";
 
 const FooterButtonBack = () => {
   return (

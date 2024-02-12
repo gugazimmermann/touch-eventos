@@ -1,10 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import ROUTES from "../../../../constants/routes";
-import { handleSignOut } from "../../../../services/auth";
+import ROUTES from "../../constants/routes";
+import { handleSignOut } from "../../services/auth";
 
 const Nav = ({ user }) => {
-  const { t } = useTranslation(["auth", "admin"]);
+  const { t } = useTranslation(["auth", "admin", "account"]);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -26,7 +26,7 @@ const Nav = ({ user }) => {
             </Link>
             <span className="mx-5">/</span>
             <Link to={`/${ROUTES.ADMIN.ACCOUNT}`} className="hover:underline">
-              {t("account", { ns: "admin" })}
+              {t("account", { ns: "account" })}
             </Link>
             <span className="mx-5">/</span>
             <button

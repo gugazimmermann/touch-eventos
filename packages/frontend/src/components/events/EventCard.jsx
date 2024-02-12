@@ -8,7 +8,7 @@ import {
   MapPin,
   Sms,
   Visitors,
-} from "../../pages/shared/icons";
+} from "../../icons";
 
 const EventCard = ({ data }) => {
   const statusColor = (data) => {

@@ -3,5 +3,8 @@
   "name": "Nome",
   "email": "Email",
   "message": "Mensagem",
-  "send": "Enviar"
+  "send": "Enviar",
+  "name_invalid": "Nome Inválido",
+  "email_invalid": "Email Inválido",
+  "success": "Mensagem enviada, logo entraremos em contato."
 }

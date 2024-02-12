@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import contactUsImg from "./images/contact-us.png";
-import { EmailFilled, PhoneFilled } from "../../shared/icons";
+import { validateEmail, validateName } from "../../../helpers/validate";
+import { EmailFilled, PhoneFilled } from "../../../icons";
 import {
   FormButton,
   InputField,
   TextField,
-} from "../../shared/components/form";
-import { Alert, Loading } from "../../shared/components";
-import { Title } from "../../shared/components/layout";
+} from "../../../components/form";
+import { Alert, Loading, Title } from "../../../components";
 
 const ContactUs = () => {
   const { t } = useTranslation("contactus");
@@ -18,7 +18,41 @@ const ContactUs = () => {
     message: "",
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    if (!validateName(values.name)) {
+      setError(t("name_invalid"));
+      setLoading(false);
+      return;
+    }
+    if (!validateEmail(values.email)) {
+      setError(t("email_invalid"));
+      setLoading(false);
+      return;
+    }
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SITE_API_URL}/contact`,
+        {
+          method: "POST",
+          body: JSON.stringify(values),
+        }
+      );
+      const res = await response.json();
+      console.log(res);
+      setLoading(false);
+      setSuccess(t("success"));
+    } catch (err) {
+      throw err;
+    }
+  };
 
   return (
     <section
@@ -35,14 +69,16 @@ const ContactUs = () => {
               src={contactUsImg}
               alt="graph"
             />
-            <p className="flex justify-center items-center font-bold text-success-500 mb-4 text-xl">
+            <p className="flex justify-center items-center font-bold text-primary-500 mb-4 text-xl">
               <PhoneFilled className="h-7 w-7 sm:h-5 sm:w-5" />
               <span className="mx-2 text-text-700">(47) 99701-4984</span>
             </p>
-            <p className="flex justify-center items-center font-bold text-success-500 mb-4 text-xl">
+            <p className="flex justify-center items-center font-bold text-primary-500 mb-4 text-xl">
               <EmailFilled className="h-7 w-7 sm:h-5 sm:w-5" />
               <span className="mx-2 text-text-700">
-                contato@touchsistemas.com.br
+                <a href="mailto:contato@touchsistemas.com.br">
+                  contato@touchsistemas.com.br
+                </a>
               </span>
             </p>
           </div>
@@ -50,16 +86,15 @@ const ContactUs = () => {
             <div className="text-center">
               <Title title={t("title")} />
             </div>
-            <form className="mt-4">
+            <form className="mt-4" onSubmit={handleSubmit}>
               {loading && <Loading />}
-              {error && (
-                <Alert title={t("error")} message={error} type="danger" />
-              )}
+              {error && <Alert message={error} type="danger" />}
+              {success && <Alert message={success} type="success" />}
               <div className="flex flex-col items-center justify-center gap-4">
                 <div className="w-full">
                   <InputField
                     disabled={loading}
-                    required={true}
+                    // required={true}
                     autocomplete="name"
                     type="text"
                     placeholder={t("name")}
@@ -71,7 +106,7 @@ const ContactUs = () => {
                 <div className="w-full">
                   <InputField
                     disabled={loading}
-                    required={true}
+                    // required={true}
                     autocomplete="email"
                     type="email"
                     placeholder={t("email")}
@@ -84,7 +119,6 @@ const ContactUs = () => {
               <div className="mt-4">
                 <TextField
                   disabled={loading}
-                  required={true}
                   placeholder={t("message")}
                   value="message"
                   values={values}

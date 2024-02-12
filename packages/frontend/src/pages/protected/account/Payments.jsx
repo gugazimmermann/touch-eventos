@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { Title } from "../../../components/page";
-import { Table } from "../../../components/shared/table";
+import { Table } from "../../../components/table";
+import { Title } from "../../../components";
 
 const Payments = ({ data = [] }) => {
-  const { t } = useTranslation("admin");
+  const { t } = useTranslation("account");
 
   const header = [
     {
@@ -23,7 +23,7 @@ const Payments = ({ data = [] }) => {
   return (
     <>
       <Title title={t("payments")} count={data.length} />
-      <Table header={header} items={data} />
+      <Table header={header} items={data} perPage={10} />
     </>
   );
 };

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { event, plans, verifications } from "../../services";
-import { Alert, Loading } from "../../components/shared";
-import { AdminTopNav } from "../../components/page";
+import { event } from "../../services";
+import { Alert, Loading } from "../../components";
+import { AdminTopNav } from "../../components/layout";
 import { EventDetailsCard } from "../../components/events";
 
 const EventDetails = () => {
@@ -34,9 +34,10 @@ const EventDetails = () => {
   const [info, setInfo] = useState("");
 
   const handleEventData = useCallback((data) => {
-    console.log(data)
     setValues({
       ...values,
+      eventId: data.eventId,
+      userId: data.userId,
       plan: data.plan,
       verification: data.verification,
       visitorGift: data.visitorGift,
@@ -89,7 +90,13 @@ const EventDetails = () => {
       {info && <Alert message={info} type="info" />}
       {values?.plan && (
         <div className="grid grid-cols-2 gap-4">
-          <EventDetailsCard data={values} />
+          <EventDetailsCard
+            data={values}
+            setLoading={setLoading}
+            setError={setError}
+            setSuccess={setSuccess}
+            setInfo={setInfo}
+          />
         </div>
       )}
     </section>

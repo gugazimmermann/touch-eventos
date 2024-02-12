@@ -1,4 +1,4 @@
-import { TableOrder } from "../../../pages/shared/icons";
+import { TableOrder } from "../../icons";
 
 const TableHeaderButton = ({ title }) => {
   return (

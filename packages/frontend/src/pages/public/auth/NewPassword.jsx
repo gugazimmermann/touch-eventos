@@ -8,8 +8,8 @@ import {
   validateCode,
   validatePassword,
 } from "../../../helpers/validate";
-import { Alert, Loading } from "../../../components/shared";
-import { FormButton, InputField } from "../../shared/components/form";
+import { Alert, Loading } from "../../../components";
+import { FormButton, InputField } from "../../../components/form";
 import AuthCard from "./AuthCard";
 
 const NewPassword = () => {

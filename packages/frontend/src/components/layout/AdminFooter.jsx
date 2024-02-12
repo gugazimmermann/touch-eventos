@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ROUTES from "../../constants/routes";
-import { Logo, Social } from "../../pages/shared/components/layout";
+import { Logo, Social } from ".";
 
 const AdminFooter = () => {
-  const { t } = useTranslation("webpage");
+  const { t } = useTranslation("home");
 
   return (
     <footer className="bg-white">
@@ -12,16 +12,14 @@ const AdminFooter = () => {
         <Link to="/">
           <Logo />
         </Link>
-
         <div className="flex flex-wrap items-center justify-center gap-6 mt-0">
-          <Link to={`/${ROUTES.WEBSITE.FAQ}`}>{t("help")}</Link>
-          <Link to={`/${ROUTES.WEBSITE.USAGE_TERMS}`}>{t("usage_terms")}</Link>
+          <Link to={`/${ROUTES.WEBSITE.FAQ}`}>{t("footer_faq")}</Link>
+          <Link to={`/${ROUTES.WEBSITE.USAGE_TERMS}`}>{t("footer_usage_terms")}</Link>
           <Link to={`/${ROUTES.WEBSITE.PRIVACITY_TERMS}`}>
-            {t("privacity_terms")}
+            {t("footer_privacity_terms")}
           </Link>
-          <Link to={`/${ROUTES.WEBSITE.CONTACT}`}>{t("contact_us")}</Link>
+          <Link to={`/${ROUTES.WEBSITE.CONTACT}`}>{t("footer_contact_us")}</Link>
         </div>
-
         <Social />
       </div>
     </footer>

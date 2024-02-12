@@ -18,7 +18,7 @@ const Social = ({ className }) => {
 
     return (
       <a href={linkTo} target='_blank' rel='noopener noreferrer' aria-label={name}>
-        <div className='mx-2 hover:text-white hover:cursor-pointer'>{Icon}</div>
+        <div className='mx-2 hover:cursor-pointer'>{Icon}</div>
       </a>
     );
   };
