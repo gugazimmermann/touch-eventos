@@ -22,8 +22,7 @@ const Account = () => {
     setSelectedTab(i);
   };
 
-  const fetchData = useCallback(
-    async (reloadInfo, verified) => {
+  const fetchData = useCallback(async (reloadInfo) => {
       setLoading(true);
       try {
         const [userData, paymentsData] = await Promise.all([
@@ -56,9 +55,7 @@ const Account = () => {
         alert(error);
       }
       setLoading(false);
-    },
-    [t]
-  );
+    }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -87,7 +84,7 @@ const Account = () => {
   ];
 
   return (
-    <section className="w-full">
+    <section className="w-full px-4">
       <AdminTopNav title={t("account")} />
       <Tab
         tabs={tabs}

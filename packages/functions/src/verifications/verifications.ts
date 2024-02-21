@@ -5,22 +5,22 @@ import {
   type QueryCommandOutput,
 } from "@aws-sdk/lib-dynamodb";
 import { error } from "src/error";
-import { dynamoDBCliente } from "../aws-clients";
+import { dynamoDBClient } from "../aws-clients";
 
 export const handler: APIGatewayProxyHandlerV2 = async () => {
-  const tableName = process.env.TABLE_NAME;
-  if (!tableName) return error(500, "Internal Server Error");
+  const verificationsTable = process.env.VERIFICATIONS_TABLE_NAME;
+  if (!verificationsTable) return error(500, "Internal Server Error");
 
   try {
     const params: QueryCommandInput = {
-      TableName: tableName,
+      TableName: verificationsTable,
       IndexName: "ActiveIndex",
       KeyConditionExpression: "#active = :active",
       ExpressionAttributeNames: { "#active": "active" },
       ExpressionAttributeValues: { ":active": 1 },
       ScanIndexForward: true,
     };
-    const results: QueryCommandOutput = await dynamoDBCliente.send(
+    const results: QueryCommandOutput = await dynamoDBClient.send(
       new QueryCommand(params)
     );
     return {

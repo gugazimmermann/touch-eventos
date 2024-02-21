@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useEvents } from "../../../context/EventsContext";
 import {
   fetchCitiesByState,
   fetchDataByCEP,
@@ -23,6 +24,7 @@ import {
 
 const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
   const { t } = useTranslation("account");
+  const { dispatch } = useEvents();
   const { PhoneCodeSelect } = usePhoneCode();
   const [values, setValues] = useState({
     userId: "",
@@ -88,25 +90,25 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
     setLoading(false);
   };
 
-  const handleState = async (state) => {
-    setLoading(true);
-    const res = await fetchCitiesByState(state);
-    setCities(res);
-    setValues({
-      ...values,
-      ...{
-        addressZipCode: "",
-        addressCity: "",
-        addressStreet: "",
-        addressNumber: "",
-        addressNeighborhood: "",
-        addressComplement: "",
-        addressLatitude: "",
-        addressLongitude: "",
-      },
-    });
-    setLoading(false);
-  };
+  // const handleState = async (state) => {
+  //   setLoading(true);
+  //   const res = await fetchCitiesByState(state);
+  //   setCities(res);
+  //   setValues({
+  //     ...values,
+  //     ...{
+  //       addressZipCode: "",
+  //       addressCity: "",
+  //       addressStreet: "",
+  //       addressNumber: "",
+  //       addressNeighborhood: "",
+  //       addressComplement: "",
+  //       addressLatitude: "",
+  //       addressLongitude: "",
+  //     },
+  //   });
+  //   setLoading(false);
+  // };
 
   const handleUpdateCoords = async (data) => {
     const clonedData = { ...data };
@@ -129,20 +131,22 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
     setError("");
     setSuccess("");
     e.preventDefault();
-    let data = { ...values, phoneCode: values.phoneCode || "+55" };
-    if (!accountInfoValidate(data, setError, t)) return;
+    let userData = { ...values, phoneCode: values.phoneCode || "+55" };
+    if (!accountInfoValidate(userData, setError, t)) return;
     setLoading(true);
-    data = await handleUpdateCoords(data);
+    userData = await handleUpdateCoords(userData);
     try {
       const currentEmail = await auth.handleFetchUserEmail();
-      const changeEmail = currentEmail.email !== data.email;
+      const changeEmail = currentEmail.email !== userData.email;
       const res = await account.updateCurrentUser({
-        ...data,
+        ...userData,
+        stripeCustomerId: data.stripeCustomerId,
         active: changeEmail ? 0 : 1,
       });
       if (res.error) {
         setError(t("account_update_error"));
       } else {
+        dispatch({ type: "USER", payload: { user: res } });
         if (changeEmail) await auth.handleUpdateUserEmail(res.email);
         fetchData(true);
       }
@@ -163,7 +167,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
       setError(error.message);
     }
     setLoading(false);
-  }
+  };
 
   const handleSubmitValidate = async (e) => {
     setError("");
@@ -226,7 +230,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
           <div className="grid grid-cols-2 gap-4">
             <InputField
               disabled={loading || confirmEmail}
-              required={false}
+              required={true}
               autocomplete="name"
               placeholder={t("account_name")}
               value="name"
@@ -236,7 +240,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
             <div className="grid grid-cols-2 gap-4">
               <SelectField
                 disabled={loading || confirmEmail}
-                required={false}
+                required={true}
                 placeholder={t("account_document_type")}
                 value="documentType"
                 values={values}
@@ -245,7 +249,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
               />
               <InputField
                 disabled={loading || confirmEmail}
-                required={false}
+                required={true}
                 autocomplete="document"
                 placeholder={t("account_document")}
                 value="document"
@@ -265,7 +269,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
           <div className="grid grid-cols-2 gap-4">
             <InputField
               disabled={loading || confirmEmail}
-              required={false}
+              required={true}
               autocomplete="email"
               type="email"
               placeholder={t("account_email")}
@@ -295,7 +299,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
           <div className="grid grid-cols-3 gap-4">
             <InputField
               disabled={loading || confirmEmail}
-              required={false}
+              required={true}
               placeholder={t("account_address_zipcode")}
               value="addressZipCode"
               values={values}
@@ -305,17 +309,17 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
             />
             <SelectField
               disabled={loading || confirmEmail}
-              required={false}
+              required={true}
               placeholder={t("account_address_state")}
               value="addressState"
               values={values}
               setValues={setValues}
               options={STATESBR}
-              onBlur={(e) => handleState(e.target.value)}
+              // onBlur={(e) => handleState(e.target.value)}
             />
             <InputFieldAutoComplete
               disabled={loading || confirmEmail}
-              required={false}
+              required={true}
               placeholder={t("account_address_city")}
               value="addressCity"
               values={values}
@@ -326,7 +330,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
           <div className="grid grid-cols-2 gap-4">
             <InputField
               disabled={loading || confirmEmail}
-              required={false}
+              required={true}
               placeholder={t("account_address_street")}
               value="addressStreet"
               values={values}
@@ -391,7 +395,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
           </div>
           <div className="flex justify-around mt-4 gap-4">
             <FormButton
-              size='w-1/3'
+              size="w-1/3"
               testid="account-update-resend-button"
               text={t("account_update_resend_code")}
               disabled={loading}
@@ -399,7 +403,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
               onClick={() => handleResendCode()}
             />
             <FormButton
-             size='w-1/3'
+              size="w-1/3"
               testid="account-update-validate-button"
               text={t("account_update_validate")}
               disabled={loading}

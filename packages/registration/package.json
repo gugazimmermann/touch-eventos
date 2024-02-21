@@ -1,0 +1,51 @@
+{
+  "name": "registration",
+  "description": "SaaS for event visitor reports",
+  "author": "Guga Zimmermann <gugazimmermann@gmail.com> (https://github.com/gugazimmermann)",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "PORT=3003 sst bind react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.6.7",
+    "date-fns": "^3.3.1",
+    "email-validator": "^2.0.4",
+    "i18next": "^23.8.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-flags-select": "^2.2.3",
+    "react-i18next": "^14.0.5",
+    "react-router-dom": "^6.22.1",
+    "react-scripts": "5.0.1",
+    "uuid": "^9.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}

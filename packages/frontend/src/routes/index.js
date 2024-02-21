@@ -20,6 +20,12 @@ const lazyLoad = (component) => {
   );
 };
 
+const Register = lazyLoad(import("../pages/public/events/Register"));
+const Confirm = lazyLoad(import("../pages/public/events/Confirm"));
+const ConfirmSuccess = lazyLoad(
+  import("../pages/public/events/ConfirmSuccess")
+);
+
 const Company = lazyLoad(import("../pages/public/company/Company"));
 const WorkWithUs = lazyLoad(import("../pages/public/work-with-us/WorkWithUs"));
 const Faq = lazyLoad(import("../pages/public/faq/Faq"));
@@ -33,14 +39,33 @@ const SignUp = lazyLoad(import("../pages/public/auth/SignUp"));
 const ConfirmEmail = lazyLoad(import("../pages/public/auth/ConfirmEmail"));
 const ForgotPassword = lazyLoad(import("../pages/public/auth/ForgotPassword"));
 const NewPassword = lazyLoad(import("../pages/public/auth/NewPassword"));
+
 const Admin = lazyLoad(import("../pages/protected/Admin"));
 const Account = lazyLoad(import("../pages/protected/account/Account"));
-const NewEvent = lazyLoad(import("../pages/protected/NewEvent"));
+const NewEvent = lazyLoad(import("../pages/protected/new-event/NewEvent"));
 const EventDetails = lazyLoad(import("../pages/protected/EventDetails"));
+const EventDetailsRegisters = lazyLoad(
+  import("../pages/protected/EventDetailsRegisters")
+);
+const EventDetailsDesk = lazyLoad(
+  import("../pages/protected/EventDetailsDesk")
+);
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
+      <Route
+        path={`/${ROUTES.EVENTS.REGISTER}/:eventId?`}
+        element={<Register />}
+      />
+      <Route
+        path={`/${ROUTES.EVENTS.CONFIRM}/:eventId?/:registrationId?/:language?`}
+        element={<Confirm />}
+      />
+      <Route
+        path={`/${ROUTES.EVENTS.CONFIRM}/:eventId?/:registrationId?/:success?/:language?`}
+        element={<ConfirmSuccess />}
+      />
       <Route element={<SiteLayout />}>
         <Route path="/" element={<Home />} />
         <Route path={`/${ROUTES.WEBSITE.COMPANY}`} element={<Company />} />
@@ -85,6 +110,14 @@ export const router = createBrowserRouter(
         <Route
           path={`/${ROUTES.ADMIN.EVENT}/:eventId`}
           element={<EventDetails />}
+        />
+        <Route
+          path={`/${ROUTES.ADMIN.EVENT}/:eventId/${ROUTES.ADMIN.REGISTERS}`}
+          element={<EventDetailsRegisters />}
+        />
+        <Route
+          path={`/${ROUTES.ADMIN.EVENT}/:eventId/${ROUTES.ADMIN.DESK}`}
+          element={<EventDetailsDesk />}
         />
       </Route>
     </>

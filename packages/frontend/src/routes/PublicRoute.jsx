@@ -10,7 +10,7 @@ const PublicRoute = () => {
   const verifyUser = useCallback(async () => {
     try {
       const currentUser = await handleGetCurrentUser();
-      if (currentUser) navigate(`/${ROUTES.ADMIN.DASHBOARD}`);
+      if (currentUser?.userId) navigate(`/${ROUTES.ADMIN.DASHBOARD}`);
     } catch (error) {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

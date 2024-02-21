@@ -3,11 +3,7 @@ import { useTranslation } from "react-i18next";
 import contactUsImg from "./images/contact-us.png";
 import { validateEmail, validateName } from "../../../helpers/validate";
 import { EmailFilled, PhoneFilled } from "../../../icons";
-import {
-  FormButton,
-  InputField,
-  TextField,
-} from "../../../components/form";
+import { FormButton, InputField, TextField } from "../../../components/form";
 import { Alert, Loading, Title } from "../../../components";
 
 const ContactUs = () => {
@@ -45,12 +41,11 @@ const ContactUs = () => {
           body: JSON.stringify(values),
         }
       );
-      const res = await response.json();
-      console.log(res);
+      await response.json();
       setLoading(false);
       setSuccess(t("success"));
     } catch (err) {
-      throw err;
+      console.error(err);
     }
   };
 

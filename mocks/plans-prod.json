@@ -1,0 +1,94 @@
+{
+  "production-touch-eventos-Plans": [
+    {
+      "PutRequest": {
+        "Item": {
+          "planId": { "S": "09c796b1-1d18-4763-87c3-bc39a62ef2e0" },
+          "order": { "N": "1" },
+          "type": { "S": "Evento Único" },
+          "duration": { "S": "3 dias" },
+          "maxDays": { "N": "3"},
+          "maxDiff": { "N": "10"},
+          "description": {
+            "S": "Dados armazenados por 30 dias após término do evento."
+          },
+          "price": { "S": "100.00" },
+          "createdAt": { "S": "1700922456982" },
+          "active": { "N": "1" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "planId": { "S": "047467a8-acff-4e6e-80ad-e46300f77f9d" },
+          "order": { "N": "2" },
+          "type": { "S": "Evento Único" },
+          "duration": { "S": "10 dias" },
+          "maxDays": { "N": "10"},
+          "maxDiff": { "N": "20"},
+          "description": {
+            "S": "Dados armazenados por 30 dias após término do evento."
+          },
+          "price": { "S": "180.00" },
+          "createdAt": { "S": "1700922456982" },
+          "active": { "N": "1" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "planId": { "S": "2172d505-152e-4588-9824-e4403cde7ccb" },
+          "order": { "N": "3" },
+          "type": { "S": "Evento Único" },
+          "duration": { "S": "30 dias" },
+          "maxDays": { "N": "30"},
+          "maxDiff": { "N": "40"},
+          "description": {
+            "S": "Dados armazenados por 30 dias após término do evento."
+          },
+          "price": { "S": "324.00" },
+          "createdAt": { "S": "1700922456982" },
+          "active": { "N": "1" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "planId": { "S": "bab2c6f7-5807-4492-a88a-32ff9c64b076" },
+          "order": { "N": "4" },
+          "type": { "S": "Múltiplos Eventos" },
+          "duration": { "S": "Semestral" },
+          "maxDays": { "N": "30"},
+          "maxDiff": { "N": "40"},
+          "description": {
+            "S": "Sem limite de eventos. Dados não são perdidos. Opção de comparar eventos."
+          },
+          "price": { "S": "1458.00" },
+          "createdAt": { "S": "1700922456982" },
+          "active": { "N": "1" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "planId": { "S": "d561d358-c0d7-4799-aebb-e1c13fb7ede2" },
+          "order": { "N": "5" },
+          "type": { "S": "Múltiplos Eventos" },
+          "duration": { "S": "Anual" },
+          "maxDays": { "N": "30"},
+          "maxDiff": { "N": "40"},
+          "description": {
+            "S": "Sem limite de eventos. Dados não são perdidos. Opção de comparar eventos."
+          },
+          "price": { "S": "2187.00" },
+          "createdAt": { "S": "1700922456982" },
+          "active": { "N": "1" }
+        }
+      }
+    }
+  ]
+}

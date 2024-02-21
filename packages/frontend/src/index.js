@@ -1,10 +1,11 @@
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import { Amplify } from "aws-amplify";
-import "./index.css";
-import routes from "./routes";
 import reportWebVitals from "./reportWebVitals";
-import './i18n';
+import { Amplify } from "aws-amplify";
+import { EventsProvider } from "./context/EventsContext";
+import routes from "./routes";
+import "./i18n";
+import "./index.css";
 
 Amplify.configure({
   Auth: {
@@ -17,9 +18,9 @@ Amplify.configure({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <>
+  <EventsProvider>
     <RouterProvider router={routes} />
-  </>
+  </EventsProvider>
 );
 
 reportWebVitals();

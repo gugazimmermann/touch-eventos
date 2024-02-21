@@ -14,6 +14,7 @@ import authEN from "./constants/translations/en/auth.json";
 import adminEN from "./constants/translations/en/admin.json";
 import accountEN from "./constants/translations/en/account.json";
 import phoneCodeEN from "./constants/translations/en/phone-code.json";
+import event_registerEN from "./constants/translations/en/event_register.json";
 
 import logoPTBR from "./constants/translations/pt-br/logo.json";
 import componentsPTBR from "./constants/translations/pt-br/components.json";
@@ -28,6 +29,9 @@ import authPTBR from "./constants/translations/pt-br/auth.json";
 import accountPTBR from "./constants/translations/pt-br/account.json";
 import adminPTBR from "./constants/translations/pt-br/admin.json";
 import phoneCodePTBR from "./constants/translations/pt-br/phone-code.json";
+import event_registerPTBR from "./constants/translations/pt-br/event_register.json";
+
+import event_registerES from "./constants/translations/es/event_register.json";
 
 const resources = {
   en: {
@@ -44,6 +48,7 @@ const resources = {
     account: accountEN,
     admin: adminEN,
     phoneCode: phoneCodeEN,
+    event_register: event_registerEN,
   },
   "pt-BR": {
     logo: logoPTBR,
@@ -59,6 +64,10 @@ const resources = {
     account: accountPTBR,
     admin: adminPTBR,
     phoneCode: phoneCodePTBR,
+    event_register: event_registerPTBR,
+  },
+  es: {
+    event_register: event_registerES,
   },
 };
 
@@ -86,6 +95,7 @@ i18n.use(initReactI18next).init({
     "account",
     "admin",
     "phoneCode",
+    "event_register",
   ],
 });
 

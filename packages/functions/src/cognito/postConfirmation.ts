@@ -6,11 +6,11 @@ import {
   type QueryCommandOutput,
   type PutCommandInput,
 } from "@aws-sdk/lib-dynamodb";
-import { dynamoDBCliente } from "../aws-clients";
+import { dynamoDBClient } from "../aws-clients";
 
 export const handler: PreSignUpTriggerHandler = async (event) => {
-  const tableName = process.env.TABLE_NAME;
-  if (!tableName) return new Error("Internal Server Error");
+  const usersTable = process.env.USERS_TABLE_NAME;
+  if (!usersTable) return new Error("Internal Server Error");
   if (!event.request.userAttributes.hasOwnProperty("email")) {
     return new Error("Bad Request: Missing User Email");
   }
@@ -20,12 +20,12 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
 
   try {
     const params: QueryCommandInput = {
-      TableName: tableName,
+      TableName: usersTable,
       IndexName: "EmailIndex",
       KeyConditionExpression: "email = :email",
       ExpressionAttributeValues: { ":email": email },
     };
-    const results: QueryCommandOutput = await dynamoDBCliente.send(
+    const results: QueryCommandOutput = await dynamoDBClient.send(
       new QueryCommand(params)
     );
     if (results.Items && results.Items.length > 0) return event;
@@ -36,7 +36,7 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
 
   try {
     const params: PutCommandInput = {
-      TableName: tableName,
+      TableName: usersTable,
       Item: {
         userId: userName,
         email: event.request.userAttributes.email,
@@ -44,7 +44,7 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
         active: 1,
       },
     };
-    await dynamoDBCliente.send(new PutCommand(params));
+    await dynamoDBClient.send(new PutCommand(params));
     return event;
   } catch (err) {
     console.error("DynamoDB Error:", err);

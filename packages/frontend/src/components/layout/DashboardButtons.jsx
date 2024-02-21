@@ -1,6 +1,6 @@
-import { Folder, FolderOpen } from "../../icons";
+import { Folder, FolderOpen, Reload } from "../../icons";
 
-const DashboardButtons = ({ archived, setArchived }) => {
+const DashboardButtons = ({ archived, setArchived, reload }) => {
   return (
     <div className="flex flow-row justify-end gap-4">
       <button
@@ -20,6 +20,12 @@ const DashboardButtons = ({ archived, setArchived }) => {
       >
         <Folder />
         <span className="mx-1">Arquivados</span>
+      </button>
+      <button
+        className="bg-info-500 flex items-center px-2 py-1 text-sm tracking-wide text-white capitalize rounded-lg"
+        onClick={() => reload(true)}
+      >
+        <Reload />
       </button>
     </div>
   );

@@ -18,7 +18,7 @@
         "Item": {
           "verificationId": { "S": "681365db-f935-4b83-bf3a-ced700a6ffc5" },
           "order": { "N": "2" },
-          "type": { "S": "SNS" },
+          "type": { "S": "SMS" },
           "description": { "S": "Cobrado separadamente" },
           "price": { "S": "0.15" },
           "createdAt": { "S": "1700922456982" },

@@ -9,7 +9,7 @@ export const getPlans = async () => {
     });
     return response.json();
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -25,6 +25,6 @@ export const getPlanById = async (planId) => {
     );
     return response.json();
   } catch (err) {
-    throw err;
+    return err;
   }
 };

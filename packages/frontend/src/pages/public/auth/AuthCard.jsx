@@ -10,7 +10,7 @@ const AuthCard = ({ title, footer, children }) => {
         </h3>
         {children}
       </div>
-      <div className="flex items-center justify-center py-4 text-center bg-primary-500 rounded-b-lg">
+      <div className="flex items-center justify-center py-4 text-center bg-success-500 rounded-b-lg">
         {footer}
       </div>
     </div>

@@ -16,12 +16,14 @@ const Table = ({ header, items, perPage }) => {
               {items.length > 0 ? (
                 <TableRow items={items} />
               ) : (
+                <tr>
                 <td
                   className="px-4 py-4 text-sm whitespace-nowrap text-center font-bold"
                   colSpan={header.length}
                 >
                   {t("table_no_item")}
                 </td>
+                </tr>
               )}
             </tbody>
           </table>

@@ -10,11 +10,17 @@
     "@aws-sdk/client-dynamodb": "^3.509.0",
     "@aws-sdk/client-s3": "^3.511.0",
     "@aws-sdk/client-ses": "^3.511.0",
+    "@aws-sdk/client-sns": "^3.515.0",
     "@aws-sdk/lib-dynamodb": "^3.509.0",
-    "@aws-sdk/s3-request-presigner": "^3.511.0"
+    "@aws-sdk/s3-request-presigner": "^3.511.0",
+    "date-fns": "^3.3.1",
+    "jsonwebtoken": "^9.0.2",
+    "stripe": "^14.16.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.133",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.11.16",
     "sst": "^2.40.1",
     "vitest": "^1.2.2"

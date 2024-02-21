@@ -1,11 +1,12 @@
+import { format } from "date-fns";
+
 const formatDate = (timestamp) => {
-  const date = new Date(timestamp * 1000);
-  return `${("0" + date.getDate()).slice(-2)}/${(
-    "0" +
-    (date.getMonth() + 1)
-  ).slice(-2)}/${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}:${(
-    "0" + date.getMinutes()
-  ).slice(-2)}`;
+  const timestampInMilliseconds =
+    timestamp.length < 11 ? timestamp * 1000 : timestamp;
+  return format(
+    new Date(parseInt(timestampInMilliseconds, 10)),
+    "dd/MM/yy HH:mm"
+  );
 };
 
 export default formatDate;

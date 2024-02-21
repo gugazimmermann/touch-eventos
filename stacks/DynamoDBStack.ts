@@ -50,6 +50,22 @@ export function DynamoDBStack({ stack }: StackContext) {
     },
   });
 
+  const usersSubscriptionTable = new Table(stack, "UsersSubscription", {
+    fields: {
+      usersSubscriptionId: "string",
+      userId: "string",
+      paymentId: "string",
+      planId: "string",
+      startDate: "string",
+      endDate: "string",
+    },
+    primaryIndex: { partitionKey: "usersSubscriptionId" },
+    globalIndexes: {
+      UserIndex: { partitionKey: "userId", sortKey: "endDate" },
+      PlanIndex: { partitionKey: "planId", sortKey: "endDate" },
+    },
+  });
+  
   const paymentsTable = new Table(stack, "Payments", {
     fields: {
       paymentId: "string",
@@ -71,6 +87,7 @@ export function DynamoDBStack({ stack }: StackContext) {
       userId: "string",
       planId: "string",
       verificationId: "string",
+      slug: "string",
       visitorGift: "number",
       raffle: "number",
       raffleType: "string",
@@ -92,6 +109,60 @@ export function DynamoDBStack({ stack }: StackContext) {
       },
       StateStartDateIndex: { partitionKey: "state", sortKey: "startDate" },
       ActiveIndex: { partitionKey: "active", sortKey: "createdAt" },
+      SlugIndex: { partitionKey: "slug" },
+    },
+  });
+
+  const eventsRegisterTable = new Table(stack, "EventsRegister", {
+    fields: {
+      registrationId: "string",
+      eventId: "string",
+      email: "string",
+      phone: "string",
+      language: "string",
+      code: "string",
+      confirmed: "string",
+      gift: "string",
+      deskId: "string",
+      createdAt: "string",
+      eventRegisterHash: "string",
+    },
+    primaryIndex: { partitionKey: "registrationId" },
+    globalIndexes: {
+      EventIndex: { partitionKey: "eventId" },
+      EventDateIndex: { partitionKey: "eventId", sortKey: "createdAt" },
+      eventRegisterHash: { partitionKey: "eventRegisterHash" },
+    },
+  });
+
+  const eventsSurveyTable = new Table(stack, "EventsSurvey", {
+    fields: {
+      surveyId: "string",
+      eventId: "string",
+      language: "string",
+      createdAt: "string",
+    },
+    primaryIndex: { partitionKey: "surveyId" },
+    globalIndexes: {
+      EventIndex: { partitionKey: "eventId" },
+      EventDateIndex: { partitionKey: "eventId", sortKey: "createdAt" },
+      LanguageIndex: { partitionKey: "language" },
+    },
+  });
+
+  const eventsDeskTable = new Table(stack, "EventsDesk", {
+    fields: {
+      deskId: "string",
+      eventId: "string",
+      user: "string",
+      accessCode: "string",
+      createdAt: "string",
+      active: "number",
+    },
+    primaryIndex: { partitionKey: "deskId" },
+    globalIndexes: {
+      EventIndex: { partitionKey: "eventId" },
+      UserIndex: { partitionKey: "user" },
     },
   });
 
@@ -99,15 +170,24 @@ export function DynamoDBStack({ stack }: StackContext) {
     PlansTableName: plansTable.tableName,
     VerificationsTableName: verificationsTable.tableName,
     UsersTableName: usersTable.tableName,
+    UsersSubscriptionTable: usersSubscriptionTable.tableName,
     PaymentsTableName: paymentsTable.tableName,
     EventsTableName: eventsTable.tableName,
+    EventsRegisterTableName: eventsRegisterTable.tableName,
+    EventsSurveyTable: eventsSurveyTable.tableName,
+    EventsDeskTable: eventsDeskTable.tableName,
+    
   });
 
   return {
     plansTable,
     verificationsTable,
     usersTable,
+    usersSubscriptionTable,
     paymentsTable,
     eventsTable,
+    eventsRegisterTable,
+    eventsSurveyTable,
+    eventsDeskTable
   };
 }

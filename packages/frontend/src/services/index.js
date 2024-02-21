@@ -7,3 +7,5 @@ export { default as fetchDataByCEP } from "./cep";
 export { default as fetchCitiesByState } from "./cities";
 export { default as fetchDataByCNPJ } from "./cnpj";
 export { default as fetchCoordinates } from "./coords";
+export * as register from "./register";
+export * as stripe from "./stripe";

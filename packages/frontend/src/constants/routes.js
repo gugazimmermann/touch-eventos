@@ -19,6 +19,13 @@ const ROUTES = Object.freeze({
     ACCOUNT: "minha-conta",
     NEWEVENT: "novo-evento",
     EVENT: "evento",
+    REGISTERS: "cadastros",
+    SURVEYS: "pesquisas",
+    DESK: "balcao",
+  },
+  EVENTS: {
+    REGISTER: "cadastro",
+    CONFIRM: "confirmacao",
   }
 });
 

@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+html,
+body,
+label {
+  font-family: "Roboto", sans-serif;
+  margin: 0 auto;
+  padding: 0;
+}
+
+html,
+body {
+  @apply bg-background-100;
+  @apply text-text-700;
+}
+
+.text-strong {
+  @apply text-text-900;
+  @apply font-bold;
+}
+
+.flagsSelect {
+  @apply pb-0 !important;
+}
+
+.flagsSelect > button {
+  padding: 0 4px;
+}
+
+.flagsSelect > button > span {
+  padding: 0 4px;
+  margin: 0;
+}
+
+.flagsSelect > ul > li {
+  padding: 0;
+  padding-left: 8px;
+  margin: 0;
+}

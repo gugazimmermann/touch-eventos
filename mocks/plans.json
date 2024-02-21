@@ -12,7 +12,7 @@
           "description": {
             "S": "Dados armazenados por 30 dias após término do evento."
           },
-          "price": { "S": "50.00" },
+          "price": { "S": "100.00" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
@@ -30,7 +30,7 @@
           "description": {
             "S": "Dados armazenados por 30 dias após término do evento."
           },
-          "price": { "S": "75.00" },
+          "price": { "S": "180.00" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
@@ -48,7 +48,7 @@
           "description": {
             "S": "Dados armazenados por 30 dias após término do evento."
           },
-          "price": { "S": "100.00" },
+          "price": { "S": "324.00" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
@@ -66,7 +66,7 @@
           "description": {
             "S": "Sem limite de eventos. Dados não são perdidos. Opção de comparar eventos."
           },
-          "price": { "S": "405.00" },
+          "price": { "S": "1458.00" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
@@ -84,7 +84,7 @@
           "description": {
             "S": "Sem limite de eventos. Dados não são perdidos. Opção de comparar eventos."
           },
-          "price": { "S": "720.00" },
+          "price": { "S": "2187.00" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }

@@ -15,18 +15,21 @@ export function CognitoStack({ stack }: StackContext) {
           requireDigits: false,
           requireSymbols: false,
         },
+        userVerification: {
+          emailSubject: 'Touch Eventos - Verificação de Email',
+          emailBody: 'O seu código de verificação é {####}'
+        }
       },
     },
     defaults: {
       function: {
         timeout: 20,
-        environment: { TABLE_NAME: usersTable.tableName },
+        environment: { USERS_TABLE_NAME: usersTable.tableName },
         permissions: [usersTable],
       },
     },
     triggers: {
-      postConfirmation:
-        "packages/functions/src/cognito/postConfirmation.handler",
+      postConfirmation: "packages/functions/src/cognito/postConfirmation.handler",
     },
   });
 

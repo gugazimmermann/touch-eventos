@@ -20,7 +20,7 @@ export const handleSignIn = async (email, password) => {
     const { isSignedIn } = await signIn({ username: email, password });
     return isSignedIn;
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -31,7 +31,7 @@ export const handleForgotPassword = async (email) => {
       return nextStep.codeDeliveryDetails.destination;
     else return;
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -43,7 +43,7 @@ export const handleNewPassword = async (email, code, password) => {
       newPassword: password,
     });
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -60,7 +60,7 @@ export const handleSignUp = async (email, password) => {
     });
     return userId;
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -72,7 +72,7 @@ export const handleConfirmEmail = async (email, code) => {
     });
     return isSignUpComplete;
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -81,7 +81,7 @@ export const handleResendSignUpCode = async (email) => {
     const { destination } = await resendSignUpCode({ username: email });
     return destination;
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -90,7 +90,7 @@ export const handleGetCurrentUser = async () => {
     const { username, userId } = await getCurrentUser();
     return { username, userId };
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -99,7 +99,7 @@ export const handleFetchAuthSession = async () => {
     const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
     return { accessToken, idToken };
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -110,7 +110,7 @@ export const handleUpdateCurrentUserPassword = async (
   try {
     await updatePassword({ oldPassword: password, newPassword: newpassword });
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -118,7 +118,7 @@ export const handleSignOut = async () => {
   try {
     await signOut();
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -127,7 +127,7 @@ export const handleFetchUserEmail = async () => {
     const { email, email_verified } = await fetchUserAttributes();
     return { email, emailVerified: email_verified };
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -141,8 +141,8 @@ export const handleUpdateUserEmail = async (email) => {
     });
     if (nextStep.updateAttributeStep === "CONFIRM_ATTRIBUTE_WITH_CODE")
       return nextStep.codeDeliveryDetails.destination;
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    return err;
   }
 };
 
@@ -153,14 +153,14 @@ export const handleConfirmUserEmail = async (code) => {
       confirmationCode: code,
     });
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
 export const handleConfirmUserEmailSendCode = async () => {
   try {
     await sendUserAttributeVerificationCode({ userAttributeKey: "email" });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    return err;
   }
 };

@@ -9,20 +9,20 @@ export const getCurrentUser = async () => {
     });
     return response.json();
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
 export const getCurrentUserPayments = async () => {
   try {
     const { accessToken } = await handleFetchAuthSession();
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/payments`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/user/payments`, {
       method: "GET",
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response.json();
   } catch (err) {
-    throw err;
+    return err;
   }
 };
 
@@ -36,6 +36,19 @@ export const updateCurrentUser = async (data) => {
     });
     return response.json();
   } catch (err) {
-    throw err;
+    return err;
+  }
+};
+
+export const getCurrentUserSubscription = async () => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/user/subscription`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return response.json();
+  } catch (err) {
+    return err;
   }
 };

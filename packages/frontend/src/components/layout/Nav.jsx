@@ -1,21 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useEvents } from "../../context/EventsContext";
 import ROUTES from "../../constants/routes";
 import { handleSignOut } from "../../services/auth";
 
-const Nav = ({ user }) => {
+const Nav = () => {
+  const { state, dispatch } = useEvents();
   const { t } = useTranslation(["auth", "admin", "account"]);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await handleSignOut();
+    dispatch({
+      type: "USER",
+      payload: { user: null },
+    });
     navigate("/");
   };
 
   return (
-    <nav className="flex content-center justify-end w-1/2">
+    <nav className="flex content-center justify-end w-full">
       <div className="flex flex-none justify-between items-center">
-        {!user ? (
+        {!state.user ? (
           <Link to={`/${ROUTES.AUTH.SIGNIN}`} className="hover:underline">
             {t("access_admin", { ns: "auth" })}
           </Link>

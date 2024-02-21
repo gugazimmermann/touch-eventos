@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { useEvents } from "../../../context/EventsContext";
 import ROUTES from "../../../constants/routes";
 import { handleSignIn } from "../../../services/auth";
+import { getCurrentUser } from "../../../services/account";
 import { validateEmail, validatePassword } from "../../../helpers/validate";
 import { Alert, Loading } from "../../../components";
 import { FormButton, InputField } from "../../../components/form";
@@ -12,6 +14,7 @@ const SignIn = () => {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const { useremail } = useParams();
+  const { dispatch } = useEvents();
   const [values, setValues] = useState({
     email: "",
     password: "",
@@ -34,8 +37,15 @@ const SignIn = () => {
     setLoading(true);
     try {
       const isSignedIn = await handleSignIn(email, password);
-      if (isSignedIn) navigate(`/${ROUTES.ADMIN.DASHBOARD}`);
-      else setError(t("form_error"));
+      if (isSignedIn) {
+        const user = await getCurrentUser();
+        if (user.active !== 1) {
+          setError("Cadastro inativo, entre em contato.");
+        } else {
+          dispatch({ type: "USER", payload: { user } });
+          navigate(`/${ROUTES.ADMIN.DASHBOARD}`);
+        }
+      } else setError(t("form_error"));
     } catch (error) {
       setError(error.message);
     }
