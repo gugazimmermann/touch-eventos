@@ -1,74 +1,72 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-import logoEN from "./constants/translations/en/logo.json";
-import componentsEN from "./constants/translations/en/components.json";
-import homeEN from "./constants/translations/en/home.json";
-import companyEN from "./constants/translations/en/company.json";
-import workwithusEN from "./constants/translations/en/workwithus.json";
-import faqEN from "./constants/translations/en/faq.json";
-import contactusEN from "./constants/translations/en/contactus.json";
-import usagetermsEN from "./constants/translations/en/usage_terms.json";
-import privacitytermsEN from "./constants/translations/en/privacity_terms.json";
-import authEN from "./constants/translations/en/auth.json";
-import adminEN from "./constants/translations/en/admin.json";
-import accountEN from "./constants/translations/en/account.json";
-import phoneCodeEN from "./constants/translations/en/phone-code.json";
-import event_registerEN from "./constants/translations/en/event_register.json";
-
-import logoPTBR from "./constants/translations/pt-br/logo.json";
 import componentsPTBR from "./constants/translations/pt-br/components.json";
-import homePTBR from "./constants/translations/pt-br/home.json";
-import companyPTBR from "./constants/translations/pt-br/company.json";
-import workwithusPTBR from "./constants/translations/pt-br/workwithus.json";
-import faqPTBR from "./constants/translations/pt-br/faq.json";
-import contactusPTBR from "./constants/translations/pt-br/contactus.json";
-import usagetermsPTBR from "./constants/translations/pt-br/usage_terms.json";
-import privacitytermsPTBR from "./constants/translations/pt-br/privacity_terms.json";
-import authPTBR from "./constants/translations/pt-br/auth.json";
-import accountPTBR from "./constants/translations/pt-br/account.json";
-import adminPTBR from "./constants/translations/pt-br/admin.json";
-import phoneCodePTBR from "./constants/translations/pt-br/phone-code.json";
-import event_registerPTBR from "./constants/translations/pt-br/event_register.json";
+import layoutPTBR from "./constants/translations/pt-br/layout.json";
+import componentsEN from "./constants/translations/en/components.json";
 
-import event_registerES from "./constants/translations/es/event_register.json";
+// WebSite
+// BR
+import authPTBR from "./constants/translations/pt-br/website/auth.json";
+import companyPTBR from "./constants/translations/pt-br/website/company.json";
+import contactusPTBR from "./constants/translations/pt-br/website/contactus.json";
+import faqPTBR from "./constants/translations/pt-br/website/faq.json";
+import homePTBR from "./constants/translations/pt-br/website/home.json";
+import privacitytermsPTBR from "./constants/translations/pt-br/website/privacity_terms.json";
+import usagetermsPTBR from "./constants/translations/pt-br/website/usage_terms.json";
+import workwithusPTBR from "./constants/translations/pt-br/website/workwithus.json";
+// EN
+import authEN from "./constants/translations/en/auth.json";
+import companyEN from "./constants/translations/en/company.json";
+import contactusEN from "./constants/translations/en/contactus.json";
+import faqEN from "./constants/translations/en/faq.json";
+import homeEN from "./constants/translations/en/home.json";
+import privacitytermsEN from "./constants/translations/en/privacity_terms.json";
+import usagetermsEN from "./constants/translations/en/usage_terms.json";
+import workwithusEN from "./constants/translations/en/workwithus.json";
+
+// Admin
+// BR
+import accountPTBR from "./constants/translations/pt-br/account.json";
+import activityDetailsPTBR from "./constants/translations/pt-br/activity_details.json";
+import adminPTBR from "./constants/translations/pt-br/admin.json";
+import newActivityPTBR from "./constants/translations/pt-br/new_activity.json";
+// EN
+import accountEN from "./constants/translations/en/account.json";
+import adminEN from "./constants/translations/en/admin.json";
 
 const resources = {
   en: {
-    logo: logoEN,
     components: componentsEN,
-    home: homeEN,
-    company: companyEN,
-    workwithus: workwithusEN,
-    faq: faqEN,
-    contactus: contactusEN,
-    usageterms: usagetermsEN,
-    privacityterms: privacitytermsEN,
     auth: authEN,
+    company: companyEN,
+    contactus: contactusEN,
+    faq: faqEN,
+    home: homeEN,
+    privacityterms: privacitytermsEN,
+    usageterms: usagetermsEN,
+    workwithus: workwithusEN,
     account: accountEN,
     admin: adminEN,
-    phoneCode: phoneCodeEN,
-    event_register: event_registerEN,
+
   },
   "pt-BR": {
-    logo: logoPTBR,
     components: componentsPTBR,
-    home: homePTBR,
-    company: companyPTBR,
-    workwithus: workwithusPTBR,
-    faq: faqPTBR,
-    contactus: contactusPTBR,
-    usageterms: usagetermsPTBR,
-    privacityterms: privacitytermsPTBR,
+    layout: layoutPTBR,
     auth: authPTBR,
+    company: companyPTBR,
+    contactus: contactusPTBR,
+    faq: faqPTBR,
+    home: homePTBR,
+    privacityterms: privacitytermsPTBR,
+    usageterms: usagetermsPTBR,
+    workwithus: workwithusPTBR,
     account: accountPTBR,
+    activity_details: activityDetailsPTBR,
     admin: adminPTBR,
-    phoneCode: phoneCodePTBR,
-    event_register: event_registerPTBR,
+    new_activity: newActivityPTBR,
   },
-  es: {
-    event_register: event_registerES,
-  },
+  es: {},
 };
 
 i18n.use(initReactI18next).init({
@@ -82,8 +80,8 @@ i18n.use(initReactI18next).init({
     useSuspense: true,
   },
   ns: [
-    "logo",
     "components",
+    "layout",
     "home",
     "company",
     "workwithus",
@@ -94,8 +92,8 @@ i18n.use(initReactI18next).init({
     "auth",
     "account",
     "admin",
-    "phoneCode",
-    "event_register",
+    "new_activity",
+    "activity_details",
   ],
 });
 

@@ -20,12 +20,6 @@ const lazyLoad = (component) => {
   );
 };
 
-const Register = lazyLoad(import("../pages/public/events/Register"));
-const Confirm = lazyLoad(import("../pages/public/events/Confirm"));
-const ConfirmSuccess = lazyLoad(
-  import("../pages/public/events/ConfirmSuccess")
-);
-
 const Company = lazyLoad(import("../pages/public/company/Company"));
 const WorkWithUs = lazyLoad(import("../pages/public/work-with-us/WorkWithUs"));
 const Faq = lazyLoad(import("../pages/public/faq/Faq"));
@@ -42,30 +36,20 @@ const NewPassword = lazyLoad(import("../pages/public/auth/NewPassword"));
 
 const Admin = lazyLoad(import("../pages/protected/Admin"));
 const Account = lazyLoad(import("../pages/protected/account/Account"));
-const NewEvent = lazyLoad(import("../pages/protected/new-event/NewEvent"));
-const EventDetails = lazyLoad(import("../pages/protected/EventDetails"));
-const EventDetailsRegisters = lazyLoad(
-  import("../pages/protected/EventDetailsRegisters")
+const NewActivity = lazyLoad(
+  import("../pages/protected/new-activity/NewActivity")
 );
-const EventDetailsDesk = lazyLoad(
-  import("../pages/protected/EventDetailsDesk")
+const ActivityDetails = lazyLoad(import("../pages/protected/activity-details/ActivityDetails"));
+const ActivityDetailsRegisters = lazyLoad(
+  import("../pages/protected/activity-details/ActivityDetailsRegisters")
+);
+const ActivityDetailsDesk = lazyLoad(
+  import("../pages/protected/activity-details/ActivityDetailsDesk")
 );
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route
-        path={`/${ROUTES.EVENTS.REGISTER}/:eventId?`}
-        element={<Register />}
-      />
-      <Route
-        path={`/${ROUTES.EVENTS.CONFIRM}/:eventId?/:registrationId?/:language?`}
-        element={<Confirm />}
-      />
-      <Route
-        path={`/${ROUTES.EVENTS.CONFIRM}/:eventId?/:registrationId?/:success?/:language?`}
-        element={<ConfirmSuccess />}
-      />
       <Route element={<SiteLayout />}>
         <Route path="/" element={<Home />} />
         <Route path={`/${ROUTES.WEBSITE.COMPANY}`} element={<Company />} />
@@ -106,18 +90,30 @@ export const router = createBrowserRouter(
       <Route element={<ProtectedRoute />}>
         <Route path={`/${ROUTES.ADMIN.DASHBOARD}`} element={<Admin />} />
         <Route path={`/${ROUTES.ADMIN.ACCOUNT}`} element={<Account />} />
-        <Route path={`/${ROUTES.ADMIN.NEWEVENT}`} element={<NewEvent />} />
+        <Route path={`/${ROUTES.ADMIN.ACCOUNTPROFILE}`} element={<Account />} />
         <Route
-          path={`/${ROUTES.ADMIN.EVENT}/:eventId`}
-          element={<EventDetails />}
+          path={`/${ROUTES.ADMIN.ACCOUNTPASSWORD}`}
+          element={<Account initialTab="password" />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.EVENT}/:eventId/${ROUTES.ADMIN.REGISTERS}`}
-          element={<EventDetailsRegisters />}
+          path={`/${ROUTES.ADMIN.ACCOUNTPAYMENT}`}
+          element={<Account initialTab="payments" />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.EVENT}/:eventId/${ROUTES.ADMIN.DESK}`}
-          element={<EventDetailsDesk />}
+          path={`/${ROUTES.ADMIN.NEWACTIVITY}`}
+          element={<NewActivity />}
+        />
+        <Route
+          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId`}
+          element={<ActivityDetails />}
+        />
+        <Route
+          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.REGISTERS}`}
+          element={<ActivityDetailsRegisters />}
+        />
+        <Route
+          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.DESK}`}
+          element={<ActivityDetailsDesk />}
         />
       </Route>
     </>

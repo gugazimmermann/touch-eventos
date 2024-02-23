@@ -2,7 +2,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import { Amplify } from "aws-amplify";
-import { EventsProvider } from "./context/EventsContext";
+import { ActivitiesProvider } from "./context/ActivitiesContext";
 import routes from "./routes";
 import "./i18n";
 import "./index.css";
@@ -18,9 +18,9 @@ Amplify.configure({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <EventsProvider>
+  <ActivitiesProvider>
     <RouterProvider router={routes} />
-  </EventsProvider>
+  </ActivitiesProvider>
 );
 
 reportWebVitals();

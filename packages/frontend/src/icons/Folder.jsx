@@ -4,7 +4,7 @@ const Folder = () => {
       xmlns="http://www.w3.org/2000/svg"
       className="w-6 h-6"
       viewBox="0 0 24 24"
-      strokeWidth="2"
+      strokeWidth="1.5"
       stroke="currentColor"
       fill="none"
       strokeLinecap="round"

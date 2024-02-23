@@ -60,7 +60,7 @@ const useDatePicker = () => {
   const verifyMaxDates = useCallback(
     (maxDays, dates) =>
       dates.length > maxDays
-        ? `${t("new_event_dates_max")} ${maxDays} ${t("new_event_dates_days")}`
+        ? `${t("new_activity_dates_max")} ${maxDays} ${t("new_activity_dates_days")}`
         : false,
     [t]
   );
@@ -79,8 +79,8 @@ const useDatePicker = () => {
           parseISO(firstDay)
         );
         return diffDays + 1 > maxDiff
-          ? `${t("new_event_dates_duration")} ${maxDiff} ${t(
-              "new_event_dates_days"
+          ? `${t("new_activity_dates_duration")} ${maxDiff} ${t(
+              "new_activity_dates_days"
             )}`
           : false;
       }
@@ -109,7 +109,7 @@ const useDatePicker = () => {
       "block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg",
   };
 
-  const validateEventDates = useCallback(
+  const validateActivityDates = useCallback(
     (maxDays, maxDiff, dates) => {
       const maxDates = verifyMaxDates(maxDays, dates);
       const maxDuration = verifyDuration(maxDiff, dates);
@@ -144,7 +144,7 @@ const useDatePicker = () => {
 
   return {
     datePickerConfig,
-    validateEventDates,
+    validateActivityDates,
     dateToTimestap,
     datesToString,
     stringToDateObject,

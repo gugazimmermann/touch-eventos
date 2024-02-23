@@ -1,10 +1,10 @@
 {
   "touch_eventos": "Touch Eventos",
   "access_error": "System access error. Please try again.",
-  "event_not_started": "This event has not started yet. Please wait for it to begin!",
-  "event_ended": "This event has ended.",
-  "event_not_found": "Event not found.",
-  "event_inactive": "This event is currently inactive.",
+  "activity_not_started": "This activity has not started yet. Please wait for it to begin!",
+  "activity_ended": "This activity has ended.",
+  "activity_not_found": "Activity not found.",
+  "activity_inactive": "This activity is currently inactive.",
   "username": "Username",
   "access_code": "Access Code",
   "enter": "Enter",
@@ -28,7 +28,7 @@
   "check": "Check",
   "deliver_gift": "Deliver Gift",
   "reset": "Reset",
-  "no_event": "No Event Selected",
+  "no_activity": "No Activity Selected",
   "country_code": "Country Code",
   "search": "Search",
   "logout": "Logout"

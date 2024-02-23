@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
 import { SendEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "../aws-clients";
-import { error } from "src/error";
+import { error } from "../error";
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
@@ -12,7 +12,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
     const response = await sesClient.send(
       new SendEmailCommand({
         Destination: {
-          ToAddresses: ["contato@touchsistemas.com.br"],
+          ToAddresses: ["contato@toucheventos.com.br"],
         },
         Message: {
           Body: {
@@ -26,7 +26,7 @@ Mensagem: ${data.message}
           },
           Subject: { Data: "Touch Eventos - Contato" },
         },
-        Source: "contato@touchsistemas.com.br",
+        Source: "contato@toucheventos.com.br",
       })
     );
     return {

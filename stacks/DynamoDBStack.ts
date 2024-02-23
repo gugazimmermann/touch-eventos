@@ -1,4 +1,5 @@
 import { StackContext, Table } from "sst/constructs";
+import { RemovalPolicy } from "aws-cdk-lib/core";
 
 export function DynamoDBStack({ stack }: StackContext) {
   const plansTable = new Table(stack, "Plans", {
@@ -18,6 +19,11 @@ export function DynamoDBStack({ stack }: StackContext) {
     globalIndexes: {
       ActiveIndex: { partitionKey: "active", sortKey: "order" },
     },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
+    },
   });
 
   const verificationsTable = new Table(stack, "Verifications", {
@@ -34,6 +40,11 @@ export function DynamoDBStack({ stack }: StackContext) {
     globalIndexes: {
       ActiveIndex: { partitionKey: "active", sortKey: "order" },
     },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
+    },
   });
 
   const usersTable = new Table(stack, "Users", {
@@ -47,6 +58,11 @@ export function DynamoDBStack({ stack }: StackContext) {
     globalIndexes: {
       EmailIndex: { partitionKey: "email" },
       ActiveIndex: { partitionKey: "active", sortKey: "createdAt" },
+    },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
     },
   });
 
@@ -64,6 +80,11 @@ export function DynamoDBStack({ stack }: StackContext) {
       UserIndex: { partitionKey: "userId", sortKey: "endDate" },
       PlanIndex: { partitionKey: "planId", sortKey: "endDate" },
     },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
+    },
   });
   
   const paymentsTable = new Table(stack, "Payments", {
@@ -79,11 +100,16 @@ export function DynamoDBStack({ stack }: StackContext) {
     globalIndexes: {
       UserIdIndex: { partitionKey: "userId", sortKey: "date" },
     },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
+    },
   });
 
-  const eventsTable = new Table(stack, "Events", {
+  const activitiesTable = new Table(stack, "Activities", {
     fields: {
-      eventId: "string",
+      activityId: "string",
       userId: "string",
       planId: "string",
       verificationId: "string",
@@ -99,7 +125,7 @@ export function DynamoDBStack({ stack }: StackContext) {
       createdAt: "string",
       active: "number",
     },
-    primaryIndex: { partitionKey: "eventId" },
+    primaryIndex: { partitionKey: "activityId" },
     globalIndexes: {
       PlanIdStartDateIndex: { partitionKey: "planId", sortKey: "createdAt" },
       UserIdEndDateIndex: { partitionKey: "userId", sortKey: "startDate" },
@@ -111,12 +137,17 @@ export function DynamoDBStack({ stack }: StackContext) {
       ActiveIndex: { partitionKey: "active", sortKey: "createdAt" },
       SlugIndex: { partitionKey: "slug" },
     },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
+    },
   });
 
-  const eventsRegisterTable = new Table(stack, "EventsRegister", {
+  const activitiesRegisterTable = new Table(stack, "ActivitiesRegister", {
     fields: {
       registrationId: "string",
-      eventId: "string",
+      activityId: "string",
       email: "string",
       phone: "string",
       language: "string",
@@ -125,35 +156,46 @@ export function DynamoDBStack({ stack }: StackContext) {
       gift: "string",
       deskId: "string",
       createdAt: "string",
-      eventRegisterHash: "string",
+      activityRegisterHash: "string",
     },
     primaryIndex: { partitionKey: "registrationId" },
     globalIndexes: {
-      EventIndex: { partitionKey: "eventId" },
-      EventDateIndex: { partitionKey: "eventId", sortKey: "createdAt" },
-      eventRegisterHash: { partitionKey: "eventRegisterHash" },
+      ActivityIndex: { partitionKey: "activityId" },
+      ActivityDateIndex: { partitionKey: "activityId", sortKey: "createdAt" },
+      ActivityRegisterHash: { partitionKey: "activityRegisterHash" },
+      DeskIdIndex: { partitionKey: "deskId" },
+    },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
     },
   });
 
-  const eventsSurveyTable = new Table(stack, "EventsSurvey", {
+  const activitiesSurveyTable = new Table(stack, "ActivitiesSurvey", {
     fields: {
       surveyId: "string",
-      eventId: "string",
+      activityId: "string",
       language: "string",
       createdAt: "string",
     },
     primaryIndex: { partitionKey: "surveyId" },
     globalIndexes: {
-      EventIndex: { partitionKey: "eventId" },
-      EventDateIndex: { partitionKey: "eventId", sortKey: "createdAt" },
+      ActivityIndex: { partitionKey: "activityId" },
+      ActivityDateIndex: { partitionKey: "activityId", sortKey: "createdAt" },
       LanguageIndex: { partitionKey: "language" },
+    },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
     },
   });
 
-  const eventsDeskTable = new Table(stack, "EventsDesk", {
+  const activitiesDeskTable = new Table(stack, "ActivitiesDesk", {
     fields: {
       deskId: "string",
-      eventId: "string",
+      activityId: "string",
       user: "string",
       accessCode: "string",
       createdAt: "string",
@@ -161,8 +203,13 @@ export function DynamoDBStack({ stack }: StackContext) {
     },
     primaryIndex: { partitionKey: "deskId" },
     globalIndexes: {
-      EventIndex: { partitionKey: "eventId" },
+      ActivityIndex: { partitionKey: "activityId" },
       UserIndex: { partitionKey: "user" },
+    },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      },
     },
   });
 
@@ -172,11 +219,10 @@ export function DynamoDBStack({ stack }: StackContext) {
     UsersTableName: usersTable.tableName,
     UsersSubscriptionTable: usersSubscriptionTable.tableName,
     PaymentsTableName: paymentsTable.tableName,
-    EventsTableName: eventsTable.tableName,
-    EventsRegisterTableName: eventsRegisterTable.tableName,
-    EventsSurveyTable: eventsSurveyTable.tableName,
-    EventsDeskTable: eventsDeskTable.tableName,
-    
+    ActivitiesTableName: activitiesTable.tableName,
+    ActivitiesRegisterTableName: activitiesRegisterTable.tableName,
+    ActivitiesSurveyTable: activitiesSurveyTable.tableName,
+    ActivitiesDeskTable: activitiesDeskTable.tableName,
   });
 
   return {
@@ -185,9 +231,9 @@ export function DynamoDBStack({ stack }: StackContext) {
     usersTable,
     usersSubscriptionTable,
     paymentsTable,
-    eventsTable,
-    eventsRegisterTable,
-    eventsSurveyTable,
-    eventsDeskTable
+    activitiesTable,
+    activitiesRegisterTable,
+    activitiesSurveyTable,
+    activitiesDeskTable
   };
 }

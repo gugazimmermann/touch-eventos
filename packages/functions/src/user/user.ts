@@ -4,8 +4,8 @@ import {
   type GetCommandInput,
   type GetCommandOutput,
 } from "@aws-sdk/lib-dynamodb";
-import { error } from "src/error";
 import { dynamoDBClient } from "../aws-clients";
+import { error } from "../error";
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event

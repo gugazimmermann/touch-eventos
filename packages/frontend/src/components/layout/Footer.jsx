@@ -56,7 +56,7 @@ const Column = ({ title, items = [] }) => {
 };
 
 const Footer = ({ green }) => {
-  const { t } = useTranslation("home");
+  const { t } = useTranslation("layout");
 
   return (
     <footer

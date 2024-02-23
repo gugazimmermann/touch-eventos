@@ -1,7 +1,7 @@
 {
   "name": "Touch Eventos",
   "short_name": "Eventos",
-  "description": "Sistema para relatórios de visitantes de eventos",
+  "description": "Sistema para cadastro e relatórios de visitantes",
   "theme_color": "#f59e0b",
   "background_color": "#f59e0b",
   "display": "standalone",

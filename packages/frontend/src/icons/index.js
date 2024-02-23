@@ -26,7 +26,7 @@ export { default as Survey } from './Survey';
 export { default as Shuffle } from './Shuffle';
 export { default as Trophy } from './Trophy';
 export { default as StepCircleCheck } from './StepCircleCheck';
-export { default as Event } from './Event';
+export { default as Activity } from './Activity';
 export { default as CreditCard } from './CreditCard';
 export { default as CheckList } from './CheckList';
 export { default as Reload } from './Reload';

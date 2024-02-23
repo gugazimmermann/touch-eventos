@@ -1,3 +1,2 @@
-export { default as EventCard } from './EventCard';
-export { default as EventDetailsCard } from './EventDetailsCard';
-export { default as EventNewCard } from './EventNewCard';
+export { default as ActivityCard } from './ActivityCard';
+export { default as NewActivityCard } from './NewActivityCard';

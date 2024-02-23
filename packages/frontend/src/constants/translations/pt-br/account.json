@@ -14,6 +14,8 @@
   "account_phone_code_required": "Código do País é Obrigatório",
   "account_phone": "Telefone",
   "account_phone_invalid": "Telefone Inválido",
+  "account_address_country": "País",
+  "account_address_country_invalid": "País Inválido",
   "account_address_zipcode": "CEP",
   "account_address_zipcode_invalid": "CEP Inválido",
   "account_address_state": "Estado",
@@ -49,5 +51,10 @@
   "payments_value": "Valor",
   "payments_status": "Status",
   "payments_status_success": "Realizado",
-  "payments_status_failure": "Não Realizado"
+  "payments_status_failure": "Não Realizado",
+  "payments_card_title": "Cartões Utilizados",
+  "payments_card_date": "Data",
+  "payments_card_brand": "Bandeira",
+  "payments_card_expiration": "Validade",
+  "payments_card_last4": "Últimos Números"
   }

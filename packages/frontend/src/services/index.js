@@ -2,7 +2,7 @@ export * as auth from "./auth";
 export * as account from "./account";
 export * as plans from "./plans";
 export * as verifications from "./verifications";
-export * as event from "./event";
+export * as activity from "./activity";
 export { default as fetchDataByCEP } from "./cep";
 export { default as fetchCitiesByState } from "./cities";
 export { default as fetchDataByCNPJ } from "./cnpj";

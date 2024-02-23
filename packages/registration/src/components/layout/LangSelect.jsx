@@ -3,7 +3,7 @@ import ReactFlagsSelect from "react-flags-select";
 import { useTranslation } from "react-i18next";
 
 const LangSelect = ({ currentLang }) => {
-  const { i18n } = useTranslation("event_register");
+  const { i18n } = useTranslation("activity_register");
   const [selected, setSelected] = useState("BR");
 
   const handleLang = (code) => {

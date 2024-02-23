@@ -1,3 +1,6 @@
 {
-  "table_no_item": "Nenhum Item Encontrado"
-  }
+  "table_no_item": "Nenhum Item Encontrado",
+  "phone_code_country_code": "Código do País",
+  "phone_code_search": "Procurar",
+  "loading": "Carregando"
+}

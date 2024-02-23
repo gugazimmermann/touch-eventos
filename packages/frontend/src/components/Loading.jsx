@@ -1,4 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 const Loading = ({size}) => {
+  const { t } = useTranslation("components");
+
   return (
     <div className="flex w-full justify-center">
       <svg
@@ -17,7 +21,7 @@ const Loading = ({size}) => {
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only">Loading...</span>
+      <span className="sr-only">{t("loading")}...</span>
     </div>
   );
 };

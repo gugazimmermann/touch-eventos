@@ -71,8 +71,8 @@ const ContactUs = () => {
             <p className="flex justify-center items-center font-bold text-primary-500 mb-4 text-xl">
               <EmailFilled className="h-7 w-7 sm:h-5 sm:w-5" />
               <span className="mx-2 text-text-700">
-                <a href="mailto:contato@touchsistemas.com.br">
-                  contato@touchsistemas.com.br
+                <a href="mailto:contato@toucheventos.com.br">
+                  contato@toucheventos.com.br
                 </a>
               </span>
             </p>

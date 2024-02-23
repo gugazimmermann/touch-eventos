@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { isAfter, isBefore } from "date-fns";
+import { endOfDay, isAfter, isBefore, startOfDay } from "date-fns";
 import { useDesk } from "../../context/DeskContext";
 import * as desk from "../../services/desk";
 import { Alert, Loading } from "../../components";
@@ -16,21 +17,20 @@ const initialValues = {
 const Login = () => {
   const { t } = useTranslation("desk");
   const navigate = useNavigate();
-  const { eventSlug } = useParams();
+  const { activitySlug } = useParams();
   const { state, dispatch } = useDesk();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [warning, setWarning] = useState("");
-  const [event, setEvent] = useState();
+  const [activity, setActivity] = useState();
   const [values, setValues] = useState(initialValues);
-  const [allowDesk, setAllowDesk] = useState(true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await desk.access(event.eventId, values);
+      const result = await desk.access(activity.activityId, values);
       if (result?.error || !result?.token) {
         setError(t("access_error"));
       } else {
@@ -45,68 +45,63 @@ const Login = () => {
     setLoading(false);
   };
 
-  const handleEventDates = useCallback((eventData) => {
-      // TODO: change this
-      // const startDate = new Date(parseInt(eventData.startDate, 10));
-      const startDate = new Date();
-      const endDate = new Date(parseInt(eventData.endDate, 10));
-      const today = new Date();
-      if (isAfter(startDate, today)) {
-        setInfo(t("event_not_started"));
-        setAllowDesk(false);
-      }
-      if (isBefore(endDate, today)) {
-        setWarning(t("event_ended"));
-        setAllowDesk(false);
-      }
-    },
-    [t]
-  );
-
-  const getData = useCallback(async (slug) => {
+  const getData = useCallback(
+    async (slug) => {
       setLoading(true);
       try {
-        const eventData = await desk.getEventBySlug(slug);
-        if (eventData?.error || !eventData?.eventId) {
-          setWarning(t("event_not_found"));
-        } else {
-          handleEventDates(eventData);
-          if (eventData.active < 1 && eventData.payment === "success") {
-            setError(t("event_inactive"));
-            setAllowDesk(false);
+        const activityData = await desk.getActivityBySlug(slug);
+        if (activityData?.activityId) {
+          const startDate = startOfDay(
+            new Date(parseInt(activityData.startDate, 10))
+          );
+          const endDate = endOfDay(new Date(parseInt(activityData.endDate, 10)));
+          const today = startOfDay(new Date());
+          if (isBefore(today, startDate)) {
+            setInfo(t("activity_not_started"));
+          } else if (isAfter(today, endDate)) {
+            setWarning(t("activity_ended"));
+          } else {
+            setActivity(activityData);
+            dispatch({
+              type: "ACTIVITY",
+              payload: { activity: activityData },
+            });
           }
-          setEvent(eventData);
-          dispatch({
-            type: "EVENT",
-            payload: { event: eventData },
-          });
+        } else if (
+          activityData?.error === "Bad Request: Activity Does Not Have Visitors Gift"
+        ) {
+          setError(t("Activity Does Not Have Visitors Gift"));
+        } else if (activityData.error === "Bad Request: Activity Not Active") {
+          setError(t("Activity Not Active"));
+        } else if (activityData.error === "Bad Request: Payment Problem") {
+          setError(t("Payment Problem"));
+        } else {
+          setWarning(t("activity_not_found"));
         }
       } catch (error) {
         setError(error.message);
       }
       setLoading(false);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dispatch]
   );
 
   useEffect(() => {
-    getData(eventSlug);
-  }, [eventSlug, getData]);
+    getData(activitySlug);
+  }, [activitySlug, getData]);
 
   useEffect(() => {
-    if (state.token) navigate(`/${eventSlug}/main`);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (state.token) navigate(`/${activitySlug}/main`);
   }, [state.token]);
 
   return (
     <>
       <div className="w-1/2 mx-auto flex items-center justify-center">
-        {!event?.logo ? (
+        {!activity?.logo ? (
           <img src={LoginImg} className="w-4/5" alt="Login" />
         ) : (
           <img
-            src={event.logo}
+            src={activity.logo}
             className="w-4/5 shadow-lg rounded-lg"
             alt="Logo"
           />
@@ -116,17 +111,16 @@ const Login = () => {
         {error && <Alert message={error} type="danger" center={true} />}
         {info && <Alert message={info} type="info" center={true} />}
         {warning && <Alert message={warning} type="warning" center={true} />}
-        {loading ? (
-          <Loading size="w-20 h-20" />
-        ) : (
+        {loading && <Loading size="w-20 h-20" />}
+        {activity && (
           <form className="w-full px-4" onSubmit={handleSubmit}>
-            <h1 className="text-3xl font-bold">{event.name}</h1>
+            <h1 className="text-3xl font-bold">{activity?.name}</h1>
             <div className="my-4">
               <label className="font-semibold mb-4" htmlFor="username">
                 {t("username")}
               </label>
               <InputField
-                disabled={loading || !allowDesk}
+                disabled={loading}
                 required={true}
                 type="text"
                 value="username"
@@ -139,7 +133,7 @@ const Login = () => {
                 {t("access_code")}
               </label>
               <InputField
-                disabled={loading || !allowDesk}
+                disabled={loading}
                 required={true}
                 type="password"
                 value="accessCode"
@@ -152,7 +146,7 @@ const Login = () => {
               <FormButton
                 testid="register-send-button"
                 text={t("enter")}
-                disabled={loading || !allowDesk}
+                disabled={loading}
                 type="submit"
                 textSize="text-base"
               />

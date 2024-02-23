@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useEvents } from "../../../context/EventsContext";
+import { useActivities } from "../../../context/ActivitiesContext";
 import ROUTES from "../../../constants/routes";
 import { handleSignIn } from "../../../services/auth";
 import { getCurrentUser } from "../../../services/account";
@@ -14,7 +14,7 @@ const SignIn = () => {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const { useremail } = useParams();
-  const { dispatch } = useEvents();
+  const { dispatch } = useActivities();
   const [values, setValues] = useState({
     email: "",
     password: "",

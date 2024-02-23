@@ -2,4 +2,4 @@
 User-agent: *
 Disallow:
 Allow: /
-Sitemap: https://www.touchsistemas.com.br/eventos/sitemap.xml
+Sitemap: https://cadastros.toucheventos.com.br/sitemap.xml

@@ -1,7 +1,7 @@
-export const getEventById = async (eventId) => {
+export const getActivityById = async (activityId) => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_SITE_API_URL}/event/${eventId}`,
+      `${process.env.REACT_APP_SITE_API_URL}/activity/${activityId}`,
       { method: "GET" }
     );
     return response.json();
@@ -10,10 +10,10 @@ export const getEventById = async (eventId) => {
   }
 };
 
-export const register = async (eventId, data) => {
+export const register = async (activityId, data) => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_SITE_API_URL}/register/${eventId}`,
+      `${process.env.REACT_APP_SITE_API_URL}/register/${activityId}`,
       {
         method: "POST",
         body: JSON.stringify(data),
@@ -25,10 +25,10 @@ export const register = async (eventId, data) => {
   }
 };
 
-export const confirm = async (eventId, data) => {
+export const confirm = async (activityId, data) => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_SITE_API_URL}/confirm/${eventId}`,
+      `${process.env.REACT_APP_SITE_API_URL}/confirm/${activityId}`,
       {
         method: "POST",
         body: JSON.stringify(data),

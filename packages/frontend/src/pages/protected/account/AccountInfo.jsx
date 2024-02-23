@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useEvents } from "../../../context/EventsContext";
+import ReactFlagsSelect from "react-flags-select";
+import { useActivities } from "../../../context/ActivitiesContext";
 import {
-  fetchCitiesByState,
+  // fetchCitiesByState,
   fetchDataByCEP,
   fetchDataByCNPJ,
   fetchCoordinates,
@@ -24,7 +25,7 @@ import {
 
 const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
   const { t } = useTranslation("account");
-  const { dispatch } = useEvents();
+  const { dispatch } = useActivities();
   const { PhoneCodeSelect } = usePhoneCode();
   const [values, setValues] = useState({
     userId: "",
@@ -34,6 +35,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
     email: "",
     phoneCode: "",
     phone: "",
+    addressCountry: "BR",
     addressZipCode: "",
     addressState: "",
     addressCity: "",
@@ -49,7 +51,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [info, setInfo] = useState("");
-  const [cities, setCities] = useState([]);
+  // const [cities, setCities] = useState([]);
 
   const handleDocument = async (document) => {
     if (values.documentType !== "CNPJ") return;
@@ -58,6 +60,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
       name: "",
       email: "",
       phone: "",
+      addressCountry: "",
       addressZipCode: "",
       addressState: "",
       addressCity: "",
@@ -205,6 +208,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
         email: data.email,
         phoneCode: data.phoneCode,
         phone: data.phone,
+        addressCountry: data.addressCountry || "BR",
         addressZipCode: data.addressZipCode,
         addressState: data.addressState,
         addressCity: data.addressCity,
@@ -296,7 +300,18 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
               />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
+            <ReactFlagsSelect
+              selected={values["addressCountry"]}
+              onSelect={(code) =>
+                setValues({ ...values, addressCountry: code })
+              }
+              searchable
+              placeholder={t("account_address_country")}
+              searchPlaceholder={t("account_address_country")}
+              className="countrySelect"
+              disabled
+            />
             <InputField
               disabled={loading || confirmEmail}
               required={true}
@@ -324,7 +339,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
               value="addressCity"
               values={values}
               setValues={setValues}
-              suggestions={cities}
+              // suggestions={cities}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">

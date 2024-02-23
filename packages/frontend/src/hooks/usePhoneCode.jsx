@@ -8,7 +8,7 @@ import {
 } from "../constants/phone-codes";
 
 const usePhoneCode = () => {
-  const { i18n, t } = useTranslation("phoneCode");
+  const { i18n, t } = useTranslation("components");
   const [phoneCodeList, setPhoneCodeList] = useState(PHONECODESEN);
 
   const countryToPhoneCode = (country, value, values, setValues) => {
@@ -42,9 +42,9 @@ const usePhoneCode = () => {
   const PhoneCodeSelect = ({ disabled, value, values, setValues }) => (
     <ReactFlagsSelect
       disabled={disabled}
-      placeholder={t("country_code")}
+      placeholder={t("phone_code_country_code")}
       searchable
-      searchPlaceholder={t("search")}
+      searchPlaceholder={t("phone_code_search")}
       showOptionLabel={false}
       showSelectedLabel={false}
       selected={phoneCodeToContry(values[value])}
@@ -52,7 +52,7 @@ const usePhoneCode = () => {
         countryToPhoneCode(country, value, values, setValues)
       }
       customLabels={phoneCodeList}
-      className="mt-4 p-0"
+      className="countrySelect"
     />
   );
 

@@ -10,13 +10,13 @@ import { Header, FooterSmall } from "../components/layout";
 import { FormButton, InputField } from "../components/form";
 
 const Confirm = () => {
-  const { t, i18n } = useTranslation("event_register");
-  const { eventSlug, registrationId, language } = useParams();
+  const { t, i18n } = useTranslation("activity_register");
+  const { activitySlug, registrationId, language } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
-  const [event, setEvent] = useState();
+  const [activity, setActivity] = useState();
   const [confirmationCode, setConfirmationCode] = useState({
     code: "",
   });
@@ -31,15 +31,15 @@ const Confirm = () => {
     setLoading(true);
     const payload = {
       registrationId,
-      eventId: event.eventId,
+      activityId: activity.activityId,
       code: confirmationCode.code,
       language: i18n.language,
       confirmedAt: `${getTime(new Date())}`,
     };
-    const confirmResponse = await register.confirm(event.eventId, payload);
+    const confirmResponse = await register.confirm(activity.activityId, payload);
     if (confirmResponse?.registrationId) {
       navigate(
-        `/${event.slug}/${confirmResponse.registrationId}/success/${confirmResponse.language}`
+        `/${activity.slug}/${confirmResponse.registrationId}/success/${confirmResponse.language}`
       );
     } else {
       if (confirmResponse?.error === "Not Found: Registration not found" ||
@@ -55,11 +55,11 @@ const Confirm = () => {
   const getData = useCallback(async (slug) => {
       setLoading(true);
       try {
-        const eventData = await register.getEventBySlug(slug);
-        if (eventData?.error || !eventData?.eventId) {
-          setWarning(t("event_not_found"));
+        const activityData = await register.getActivityBySlug(slug);
+        if (activityData?.error || !activityData?.activityId) {
+          setWarning(t("activity_not_found"));
         } else {
-          setEvent(eventData);
+          setActivity(activityData);
         }
       } catch (error) {
         setError(error.message);
@@ -74,12 +74,12 @@ const Confirm = () => {
   }, [i18n, language]);
 
   useEffect(() => {
-    if (eventSlug && registrationId) getData(eventSlug);
-    else if (eventSlug && !registrationId)
-      navigate(`/${eventSlug}`);
+    if (activitySlug && registrationId) getData(activitySlug);
+    else if (activitySlug && !registrationId)
+      navigate(`/${activitySlug}`);
     else navigate("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventSlug, registrationId, getData]);
+  }, [activitySlug, registrationId, getData]);
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -96,18 +96,18 @@ const Confirm = () => {
               {warning && (
                 <Alert message={warning} type="warning" center={true} />
               )}
-              {event && (
+              {activity && (
                 <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
-                  {event.logo && (
+                  {activity.logo && (
                     <img
                       className="object-cover object-center w-full h-64"
-                      src={event.logo}
+                      src={activity.logo}
                       alt="logo"
                     />
                   )}
                   <div className="flex items-center justify-center px-8 py-4 bg-success-500">
                     <h1 className="text-xl font-bold text-white">
-                      {event.name}
+                      {activity.name}
                     </h1>
                   </div>
 
@@ -142,27 +142,27 @@ const Confirm = () => {
                     </form>
 
                     <div className="p-8">
-                      {event.visitorGift === "YES" && (
+                      {activity.visitorGift === "YES" && (
                         <div className="flex flex-col items-center justify-center">
                           <Gift className="w-8 h-8 text-success-500" />
                           <div>
                             {i18n.language === "pt-BR"
-                              ? event.visitorGiftTextPTBR
+                              ? activity.visitorGiftTextPTBR
                               : i18n.language === "en"
-                              ? event.visitorGiftTextEN
-                              : event.visitorGiftTextES}
+                              ? activity.visitorGiftTextEN
+                              : activity.visitorGiftTextES}
                           </div>
                         </div>
                       )}
-                      {event.raffle === "YES" ? (
+                      {activity.raffle === "YES" ? (
                         <div className="flex flex-col items-center justify-center mt-4">
                           <Survey className="w-8 h-8 text-success-500" />
                           <div>
                             {i18n.language === "pt-BR"
-                              ? event.raffleTextPTBR
+                              ? activity.raffleTextPTBR
                               : i18n.language === "en"
-                              ? event.raffleTextEN
-                              : event.raffleTextES}
+                              ? activity.raffleTextEN
+                              : activity.raffleTextES}
                           </div>
                         </div>
                       ) : (

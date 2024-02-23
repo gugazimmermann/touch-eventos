@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getTime, isAfter, isBefore } from "date-fns";
+import { endOfDay, getTime, isAfter, isBefore, startOfDay } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
 import * as register from "../services/register";
@@ -13,8 +13,8 @@ import { Header, FooterSmall } from "../components/layout";
 import { FormButton, InputField } from "../components/form";
 
 const Register = () => {
-  const { t, i18n } = useTranslation("event_register");
-  const { eventSlug } = useParams();
+  const { t, i18n } = useTranslation("activity_register");
+  const { activitySlug } = useParams();
   const navigate = useNavigate();
   const { PhoneCodeSelect } = usePhoneCode();
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ const Register = () => {
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [warning, setWarning] = useState("");
-  const [event, setEvent] = useState();
+  const [activity, setActivity] = useState();
   const [allowRegister, setAllowRegister] = useState(true);
   const [registrationPhone, setRegistrationPhone] = useState({
     phoneCode: "",
@@ -43,13 +43,13 @@ const Register = () => {
     const payload = {
       check,
       registrationId: uuidv4(),
-      eventId: event.eventId,
+      activityId: activity.activityId,
       email: "",
       phone: "",
       language: i18n.language,
       createdAt: `${getTime(new Date())}`,
     };
-    if (event.verification === "SMS") {
+    if (activity.verification === "SMS") {
       const phone = registrationPhone.phone.replace(/\D+/g, "");
       if (!validatePhone(phone)) {
         setError(t("invalid_phone"));
@@ -65,10 +65,10 @@ const Register = () => {
       payload.email = registrationEmail.email;
     }
     setLoading(true);
-    const registerResponse = await register.register(event.eventId, payload);
+    const registerResponse = await register.register(activity.activityId, payload);
     if (registerResponse?.registrationId) {
       navigate(
-        `/${event.slug}/${registerResponse.registrationId}/${registerResponse.language}`
+        `/${activity.slug}/${registerResponse.registrationId}/${registerResponse.language}`
       );
     } else {
       setError(t("register_error"));
@@ -76,67 +76,49 @@ const Register = () => {
     setLoading(false);
   };
 
-  const handleEventDates = useCallback(
-    (eventData) => {
-      // TODO: change this
-      // const startDate = new Date(parseInt(eventData.startDate, 10));
-      const startDate = new Date();
-      const endDate = new Date(parseInt(eventData.endDate, 10));
-      const today = new Date();
-      if (isAfter(startDate, today)) {
-        setInfo(t("event_not_started"));
-        setAllowRegister(false);
-      }
-      if (isBefore(endDate, today)) {
-        setWarning(t("event_ended"));
-        setAllowRegister(false);
-      }
-    },
-    [t]
-  );
-
-  const handleTrial = useCallback(
-    (eventData) => {
-      if (eventData.payment !== "success") {
-        if (eventData.registrations < 10) {
-          setInfo(`${t("event_trial_remain")} ${10 - eventData.registrations}`);
-        } else {
-          setWarning(t("event_trial_over"));
-          setAllowRegister(false);
-        }
-      }
-    },
-    [t]
-  );
-
-  const getData = useCallback(async (slug) => {
+  const getData = useCallback(
+    async (slug) => {
       setLoadingPage(true);
       try {
-        const eventData = await register.getEventBySlug(slug);
-        if (eventData?.error || !eventData?.eventId) {
-          setWarning(t("event_not_found"));
+        const activityData = await register.getActivityBySlug(slug);
+        if (activityData?.error || !activityData?.activityId) {
+          setWarning(t("activity_not_found"));
         } else {
-          handleEventDates(eventData);
-          if (eventData.active < 1 && eventData.payment === "success") {
-            setError(t("event_inactive"));
-            setAllowRegister(false);
+          const startDate = startOfDay(
+            new Date(parseInt(activityData.startDate, 10))
+          );
+          const endDate = endOfDay(new Date(parseInt(activityData.endDate, 10)));
+          const today = startOfDay(new Date());
+          if (isBefore(today, startDate)) {
+            setInfo(t("activity_not_started"));
+          } else if (isAfter(today, endDate)) {
+            setWarning(t("activity_ended"));
           }
-          handleTrial(eventData);
-          setEvent(eventData);
+          if (activityData.payment !== "success") {
+            if (activityData.registrations < 10) {
+              setInfo(
+                `${t("activity_trial_remain")} ${10 - activityData.registrations}`
+              );
+            } else {
+              setWarning(t("activity_trial_over"));
+              setAllowRegister(false);
+            }
+          }
+          setActivity(activityData);
         }
       } catch (error) {
         setError(error.message);
       }
       setLoadingPage(false);
     },
-    [handleEventDates, handleTrial, t]
+    [t]
   );
 
   useEffect(() => {
-    if (eventSlug) getData(eventSlug);
+    if (activitySlug) getData(activitySlug);
     else window.location.href = process.env.REACT_APP_SITE_URL;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventSlug, getData]);
+  }, [activitySlug, getData]);
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -156,36 +138,36 @@ const Register = () => {
                 <Loading size="w-20 w-20" />
               </div>
             ) : (
-              <div className="container mx-auto bg-background-50 p-4">
+              <div className="container mx-auto flex-grow bg-background-50 p-4">
                 {error && <Alert message={error} type="danger" center={true} />}
                 {info && <Alert message={info} type="info" center={true} />}
                 {warning && (
                   <Alert message={warning} type="warning" center={true} />
                 )}
-                {event && (
-                  <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
-                    {event.logo && (
+                {activity && (
+                  <div className="w-full max-w-sm  mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
+                    {activity.logo && (
                       <img
                         className="object-cover object-center w-full h-64"
-                        src={event.logo}
+                        src={activity.logo}
                         alt="logo"
                       />
                     )}
                     <div className="flex items-center justify-center px-8 py-4 bg-success-500">
                       <h1 className="text-xl font-bold text-white">
-                        {event.name}
+                        {activity.name}
                       </h1>
                     </div>
 
                     <div className="mt-4 w-full text-center">
                       <h1 className="text-xl font-semibold">
-                        {event.verification === "SMS"
+                        {activity.verification === "SMS"
                           ? t("your_phone")
                           : t("your_email")}
                       </h1>
 
                       <form className="w-full px-4" onSubmit={handleSubmit}>
-                        {event.verification === "SMS" ? (
+                        {activity.verification === "SMS" ? (
                           <div className="flex flex-row gap-2">
                             <div className="w-1/3">
                               <PhoneCodeSelect
@@ -199,7 +181,7 @@ const Register = () => {
                               <InputField
                                 disabled={loading || !allowRegister}
                                 required={
-                                  event.verification === "SMS" ? true : false
+                                  activity.verification === "SMS" ? true : false
                                 }
                                 autocomplete="phone"
                                 placeholder={t("phone")}
@@ -214,7 +196,7 @@ const Register = () => {
                           <InputField
                             disabled={loading || !allowRegister}
                             required={
-                              event.verification !== "SMS" ? true : false
+                              activity.verification !== "SMS" ? true : false
                             }
                             autocomplete="email"
                             type="email"
@@ -267,27 +249,36 @@ const Register = () => {
                       </form>
 
                       <div className="p-8">
-                        {event.visitorGift === "YES" && (
-                          <div className="flex flex-col items-center justify-center">
-                            <Gift className="w-8 h-8 text-success-500" />
-                            <div>
-                              {i18n.language === "pt-BR"
-                                ? event.visitorGiftTextPTBR
-                                : i18n.language === "en"
-                                ? event.visitorGiftTextEN
-                                : event.visitorGiftTextES}
+                        {activity.visitorGift === "YES" &&
+                          ((i18n.language === "pt-BR" &&
+                          activity.visitorGiftTextPTBR) ||
+                            (i18n.language === "en" &&
+                            activity.visitorGiftTextEN) ||
+                            (i18n.language === "es" &&
+                            activity.visitorGiftTextES)) && (
+                            <div className="flex flex-col items-center justify-center">
+                              <Gift className="w-8 h-8 text-success-500" />
+                              <div>
+                                {i18n.language === "pt-BR"
+                                  ? activity.visitorGiftTextPTBR
+                                  : i18n.language === "en"
+                                  ? activity.visitorGiftTextEN
+                                  : activity.visitorGiftTextES}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        {event.raffle === "YES" ? (
+                          )}
+                        {activity.raffle === "YES" &&
+                        ((i18n.language === "pt-BR" && activity.raffleTextPTBR) ||
+                          (i18n.language === "en" && activity.raffleTextEN) ||
+                          (i18n.language === "es" && activity.raffleTextES)) ? (
                           <div className="flex flex-col items-center justify-center mt-4">
                             <Survey className="w-8 h-8 text-success-500" />
                             <div>
                               {i18n.language === "pt-BR"
-                                ? event.raffleTextPTBR
+                                ? activity.raffleTextPTBR
                                 : i18n.language === "en"
-                                ? event.raffleTextEN
-                                : event.raffleTextES}
+                                ? activity.raffleTextEN
+                                : activity.raffleTextES}
                             </div>
                           </div>
                         ) : (

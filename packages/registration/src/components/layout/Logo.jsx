@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 const Logo = ({ white, className }) => {
-  const { t } = useTranslation("event_register");
+  const { t } = useTranslation("activity_register");
 
   return (
     <div className={`flex flex-row items-center ${className}`}>

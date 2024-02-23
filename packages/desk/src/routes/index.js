@@ -23,8 +23,8 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route element={<Layout />}>
-        <Route path={`/:eventSlug?`} element={<Login />} />
-        <Route path={`/:eventSlug/main`} element={<Gift />} />
+        <Route path={`/:activitySlug?`} element={<Login />} />
+        <Route path={`/:activitySlug/main`} element={<Gift />} />
       </Route>
     </>
   )

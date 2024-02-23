@@ -4,7 +4,7 @@ import ROUTES from "../../constants/routes";
 import { Logo, Social } from ".";
 
 const AdminFooter = () => {
-  const { t } = useTranslation("home");
+  const { t } = useTranslation("layout");
 
   return (
     <footer className="bg-white">

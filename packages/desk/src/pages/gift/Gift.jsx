@@ -37,14 +37,14 @@ const images = [
 const Gift = () => {
   const { t } = useTranslation("desk");
   const navigate = useNavigate();
-  const { eventSlug } = useParams();
+  const { activitySlug } = useParams();
   const { state } = useDesk();
   const { PhoneCodeSelect } = usePhoneCode();
   const [selectedImage, setSelectedImage] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [event, setEvent] = useState();
+  const [activity, setActivity] = useState();
   const [checkPhone, setCheckPhone] = useState({ phoneCode: "", phone: "" });
   const [checkEmail, setCheckEmail] = useState({ email: "" });
   const [registration, setRegistration] = useState();
@@ -73,7 +73,7 @@ const Gift = () => {
 
   const handleDeliver = async () => {
     setLoading(true);
-    const deliverResponse = await desk.deliver(event.eventId, {
+    const deliverResponse = await desk.deliver(activity.activityId, {
       registrationId: registration.registrationId,
       token: state.token,
     });
@@ -103,23 +103,23 @@ const Gift = () => {
       token: state.token,
       hash: "",
     };
-    if (event.verification === "SMS") {
+    if (activity.verification === "SMS") {
       const phone = checkPhone.phone.replace(/\D+/g, "");
       if (!validatePhone(phone)) {
         setError(t("invalid_phone"));
         return;
       }
       const phoneCode = checkPhone.phoneCode || "+55";
-      payload.hash = `${event.eventId}#${phoneCode}${phone}`;
+      payload.hash = `${activity.activityId}#${phoneCode}${phone}`;
     } else {
       if (!validateEmail(checkEmail.email)) {
         setError(t("invalid_email"));
         return;
       }
-      payload.hash = `${event.eventId}#${checkEmail.email}`;
+      payload.hash = `${activity.activityId}#${checkEmail.email}`;
     }
     setLoading(true);
-    const checkResponse = await desk.check(event.eventId, payload);
+    const checkResponse = await desk.check(activity.activityId, payload);
     if (checkResponse?.register) {
       setRegistration(checkResponse.register);
     } else if (checkResponse?.error === "Not Found: Register Not Found") {
@@ -137,11 +137,11 @@ const Gift = () => {
   }, [selectRandomImage]);
 
   useEffect(() => {
-    if (!state.token && !state.event && !eventSlug) navigate("/");
-    else if (!state.token || !state.event) navigate(`/${eventSlug}`);
-    setEvent(state.event);
+    if (!state.token && !state.activity && !activitySlug) navigate("/");
+    else if (!state.token || !state.activity) navigate(`/${activitySlug}`);
+    setActivity(state.activity);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.token, state.event, eventSlug]);
+  }, [state.token, state.activity, activitySlug]);
 
   return (
     <div className="w-full mx-auto flex flex-row gap-10 justify-center items-center">
@@ -152,13 +152,13 @@ const Gift = () => {
           alt="visitor gift"
         />
       </div>
-      {event && (
+      {activity && (
         <div className="w-1/2 flex flex-col justify-center items-center">
-          <h1 className="text-4xl font-semibold">{event.name}</h1>
+          <h1 className="text-4xl font-semibold">{activity.name}</h1>
           <p className="mt-3 text-xl">
             {t("gift_text_1")}{" "}
             <span className="text-2xl font-semibold text-primary-500">
-              {event.verification === "SMS"
+              {activity.verification === "SMS"
                 ? t("gift_text_phone")
                 : t("gift_text_email")}
             </span>{" "}
@@ -181,7 +181,7 @@ const Gift = () => {
                   className="w-full flex flex-row justify-between items-center gap-2"
                   onSubmit={handleSubmit}
                 >
-                  {event.verification === "SMS" ? (
+                  {activity.verification === "SMS" ? (
                     <div className="w-full flex flex-row justify-between items-center gap-2">
                       <PhoneCodeSelect
                         disabled={loading}
@@ -192,7 +192,7 @@ const Gift = () => {
                       <div className="mt-4 flex flex-grow">
                         <InputField
                           disabled={loading}
-                          required={event.verification === "SMS" ? true : false}
+                          required={activity.verification === "SMS" ? true : false}
                           autocomplete="phone"
                           placeholder={t("phone")}
                           value="phone"
@@ -206,7 +206,7 @@ const Gift = () => {
                     <div className="mt-4 flex flex-grow">
                       <InputField
                         disabled={loading}
-                        required={event.verification !== "SMS" ? true : false}
+                        required={activity.verification !== "SMS" ? true : false}
                         autocomplete="email"
                         type="email"
                         placeholder={t("email")}
@@ -233,7 +233,7 @@ const Gift = () => {
                     <>
                       <div className="w-full flex flex-row justify-evenly items-center gap-4">
                         <div className="text-lg font-semibold">
-                          {registration.eventRegisterHash.split("#")[1]}
+                          {registration.activityRegisterHash.split("#")[1]}
                         </div>
                         <span
                           className={`px-3 py-1.5 text-lg font-bold text-center inline-block leading-none whitespace-nowrap rounded-lg ${

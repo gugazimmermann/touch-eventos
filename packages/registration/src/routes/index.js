@@ -23,15 +23,15 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route
-        path={`/:eventSlug?`}
+        path={`/:activitySlug?`}
         element={<Register />}
       />
       <Route
-        path={`/:eventSlug?/:registrationId?/:language?`}
+        path={`/:activitySlug?/:registrationId?/:language?`}
         element={<Confirm />}
       />
       <Route
-        path={`/:eventSlug?/:registrationId?/:success?/:language?`}
+        path={`/:activitySlug?/:registrationId?/:success?/:language?`}
         element={<ConfirmSuccess />}
       />
     </>

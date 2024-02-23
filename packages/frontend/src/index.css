@@ -22,23 +22,19 @@ body {
   @apply font-bold;
 }
 
-.flagsSelect {
+.countrySelect {
   @apply pb-0 !important;
 }
 
-.flagsSelect > button {
-  padding: 0 4px;
-}
-
-.flagsSelect > button > span {
-  padding: 0 4px;
-  margin: 0;
-}
-
-.flagsSelect > ul > li {
-  padding: 0;
-  padding-left: 8px;
-  margin: 0;
+.countrySelect > button {
+  @apply w-full;
+  @apply px-4;
+  @apply mt-4;
+  @apply text-text-700;
+  @apply placeholder-text-500;
+  @apply bg-white;
+  @apply rounded-lg;
+  @apply border-gray-200
 }
 
 .stripe #payment-element {
@@ -91,7 +87,7 @@ body {
 .spinner:before,
 .spinner:after {
   position: absolute;
-  content: '';
+  content: "";
 }
 
 .spinner:before {

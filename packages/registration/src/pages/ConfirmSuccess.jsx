@@ -7,22 +7,22 @@ import { Alert, Loading } from "../components";
 import { Header, FooterSmall } from "../components/layout";
 
 const ConfirmSuccess = () => {
-  const { t, i18n } = useTranslation("event_register");
-  const { eventSlug, registrationId, success, language } = useParams();
+  const { t, i18n } = useTranslation("activity_register");
+  const { activitySlug, registrationId, success, language } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
-  const [event, setEvent] = useState();
+  const [activity, setActivity] = useState();
 
   const getData = useCallback(async (slug) => {
       setLoading(true);
       try {
-        const eventData = await register.getEventBySlug(slug);
-        if (eventData?.error || !eventData?.eventId) {
-          setWarning(t("event_not_found"));
+        const activityData = await register.getActivityBySlug(slug);
+        if (activityData?.error || !activityData?.activityId) {
+          setWarning(t("activity_not_found"));
         } else {
-          setEvent(eventData);
+          setActivity(activityData);
         }
       } catch (error) {
         setError(error.message);
@@ -37,12 +37,12 @@ const ConfirmSuccess = () => {
   }, [i18n, language]);
 
   useEffect(() => {
-    if (eventSlug && registrationId) getData(eventSlug);
-    else if (eventSlug && (!success || !registrationId))
-      navigate(`/${eventSlug}`);
+    if (activitySlug && registrationId) getData(activitySlug);
+    else if (activitySlug && (!success || !registrationId))
+      navigate(`/${activitySlug}`);
     else navigate("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventSlug, registrationId, getData]);
+  }, [activitySlug, registrationId, getData]);
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -59,18 +59,18 @@ const ConfirmSuccess = () => {
               {warning && (
                 <Alert message={warning} type="warning" center={true} />
               )}
-              {event && (
+              {activity && (
                 <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
-                  {event.logo && (
+                  {activity.logo && (
                     <img
                       className="object-cover object-center w-full h-64"
-                      src={event.logo}
+                      src={activity.logo}
                       alt="logo"
                     />
                   )}
                   <div className="flex items-center justify-center px-8 py-4 bg-success-500">
                     <h1 className="text-xl font-bold text-white">
-                      {event.name}
+                      {activity.name}
                     </h1>
                   </div>
 
@@ -80,15 +80,15 @@ const ConfirmSuccess = () => {
                     </h1>
 
                     <div className="p-8">
-                      {event.raffle === "YES" ? (
+                      {activity.raffle === "YES" ? (
                         <div className="flex flex-col items-center justify-center mt-4">
                           <Survey className="w-8 h-8 text-success-500" />
                           <div>
                             {i18n.language === "pt-BR"
-                              ? event.raffleTextPTBR
+                              ? activity.raffleTextPTBR
                               : i18n.language === "en"
-                              ? event.raffleTextEN
-                              : event.raffleTextES}
+                              ? activity.raffleTextEN
+                              : activity.raffleTextES}
                           </div>
                         </div>
                       ) : (

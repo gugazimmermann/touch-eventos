@@ -6,24 +6,26 @@ import {
   type QueryCommandOutput,
 } from "@aws-sdk/lib-dynamodb";
 import { dynamoDBClient } from "../aws-clients";
-import { error } from "../../src/error";
+import { error } from "../error";
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
 ) => {
-  const eventsDeskTable = process.env.EVENTS_DESK_TABLE_NAME;
+  const activitiesDeskTable = process.env.ACTIVITIES_DESK_TABLE_NAME;
   const JWT_SECRET = process.env.JWT_SECRET;
-  if (!eventsDeskTable || !JWT_SECRET)
+  if (!activitiesDeskTable || !JWT_SECRET)
     return error(500, "Internal Server Error");
-  const eventId = event?.pathParameters?.id;
-  if (!eventId) return error(400, "Bad Request: Missing Event Id");
+
+  const activityId = event?.pathParameters?.id;
+  if (!activityId) return error(400, "Bad Request: Missing Activity Id");
+
   const data = JSON.parse(event?.body || "");
   if (!data?.username || !data?.accessCode)
     return error(400, "Bad Request: Missing Data");
 
   try {
     const deskParams: QueryCommandInput = {
-      TableName: eventsDeskTable,
+      TableName: activitiesDeskTable,
       ExpressionAttributeNames: {
         "#deskId": "deskId",
         "#user": "user",
@@ -38,7 +40,8 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
     const deskResults: QueryCommandOutput = await dynamoDBClient.send(
       new QueryCommand(deskParams)
     );
-    if (!deskResults.Items?.length) return error(404, "Not Found: User not found");
+    if (!deskResults.Items?.length)
+      return error(404, "Not Found: User not found");
     const item = deskResults.Items[0];
 
     if (item.accessCode !== data.accessCode)

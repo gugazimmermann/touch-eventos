@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEvents } from "../../context/EventsContext";
+import { useActivities } from "../../context/ActivitiesContext";
 import Logo from "./Logo";
 import Nav from "./Nav";
 import LangSelect from "./LangSelect";
 import { format } from "date-fns";
 
 const Header = ({ nav = true, lang = false, currentLang = 'pt-BR' }) => {
-  const { state } = useEvents();
-  const { t } = useTranslation(["account"]);
+  const { state } = useActivities();
+  const { t } = useTranslation(["layout"]);
 
   return (
     <header className=" p-2 bg-white fixed w-full shadow-md top-0 left-0 right-0 z-40">
@@ -20,7 +20,7 @@ const Header = ({ nav = true, lang = false, currentLang = 'pt-BR' }) => {
         </div>
         <div className="flex justify-center items-center w-1/3">
           {state.subscription?.endDate && (
-            <h1>Plano válido até: {format(
+            <h1>{t("header_plan_valid_until")}: {format(
               new Date(parseInt(state.subscription.endDate, 10)),
               "dd/MM/yy"
             )}</h1>

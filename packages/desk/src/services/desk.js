@@ -1,7 +1,7 @@
-export const getEventBySlug = async (slug) => {
+export const getActivityBySlug = async (slug) => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_SITE_API_URL}/event/${slug}`,
+      `${process.env.REACT_APP_SITE_API_URL}/desk/activity/${slug}`,
       { method: "GET" }
     );
     return response.json();
@@ -10,9 +10,9 @@ export const getEventBySlug = async (slug) => {
   }
 };
 
-export const access = async (eventId, data) => {
+export const access = async (activityId, data) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_SITE_API_URL}/event/${eventId}/access`, {
+    const response = await fetch(`${process.env.REACT_APP_SITE_API_URL}/desk/${activityId}/access`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -22,9 +22,9 @@ export const access = async (eventId, data) => {
   }
 };
 
-export const check = async (eventId, data) => {
+export const check = async (activityId, data) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_SITE_API_URL}/event/${eventId}/check`, {
+    const response = await fetch(`${process.env.REACT_APP_SITE_API_URL}/desk/${activityId}/check`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -34,9 +34,9 @@ export const check = async (eventId, data) => {
   }
 };
 
-export const deliver = async (eventId, data) => {
+export const deliver = async (activityId, data) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_SITE_API_URL}/event/${eventId}/deliver`, {
+    const response = await fetch(`${process.env.REACT_APP_SITE_API_URL}/desk/${activityId}/deliver`, {
       method: "POST",
       body: JSON.stringify(data),
     });

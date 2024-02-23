@@ -9,8 +9,8 @@ const deskReducer = (state, action) => {
     return { ...state, lang: action.payload.lang };
   } else if (action.type === "TOKEN") {
     return { ...state, token: action.payload.token };
-  } else if (action.type === "EVENT") {
-    return { ...state, event: action.payload.event };
+  } else if (action.type === "ACTIVITY") {
+    return { ...state, activity: action.payload.activity };
   } else {
     return { ...state };
   }
@@ -20,13 +20,13 @@ const DeskProvider = ({ children }) => {
   const storedTheme = localStorage.getItem("theme");
   const storedLang = localStorage.getItem("lang");
   const storedToken = localStorage.getItem("token");
-  const storedEvent = localStorage.getItem("event");
+  const storedActivity = localStorage.getItem("activity");
 
   const [state, dispatch] = useReducer(deskReducer, {
     theme: storedTheme ? JSON.parse(storedTheme) : null,
     lang: storedLang ? JSON.parse(storedLang) : null,
     token: storedToken ? JSON.parse(storedToken) : null,
-    event: storedEvent ? JSON.parse(storedEvent) : null,
+    activity: storedActivity ? JSON.parse(storedActivity) : null,
   });
 
   useEffect(() => {
@@ -42,8 +42,8 @@ const DeskProvider = ({ children }) => {
   }, [state.token]);
 
   useEffect(() => {
-    localStorage.setItem("event", JSON.stringify(state.event));
-  }, [state.event]);
+    localStorage.setItem("activity", JSON.stringify(state.activity));
+  }, [state.activity]);
 
   return (
     <DeskContext.Provider value={{ state, dispatch }}>
@@ -55,7 +55,7 @@ const DeskProvider = ({ children }) => {
 const useDesk = () => {
   const context = useContext(DeskContext);
   if (!context) {
-    throw new Error("useEvents must be used within an EventsProvider");
+    throw new Error("useDesk must be used within an DeskProvider");
   }
   return context;
 };

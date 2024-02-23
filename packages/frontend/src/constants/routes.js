@@ -16,14 +16,17 @@ const ROUTES = Object.freeze({
   },
   ADMIN: {
     DASHBOARD: "dashboard",
-    ACCOUNT: "minha-conta",
-    NEWEVENT: "novo-evento",
-    EVENT: "evento",
+    ACCOUNT: "conta",
+    ACCOUNTPROFILE: "conta/cadastro",
+    ACCOUNTPASSWORD: "conta/senha",
+    ACCOUNTPAYMENT: "conta/pagamentos",
+    NEWACTIVITY: "atividade/nova",
+    ACTIVITY: "atividade",
     REGISTERS: "cadastros",
     SURVEYS: "pesquisas",
     DESK: "balcao",
   },
-  EVENTS: {
+  ACTIVITIES: {
     REGISTER: "cadastro",
     CONFIRM: "confirmacao",
   }

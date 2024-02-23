@@ -4,8 +4,8 @@ import {
   type QueryCommandInput,
   type QueryCommandOutput,
 } from "@aws-sdk/lib-dynamodb";
-import { error } from "src/error";
 import { dynamoDBClient } from "../aws-clients";
+import { error } from "../error";
 
 export const handler: APIGatewayProxyHandlerV2 = async () => {
   const plansTable = process.env.PLANS_TABLE_NAME;

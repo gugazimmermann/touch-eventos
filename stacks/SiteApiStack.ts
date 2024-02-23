@@ -6,20 +6,20 @@ import { BucketdStack } from "./BucketStack";
 
 export function SiteApiStack({ stack }: StackContext) {
   const {
-    eventsTable,
+    activitiesTable,
     plansTable,
     verificationsTable,
-    eventsRegisterTable,
-    eventsDeskTable,
+    activitiesRegisterTable,
+    activitiesDeskTable,
   } = use(DynamoDBStack);
-  const { eventsImagesBucket } = use(BucketdStack);
+  const { activitiesImagesBucket } = use(BucketdStack);
 
   const siteApi = new Api(stack, "SiteApi", {
     customDomain:
       stack.stage === "production"
         ? {
-            domainName: "api-site-eventos.touchsistemas.com.br",
-            hostedZone: "touchsistemas.com.br",
+            domainName: "site-api.toucheventos.com.br",
+            hostedZone: "toucheventos.com.br",
             cdk: {
               certificate: Certificate.fromCertificateArn(
                 stack,
@@ -55,35 +55,35 @@ export function SiteApiStack({ stack }: StackContext) {
           ],
         },
       },
-      "GET /event/{slug}": {
+      "GET /register/activity/{slug}": {
         function: {
-          handler: "packages/functions/src/register/eventBySlug.handler",
+          handler: "packages/functions/src/register/activity-by-slug.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            EVENTS_REGISTER_TABLE_NAME: eventsRegisterTable.tableName,
-            EVENTS_IMAGES_BUCKET: eventsImagesBucket.bucketName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
+            ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
           },
           permissions: [
-            eventsTable,
+            activitiesTable,
             verificationsTable,
-            eventsRegisterTable,
-            eventsImagesBucket,
+            activitiesRegisterTable,
+            activitiesImagesBucket,
           ],
         },
       },
-      "POST /register/{id}": {
+      "POST /register/registration/{id}": {
         function: {
-          handler: "packages/functions/src/register/registerEvent.handler",
+          handler: "packages/functions/src/register/registration.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            EVENTS_REGISTER_TABLE_NAME: eventsRegisterTable.tableName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
           },
           permissions: [
-            eventsTable,
+            activitiesTable,
             verificationsTable,
-            eventsRegisterTable,
+            activitiesRegisterTable,
             new PolicyStatement({
               actions: ["ses:SendEmail", "SES:SendRawEmail"],
               resources: ["*"],
@@ -95,18 +95,18 @@ export function SiteApiStack({ stack }: StackContext) {
           ],
         },
       },
-      "POST /confirm/{id}": {
+      "POST /register/confirm/{id}": {
         function: {
-          handler: "packages/functions/src/register/confirmEvent.handler",
+          handler: "packages/functions/src/register/confirm.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
-            EVENTS_REGISTER_TABLE_NAME: eventsRegisterTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
             SURVEY_URL: String(process.env.SURVEY_URL),
           },
           permissions: [
-            eventsTable,
-            eventsRegisterTable,
+            activitiesTable,
+            activitiesRegisterTable,
             verificationsTable,
             new PolicyStatement({
               actions: ["ses:SendEmail", "SES:SendRawEmail"],
@@ -119,37 +119,54 @@ export function SiteApiStack({ stack }: StackContext) {
           ],
         },
       },
-      "POST /event/{id}/access": {
+      "GET /desk/activity/{slug}": {
+        function: {
+          handler: "packages/functions/src/desk/activity-by-slug.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
+            ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
+          },
+          permissions: [
+            activitiesTable,
+            verificationsTable,
+            activitiesRegisterTable,
+            activitiesImagesBucket,
+          ],
+        },
+      },
+      "POST /desk/{id}/access": {
         function: {
           handler: "packages/functions/src/desk/access.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
-            EVENTS_DESK_TABLE_NAME: eventsDeskTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
             JWT_SECRET: String(process.env.JWT_SECRET),
           },
-          permissions: [eventsTable, eventsDeskTable],
+          permissions: [activitiesTable, activitiesDeskTable],
         },
       },
-      "POST /event/{id}/check": {
+      "POST /desk/{id}/check": {
         function: {
           handler: "packages/functions/src/desk/check.handler",
           environment: {
-            EVENTS_DESK_TABLE_NAME: eventsDeskTable.tableName,
-            EVENTS_REGISTER_TABLE_NAME: eventsRegisterTable.tableName,
+            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             JWT_SECRET: String(process.env.JWT_SECRET),
           },
-          permissions: [eventsDeskTable, eventsRegisterTable],
+          permissions: [activitiesDeskTable, activitiesRegisterTable],
         },
       },
-      "POST /event/{id}/deliver": {
+      "POST /desk/{id}/deliver": {
         function: {
           handler: "packages/functions/src/desk/deliver.handler",
           environment: {
-            EVENTS_DESK_TABLE_NAME: eventsDeskTable.tableName,
-            EVENTS_REGISTER_TABLE_NAME: eventsRegisterTable.tableName,
+            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             JWT_SECRET: String(process.env.JWT_SECRET),
           },
-          permissions: [eventsDeskTable, eventsRegisterTable],
+          permissions: [activitiesDeskTable, activitiesRegisterTable],
         },
       },
     },

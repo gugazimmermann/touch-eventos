@@ -3,6 +3,7 @@ import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { SiteApiStack } from "./SiteApiStack";
 import { ApiStack } from "./ApiStack";
 import { CognitoStack } from "./CognitoStack";
+import { RemovalPolicy } from "aws-cdk-lib/core";
 
 export function FrontendStack({ stack, app }: StackContext) {
   const { siteApi } = use(SiteApiStack);
@@ -13,8 +14,7 @@ export function FrontendStack({ stack, app }: StackContext) {
     customDomain:
       stack.stage === "production"
         ? {
-            domainName: "eventos.touchsistemas.com.br",
-            hostedZone: "touchsistemas.com.br",
+            domainName: "toucheventos.com.br",
             cdk: {
               certificate: Certificate.fromCertificateArn(
                 stack,
@@ -43,14 +43,19 @@ export function FrontendStack({ stack, app }: StackContext) {
       REACT_APP_STRIPE_KEY: String(process.env.STRIKE_KEY),
       REACT_APP_STRIPE_CALLBACK_URL: String(process.env.STRIPE_CALLBACK_URL),
     },
+    cdk: {
+      bucket: {
+        removalPolicy: RemovalPolicy.DESTROY
+      }
+    }
   });
 
   const registration = new StaticSite(stack, "Registration", {
     customDomain:
       stack.stage === "production"
         ? {
-            domainName: "cadastros.touchsistemas.com.br",
-            hostedZone: "touchsistemas.com.br",
+            domainName: "cadastros.toucheventos.com.br",
+            hostedZone: "toucheventos.com.br",
             cdk: {
               certificate: Certificate.fromCertificateArn(
                 stack,
@@ -71,14 +76,19 @@ export function FrontendStack({ stack, app }: StackContext) {
       REACT_APP_SITE_URL: String(process.env.SITE_URL),
       REACT_APP_SITE_API_URL: siteApi.customDomainUrl || siteApi.url,
     },
+    cdk: {
+      bucket: {
+        removalPolicy: RemovalPolicy.DESTROY
+      }
+    }
   });
 
   const desk = new StaticSite(stack, "Desk", {
     customDomain:
       stack.stage === "production"
         ? {
-            domainName: "balcao.touchsistemas.com.br",
-            hostedZone: "touchsistemas.com.br",
+            domainName: "balcao.toucheventos.com.br",
+            hostedZone: "toucheventos.com.br",
             cdk: {
               certificate: Certificate.fromCertificateArn(
                 stack,
@@ -98,6 +108,11 @@ export function FrontendStack({ stack, app }: StackContext) {
       REACT_APP_SITE_TITLE: "Touch Eventos - Brindes",
       REACT_APP_SITE_API_URL: siteApi.customDomainUrl || siteApi.url,
     },
+    cdk: {
+      bucket: {
+        removalPolicy: RemovalPolicy.DESTROY
+      }
+    }
   });
 
   stack.addOutputs({

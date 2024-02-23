@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format, isAfter, isBefore, isSameDay } from "date-fns";
-import { useEvents } from "../../context/EventsContext";
-import { account, event } from "../../services";
+import { useActivities } from "../../context/ActivitiesContext";
+import { account, activity } from "../../services";
 import { Alert, Loading } from "../../components";
 import { AdminTopNav, DashboardButtons } from "../../components/layout";
-import { EventCard, EventNewCard } from "./components";
+import { ActivityCard, NewActivityCard } from "./components";
 
 const imagePlaceholder =
   "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg";
 
 const Admin = () => {
   const { t } = useTranslation("admin");
-  const { state, dispatch } = useEvents();
+  const { state, dispatch } = useActivities();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
@@ -61,11 +61,9 @@ const Admin = () => {
 
   const getEvents = useCallback(async (force) => {
     setLoading(true);
-    const eventsList = !archivedEvents
-      ? state.eventsList
-      : state.eventsListArchived;
+    const eventsList = !archivedEvents ? state.eventsList : state.eventsListArchived;
     if (!eventsList || force) {
-      const res = await event.getEvents(archivedEvents);
+      const res = await activity.getActivities(archivedEvents);
       if (res?.error) setError(res.error);
       else {
         if (archivedEvents)
@@ -128,8 +126,8 @@ const Admin = () => {
       <AdminTopNav
         title={`${t("dashboard")} - ${
           !archivedEvents
-            ? t("dashboard_events_active")
-            : t("dashboard_events_archived")
+            ? t("dashboard_activity_active")
+            : t("dashboard_activity_archived")
         }`}
       >
         <DashboardButtons
@@ -141,11 +139,11 @@ const Admin = () => {
       {error && <Alert message={error} type="danger" />}
       {warning && <Alert message={warning} type="warning" />}
       <div className=" grid grid-cols-5 gap-4 pb-8">
-        {!archivedEvents && <EventNewCard canCreate={canCreate} />}
+        {!archivedEvents && <NewActivityCard canCreate={canCreate} />}
         {loading ? (
           <Loading />
         ) : (
-          events.map((e) => <EventCard key={e.eventId} data={e} />)
+          events.map((e) => <ActivityCard key={e.eventId} data={e} />)
         )}
       </div>
     </section>

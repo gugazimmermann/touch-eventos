@@ -11,18 +11,18 @@ export function ApiStack({ stack }: StackContext) {
     usersTable,
     usersSubscriptionTable,
     paymentsTable,
-    eventsTable,
-    eventsRegisterTable,
-    eventsSurveyTable,
-    eventsDeskTable,
+    activitiesTable,
+    activitiesRegisterTable,
+    activitiesSurveyTable,
+    activitiesDeskTable,
   } = use(DynamoDBStack);
   const { cognito } = use(CognitoStack);
-  const { eventsImagesBucket } = use(BucketdStack);
+  const { activitiesImagesBucket } = use(BucketdStack);
 
   const api = new Api(stack, "Api", {
     customDomain: stack.stage === "production" ? {
-      domainName: "api-eventos.touchsistemas.com.br",
-      hostedZone: "touchsistemas.com.br",
+      domainName: "api.toucheventos.com.br",
+      hostedZone: "toucheventos.com.br",
       cdk: {
         certificate: Certificate.fromCertificateArn(
           stack,
@@ -53,7 +53,7 @@ export function ApiStack({ stack }: StackContext) {
       },
       "PUT /user": {
         function: {
-          handler: "packages/functions/src/user/userUpdate.handler",
+          handler: "packages/functions/src/user/user-update.handler",
           environment: {
             USERS_TABLE_NAME: usersTable.tableName,
             STRIPE_TOKEN: String(process.env.STRIPE_TOKEN),
@@ -63,14 +63,14 @@ export function ApiStack({ stack }: StackContext) {
       },
       "GET /user/payments": {
         function: {
-          handler: "packages/functions/src/user/payments.handler",
+          handler: "packages/functions/src/user/user-payments.handler",
           environment: { PAYMENTS_TABLE_NAME: paymentsTable.tableName },
           permissions: [paymentsTable],
         },
       },
       "GET /user/subscription": {
         function: {
-          handler: "packages/functions/src/user/subscription.handler",
+          handler: "packages/functions/src/user/user-subscription.handler",
           environment: { USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName },
           permissions: [usersSubscriptionTable],
         },
@@ -78,7 +78,7 @@ export function ApiStack({ stack }: StackContext) {
       "GET /payment/customer-payment-methods": {
         function: {
           handler:
-            "packages/functions/src/payment/customerPaymentMethods.handler",
+            "packages/functions/src/payment/customer-payment-methods.handler",
           environment: {
             USER_TABLE_NAME: usersTable.tableName,
             STRIPE_TOKEN: String(process.env.STRIPE_TOKEN),
@@ -88,7 +88,7 @@ export function ApiStack({ stack }: StackContext) {
       },
       "POST /payment/create-payment-intent": {
         function: {
-          handler: "packages/functions/src/payment/createPaymentIntent.handler",
+          handler: "packages/functions/src/payment/create-payment-intent.handler",
           environment: {
             PLAN_TABLE_NAME: plansTable.tableName,
             VERIFICATION_TABLE_NAME: verificationsTable.tableName,
@@ -107,7 +107,7 @@ export function ApiStack({ stack }: StackContext) {
       },
       "GET /plans/{planId}": {
         function: {
-          handler: "packages/functions/src/plans/planById.handler",
+          handler: "packages/functions/src/plans/plan-by-id.handler",
           environment: { PLANS_TABLE_NAME: plansTable.tableName },
           permissions: [plansTable],
         },
@@ -122,116 +122,117 @@ export function ApiStack({ stack }: StackContext) {
       "GET /verifications/{verificationId}": {
         function: {
           handler:
-            "packages/functions/src/verifications/verificationById.handler",
+            "packages/functions/src/verifications/verification-by-id.handler",
           environment: { VERIFICATIONS_TABLE_NAME: verificationsTable.tableName },
           permissions: [verificationsTable],
         },
       },
-      "GET /events/list/{archived}": {
+      "GET /activities/list/{archived}": {
         function: {
-          handler: "packages/functions/src/events/eventsList.handler",
+          handler: "packages/functions/src/activities/activities-list.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            EVENTS_REGISTER_TABLE_NAME: eventsRegisterTable.tableName,
-            EVENTS_IMAGES_BUCKET: eventsImagesBucket.bucketName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
+            ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
           },
           permissions: [
-            eventsTable,
+            activitiesTable,
             verificationsTable,
-            eventsRegisterTable,
-            eventsImagesBucket,
+            activitiesRegisterTable,
+            activitiesImagesBucket,
           ],
         },
       },
-      "GET /events/{eventId}": {
+      "GET /activities/{activityId}": {
         function: {
-          handler: "packages/functions/src/events/eventById.handler",
+          handler: "packages/functions/src/activities/activity-by-id.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             PLANS_TABLE_NAME: plansTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            EVENTS_REGISTER_TABLE_NAME: eventsRegisterTable.tableName,
-            EVENTS_SURVEY_TABLE_NAME: eventsSurveyTable.tableName,
-            EVENTS_DESK_TABLE_NAME: eventsDeskTable.tableName,
-            EVENTS_IMAGES_BUCKET: eventsImagesBucket.bucketName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
+            ACTIVITIES_SURVEY_TABLE_NAME: activitiesSurveyTable.tableName,
+            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
+            ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
           },
           permissions: [
-            eventsTable,
+            activitiesTable,
             plansTable,
             verificationsTable,
-            eventsRegisterTable,
-            eventsSurveyTable,
-            eventsDeskTable,
-            eventsImagesBucket,
+            activitiesRegisterTable,
+            activitiesSurveyTable,
+            activitiesDeskTable,
+            activitiesImagesBucket,
           ],
         },
       },
-      "GET /events/{eventId}/registers": {
+      "GET /activities/verify-slug/{slug}": {
         function: {
-          handler: "packages/functions/src/events/eventRegistersById.handler",
+          handler: "packages/functions/src/activities/activity-by-slug.handler",
+          environment: { ACTIVITIES_TABLE_NAME: activitiesTable.tableName },
+          permissions: [activitiesTable],
+        },
+      },
+      "GET /activities/{activityId}/registers": {
+        function: {
+          handler: "packages/functions/src/activities/register/registers-by-activity-id.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
-            EVENTS_REGISTER_TABLE_NAME: eventsRegisterTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
           },
-          permissions: [eventsTable, eventsRegisterTable],
+          permissions: [activitiesTable, activitiesRegisterTable],
         },
       },
-      "GET /events/{eventId}/desk": {
+      "GET /activities/{activityId}/desk": {
         function: {
-          handler: "packages/functions/src/events/desk/list.handler",
+          handler: "packages/functions/src/activities/desk/desks-by-activity-id.handler",
           environment: {
-            EVENTS_DESK_TABLE_NAME: eventsDeskTable.tableName,
+            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
+            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
           },
-          permissions: [eventsDeskTable],
+          permissions: [activitiesDeskTable, activitiesRegisterTable],
         },
       },
-      "GET /events/verify-slug/{slug}": {
+      "POST /activities/create": {
         function: {
-          handler: "packages/functions/src/events/eventVerifySlug.handler",
-          environment: { EVENTS_TABLE_NAME: eventsTable.tableName },
-          permissions: [eventsTable],
-        },
-      },
-      "POST /events/create": {
-        function: {
-          handler: "packages/functions/src/events/eventCreate.handler",
+          handler: "packages/functions/src/activities/activity-create.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             PAYMENTS_TABLE_NAME: paymentsTable.tableName,
             PLANS_TABLE_NAME: plansTable.tableName,
             USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
           },
-          permissions: [eventsTable, paymentsTable, plansTable, usersSubscriptionTable],
+          permissions: [activitiesTable, paymentsTable, plansTable, usersSubscriptionTable],
         },
       },
-      "POST /events/{eventId}/image": {
+      "POST /activities/{activityId}/image": {
         function: {
-          handler: "packages/functions/src/events/eventImage.handler",
+          handler: "packages/functions/src/activities/activity-image.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
-            EVENTS_IMAGES_BUCKET: eventsImagesBucket.bucketName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
           },
-          permissions: [eventsTable, eventsImagesBucket],
+          permissions: [activitiesTable, activitiesImagesBucket],
         },
       },
-      "POST /events/{eventId}/desk": {
+      "POST /activities/{activityId}/desk": {
         function: {
-          handler: "packages/functions/src/events/desk/create.handler",
+          handler: "packages/functions/src/activities/desk/desk-create.handler",
           environment: {
-            EVENTS_TABLE_NAME: eventsTable.tableName,
-            EVENTS_DESK_TABLE_NAME: eventsDeskTable.tableName,
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
           },
-          permissions: [eventsTable, eventsDeskTable],
+          permissions: [activitiesTable, activitiesDeskTable],
         },
       },
-      "PUT /events/{eventId}/desk/{deskId}": {
+      "PUT /activities/{activityId}/desk/{deskId}": {
         function: {
-          handler: "packages/functions/src/events/desk/change.handler",
+          handler: "packages/functions/src/activities/desk/desk-status.handler",
           environment: {
-            EVENTS_DESK_TABLE_NAME: eventsDeskTable.tableName,
+            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
           },
-          permissions: [eventsDeskTable],
+          permissions: [activitiesDeskTable],
         },
       },
     },

@@ -19,23 +19,18 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
   const email = event.request.userAttributes.email;
 
   try {
-    const params: QueryCommandInput = {
+    const queryParams: QueryCommandInput = {
       TableName: usersTable,
       IndexName: "EmailIndex",
       KeyConditionExpression: "email = :email",
       ExpressionAttributeValues: { ":email": email },
     };
-    const results: QueryCommandOutput = await dynamoDBClient.send(
-      new QueryCommand(params)
+    const queryResults: QueryCommandOutput = await dynamoDBClient.send(
+      new QueryCommand(queryParams)
     );
-    if (results.Items && results.Items.length > 0) return event;
-  } catch (err) {
-    console.error("DynamoDB Error:", err);
-    return new Error("Internal Server Error: DynamoDB operation failed");
-  }
+    if (queryResults.Items && queryResults.Items.length > 0) return event;
 
-  try {
-    const params: PutCommandInput = {
+    const putParams: PutCommandInput = {
       TableName: usersTable,
       Item: {
         userId: userName,
@@ -44,7 +39,7 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
         active: 1,
       },
     };
-    await dynamoDBClient.send(new PutCommand(params));
+    await dynamoDBClient.send(new PutCommand(putParams));
     return event;
   } catch (err) {
     console.error("DynamoDB Error:", err);
