@@ -4,7 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripe } from "../../../services";
 import { FormButton } from "../../../components/form";
-import NewEventFormStripeCheckoutForm from "./NewActivityFormStripeCheckoutForm";
+import NewActivityFormStripeCheckoutForm from "./NewActivityFormStripeCheckoutForm";
 import { Loading } from "../../../components";
 import { formatValue } from "../../../helpers/format";
 
@@ -99,7 +99,7 @@ const NewActivityFormStripe = ({
             <div className="w-full md:w-1/2 stripe">
               {clientSecret && (
                 <Elements options={options} stripe={stripePromise}>
-                  <NewEventFormStripeCheckoutForm
+                  <NewActivityFormStripeCheckoutForm
                     setSuccess={setSuccess}
                     setInfo={setInfo}
                     setWarning={setWarning}
@@ -115,7 +115,7 @@ const NewActivityFormStripe = ({
           <div className="w-full flex flex-row mt-8">
             <div className="w-1/3 flex justify-center">
               <FormButton
-                testid="new-event-back-button"
+                testid="new-activity-back-button"
                 text={t("new_activity_button_back")}
                 disabled={loading}
                 type="button"
@@ -127,7 +127,7 @@ const NewActivityFormStripe = ({
             <div className="w-1/3 flex justify-center" />
             <div className="w-1/3 flex justify-center">
               <FormButton
-                testid="new-event-test-button"
+                testid="new-activity-test-button"
                 text={t("new_activity_button_trial")}
                 disabled={loading}
                 type="button"

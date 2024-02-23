@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useDesk } from "../../context/DeskContext";
 
 const LangSelect = ({ currentLang }) => {
-  const { i18n } = useTranslation("desk");
+  const { i18n } = useTranslation();
   const { dispatch } = useDesk();
   const [selected, setSelected] = useState("BR");
 

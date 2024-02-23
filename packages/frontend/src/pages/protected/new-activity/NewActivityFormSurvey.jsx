@@ -180,7 +180,7 @@ const NewActivityFormSurvey = ({
           disabled={loading}
           required={values.raffle === "YES"}
           placeholder={t("new_activity_notifY_survey_on_end")}
-          value="notificationOnEventEnd"
+          value="notificationOnActivityEnd"
           values={values}
           setValues={setValues}
           options={[
@@ -198,7 +198,7 @@ const NewActivityFormSurvey = ({
       <div className="w-full flex flex-row mt-8">
         <div className="w-1/3 flex justify-center">
           <FormButton
-            testid="new-event-back-button"
+            testid="new-activity-back-button"
             text={t("new_activity_button_back")}
             disabled={loading}
             type="button"
@@ -210,7 +210,7 @@ const NewActivityFormSurvey = ({
         <div className="w-1/3 flex justify-center" />
         <div className="w-1/3 flex justify-center">
           <FormButton
-            testid="new-event-foward-button"
+            testid="new-activity-foward-button"
             text={t("new_activity_button_foward")}
             disabled={loading}
             type="submit"

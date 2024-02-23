@@ -21,14 +21,14 @@ import {
 } from "../../../components/form";
 import { CircleCheckFilled, Search, XCircle } from "../../../icons";
 
-const NewActivityFormEvent = ({
+const NewActivityFormActivity = ({
   activePlans,
   loading,
   setLoading,
   values,
   setValues,
-  eventDates,
-  setEventDates,
+  activityDates,
+  setActivityDates,
   verifyDates,
   showToast,
   onSubmit,
@@ -93,7 +93,7 @@ const NewActivityFormEvent = ({
 
   useEffect(() => {
     verifyDates();
-  }, [activePlans, eventDates, values.planId, verifyDates]);
+  }, [activePlans, activityDates, values.planId, verifyDates]);
 
   useEffect(() => {
     setValues({
@@ -132,8 +132,8 @@ const NewActivityFormEvent = ({
         <DatePicker
           {...datePickerConfig}
           required={true}
-          value={eventDates}
-          onChange={setEventDates}
+          value={activityDates}
+          onChange={setActivityDates}
           minDate={startOfDay(new Date())}
           placeholder={t("new_activity_dates")}
           plugins={[<DatePanel header={t("new_activity_dates")} />]}
@@ -172,7 +172,7 @@ const NewActivityFormEvent = ({
                 : "text-text-700 bg-text-200"
             }`}
             type="button"
-            testid="new-event-verify-slug-button"
+            testid="new-activity-verify-slug-button"
             disabled={loading}
             onClick={() => handleVerifySlug(values["slug"])}
           >
@@ -266,7 +266,7 @@ const NewActivityFormEvent = ({
       <div className="w-full flex flex-row mt-8">
         <div className="w-1/3 flex justify-center">
           <FormButton
-            testid="new-event-clear-button"
+            testid="new-activity-clear-button"
             text={t("new_activity_button_reset")}
             disabled={loading}
             type="button"
@@ -278,7 +278,7 @@ const NewActivityFormEvent = ({
         <div className="w-1/3 flex justify-center" />
         <div className="w-1/3 flex justify-center">
           <FormButton
-            testid="new-event-foward-button"
+            testid="new-activity-foward-button"
             text={t("new_activity_button_foward")}
             disabled={loading}
             type="submit"
@@ -290,4 +290,4 @@ const NewActivityFormEvent = ({
   );
 };
 
-export default NewActivityFormEvent;
+export default NewActivityFormActivity;

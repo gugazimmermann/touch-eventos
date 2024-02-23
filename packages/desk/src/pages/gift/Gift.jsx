@@ -78,7 +78,7 @@ const Gift = () => {
       token: state.token,
     });
     if (deliverResponse?.delivered) {
-      setSuccess("gist_delivered");
+      setSuccess(t("gift_success_delivered"));
       setDeliver(true);
     } else if (
       deliverResponse?.error === "Bad Request: Visistor Not Confirmed"
@@ -144,8 +144,8 @@ const Gift = () => {
   }, [state.token, state.activity, activitySlug]);
 
   return (
-    <div className="w-full mx-auto flex flex-row gap-10 justify-center items-center">
-      <div className="w-1/2 flex items-center justify-center">
+    <div className="w-full mx-auto flex flex-col-reverse sm:flex-row flex-grow gap-10 justify-evenly items-center">
+      <div className="w-4/5 sm:w-1/2 flex items-center justify-center">
         <img
           className="h-auto w-auto max-h-96"
           src={selectedImage}
@@ -153,7 +153,7 @@ const Gift = () => {
         />
       </div>
       {activity && (
-        <div className="w-1/2 flex flex-col justify-center items-center">
+        <div className="w-full sm:w-1/2 flex flex-col justify-center items-center">
           <h1 className="text-4xl font-semibold">{activity.name}</h1>
           <p className="mt-3 text-xl">
             {t("gift_text_1")}{" "}
@@ -178,7 +178,7 @@ const Gift = () => {
             <>
               {!registration && !deliver ? (
                 <form
-                  className="w-full flex flex-row justify-between items-center gap-2"
+                  className="w-full flex flex-col justify-between items-center gap-2"
                   onSubmit={handleSubmit}
                 >
                   {activity.verification === "SMS" ? (
@@ -203,7 +203,7 @@ const Gift = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="mt-4 flex flex-grow">
+                    <div className="w-full mt-4 flex flex-grow">
                       <InputField
                         disabled={loading}
                         required={activity.verification !== "SMS" ? true : false}
@@ -216,7 +216,7 @@ const Gift = () => {
                       />
                     </div>
                   )}
-                  <div className="mt-4">
+                  <div className="w-full mt-4">
                     <FormButton
                       testid="desk-check-button"
                       text={t("check")}
@@ -249,7 +249,7 @@ const Gift = () => {
                           {t(seeRegisterCanReceiveGift(registration))}
                         </span>
                       </div>
-                      <div className="w-1/2 mt-4">
+                      <div className="w-full sm?w-1/2 mt-4">
                         <button
                           data-testid="desk-gift-button"
                           disabled={!registration.confirmed}

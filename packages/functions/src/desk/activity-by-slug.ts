@@ -49,7 +49,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
     if (!activitiesResults?.Items?.length) return error(404, "Not Found: activity not found");
     const item = activitiesResults.Items[0];
 
-    if (item.active !== 1) return error(400, "Bad Request: Ectivity Not Active");
+    if (item.active !== 1 && item.payment) return error(400, "Bad Request: Activity Not Active");
     if (item.visitorGift !== "YES") return error(400, "Bad Request: Activity Does Not Have Visitors Gift");
     
     const verificationsResults: GetCommandOutput = await dynamoDBClient.send(

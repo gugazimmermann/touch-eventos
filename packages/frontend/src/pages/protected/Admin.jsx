@@ -17,10 +17,10 @@ const Admin = () => {
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
   const [canCreate, setCanCreate] = useState(false);
-  const [archivedEvents, setArchivedEvents] = useState(false);
-  const [events, setEvents] = useState([]);
+  const [archivedActivities, setArchivedActivities] = useState(false);
+  const [activities, setActivities] = useState([]);
 
-  const eventStatus = (start, end) => {
+  const activityStatus = (start, end) => {
     const startDate = new Date(parseInt(start, 10));
     const endDate = new Date(parseInt(end, 10));
     const today = new Date();
@@ -38,10 +38,10 @@ const Admin = () => {
   };
 
   const formatData = useCallback((data) => {
-    const fomatedEvents = [];
+    const fomatedActivities = [];
     data.forEach((e) => {
-      fomatedEvents.push({
-        eventId: e.eventId,
+      fomatedActivities.push({
+        activityId: e.activityId,
         logo: e.logo || imagePlaceholder,
         name: e.name,
         dates: `${format(
@@ -51,43 +51,48 @@ const Admin = () => {
         location: `${e.city} / ${e.state}`,
         verificationType: e.verificationType,
         visitors: e.visitors || "-",
-        status: eventStatus(e.startDate, e.endDate),
+        status: activityStatus(e.startDate, e.endDate),
         payment: e.payment,
         active: e.active,
       });
     });
-    return fomatedEvents;
+    return fomatedActivities;
   }, []);
 
-  const getEvents = useCallback(async (force) => {
-    setLoading(true);
-    const eventsList = !archivedEvents ? state.eventsList : state.eventsListArchived;
-    if (!eventsList || force) {
-      const res = await activity.getActivities(archivedEvents);
-      if (res?.error) setError(res.error);
-      else {
-        if (archivedEvents)
-          dispatch({
-            type: "EVENTS_LIST_ARCHIVED",
-            payload: { eventsListArchived: res },
-          });
-        else dispatch({ type: "EVENTS_LIST", payload: { eventsList: res } });
-        setEvents(formatData(res));
+  const getActivities = useCallback(
+    async (force) => {
+      setLoading(true);
+      const activitiesList = !archivedActivities
+        ? state.activitiesList
+        : state.activitiesListArchived;
+      if (!activitiesList || force) {
+        const res = await activity.getActivities(archivedActivities);
+        if (res?.error) setError(res.error);
+        else {
+          if (archivedActivities)
+            dispatch({
+              type: "ACTIVITIES_LIST_ARCHIVED",
+              payload: { activitiesListArchived: res },
+            });
+          else dispatch({ type: "ACTIVITIES_LIST", payload: { activitiesList: res } });
+          setActivities(formatData(res));
+        }
+      } else {
+        setActivities(formatData(activitiesList));
       }
-    } else {
-      setEvents(formatData(eventsList));
-    }
-    setLoading(false);
-  }, [
-    archivedEvents,
-    dispatch,
-    formatData,
-    state.eventsList,
-    state.eventsListArchived,
-  ]);
+      setLoading(false);
+    },
+    [
+      archivedActivities,
+      dispatch,
+      formatData,
+      state.activitiesList,
+      state.activitiesListArchived,
+    ]
+  );
 
   const getUserData = useCallback(async () => {
-    const userData = state?.user || await account.getCurrentUser();
+    const userData = state?.user || (await account.getCurrentUser());
     if (!userData?.name || !userData?.document) {
       setWarning("Acesse 'Minha Conta' e finalize seu cadastro.");
     } else {
@@ -100,7 +105,8 @@ const Admin = () => {
   }, [dispatch, state?.user]);
 
   const getUserSubscription = useCallback(async () => {
-    const userSubscription = state?.subscription || await account.getCurrentUserSubscription();
+    const userSubscription =
+      state?.subscription || (await account.getCurrentUserSubscription());
     if (userSubscription?.subscription?.endDate) {
       dispatch({
         type: "SUBSCRIPTION",
@@ -113,9 +119,9 @@ const Admin = () => {
     setLoading(true);
     await getUserData();
     await getUserSubscription();
-    await getEvents();
+    await getActivities();
     setLoading(false);
-  }, [getEvents, getUserSubscription, getUserData]);
+  }, [getActivities, getUserSubscription, getUserData]);
 
   useEffect(() => {
     fetchData();
@@ -125,25 +131,25 @@ const Admin = () => {
     <section className="w-full px-4">
       <AdminTopNav
         title={`${t("dashboard")} - ${
-          !archivedEvents
+          !archivedActivities
             ? t("dashboard_activity_active")
             : t("dashboard_activity_archived")
         }`}
       >
         <DashboardButtons
-          archived={archivedEvents}
-          setArchived={setArchivedEvents}
-          reload={getEvents}
+          archived={archivedActivities}
+          setArchived={setArchivedActivities}
+          reload={getActivities}
         />
       </AdminTopNav>
       {error && <Alert message={error} type="danger" />}
       {warning && <Alert message={warning} type="warning" />}
       <div className=" grid grid-cols-5 gap-4 pb-8">
-        {!archivedEvents && <NewActivityCard canCreate={canCreate} />}
+        {!archivedActivities && <NewActivityCard canCreate={canCreate} />}
         {loading ? (
           <Loading />
         ) : (
-          events.map((e) => <ActivityCard key={e.eventId} data={e} />)
+          activities.map((e) => <ActivityCard key={e.activityId} data={e} />)
         )}
       </div>
     </section>

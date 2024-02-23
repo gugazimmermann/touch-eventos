@@ -43,3 +43,18 @@ body {
   padding-left: 8px;
   margin: 0;
 }
+
+.phoneCodeSelect {
+  @apply pb-0 !important;
+}
+
+.phoneCodeSelect > button {
+  @apply w-full;
+  @apply px-4;
+  @apply mt-4;
+  @apply text-text-700;
+  @apply placeholder-text-500;
+  @apply bg-white;
+  @apply rounded-lg;
+  @apply border-gray-200
+}

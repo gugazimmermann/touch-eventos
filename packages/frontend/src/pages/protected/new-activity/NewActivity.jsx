@@ -12,7 +12,7 @@ import ROUTES from "../../../constants/routes";
 import { Alert, Loading, Toast } from "../../../components";
 import { AdminTopNav } from "../../../components/layout";
 import StepHeader from "./NewActivityStepHeader";
-import NewActivityFormEvent from "./NewActivityFormEvent";
+import NewActivityFormActivity from "./NewActivityFormActivity";
 import NewActivityFormSurvey from "./NewActivityFormSurvey";
 import NewActivityFormStripe from "./NewActivityFormStripe";
 
@@ -42,7 +42,7 @@ const initialValues = {
   raffleTextEN: "",
   raffleTextES: "",
   notificationOnConfirm: "",
-  notificationOnEventEnd: "",
+  notificationOnActivityEnd: "",
 };
 
 const NewActivity = () => {
@@ -53,7 +53,7 @@ const NewActivity = () => {
     dateToTimestap,
     datesToString,
     stringToDateObject,
-    validateEventDates,
+    validateActivityDates,
   } = useDatePicker({
     locale: "pt-BR",
   });
@@ -66,11 +66,19 @@ const NewActivity = () => {
   const [activeVerifications, setActiveVerifications] = useState([]);
   const [step, setStep] = useState(1);
   const [values, setValues] = useState(initialValues);
-  const [eventDates, setEventDates] = useState([]);
+  const [activityDates, setActivityDates] = useState([]);
   const [toastMsg, setToastMsg] = useState("");
   const [isToastVisible, setToastVisible] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState();
+
+  const resetMessages = () => {
+    setError("");
+    setSuccess("");
+    setInfo("");
+    setToastMsg("");
+    setToastVisible(false);
+  }
 
   const handleShowToast = (msg) => {
     setToastMsg(msg);
@@ -79,13 +87,13 @@ const NewActivity = () => {
 
   const handleResetForm = () => {
     dispatch({
-      type: "EVENT_REGISTER",
-      payload: { eventRegister: null },
+      type: "ACTIVITY_REGISTER",
+      payload: { activityRegister: null },
     });
     setValues(initialValues);
     if (state.subscription?.planId)
       setValues({ ...values, planId: state.subscription.planId });
-    setEventDates([]);
+    setActivityDates([]);
   };
 
   const handleVerifySlug = async (slug) => {
@@ -110,22 +118,22 @@ const NewActivity = () => {
   };
 
   const verifyDates = useCallback(() => {
-    if (eventDates.length && activePlans.length) {
+    if (activityDates.length && activePlans.length) {
       const selectedPlan =
         values.planId || activePlans[activePlans.length - 1].planId;
       const { maxDays, maxDiff } = activePlans.find(
         (p) => p.planId === selectedPlan
       );
-      const verify = validateEventDates(maxDays, maxDiff, eventDates);
+      const verify = validateActivityDates(maxDays, maxDiff, activityDates);
       setInfo(verify);
       return verify;
     }
-  }, [activePlans, eventDates, setInfo, validateEventDates, values.planId]);
+  }, [activePlans, activityDates, setInfo, validateActivityDates, values.planId]);
 
   const verifySubscriptionDate = useCallback(() => {
     if (state?.subscription?.endDate) {
       const lastDay = new Date(
-        parseInt(eventDates[eventDates.length - 1].unix * 1000, 10)
+        parseInt(activityDates[activityDates.length - 1].unix * 1000, 10)
       );
       const lastSubscriptionDay = new Date(
         parseInt(state.subscription.endDate, 10)
@@ -136,7 +144,7 @@ const NewActivity = () => {
       setInfo(verify);
       return verify;
     }
-  }, [eventDates, state?.subscription?.endDate]);
+  }, [activityDates, state?.subscription?.endDate]);
 
   const handleSubmit = async (paymentIntent) => {
     setError("");
@@ -144,7 +152,7 @@ const NewActivity = () => {
     setInfo("");
     try {
       const currentPlan = activePlans.find((p) => p.planId === values.planId);
-      const eventId = uuidv4();
+      const activityId = uuidv4();
       const paymentId = uuidv4();
       const { userId } = await auth.handleGetCurrentUser();
       let paymentData = null;
@@ -161,10 +169,10 @@ const NewActivity = () => {
       }
       const data = {
         ...values,
-        eventId,
+        activityId,
         userId,
-        startDate: `${dateToTimestap(eventDates[0])}`,
-        endDate: `${dateToTimestap(eventDates[eventDates.length - 1])}`,
+        startDate: `${dateToTimestap(activityDates[0])}`,
+        endDate: `${dateToTimestap(activityDates[activityDates.length - 1])}`,
         city: values.addressCity,
         state: values.addressState,
         location: `${values.addressCity}+${values.addressState}`,
@@ -173,16 +181,16 @@ const NewActivity = () => {
           state.subscription?.planId || paymentIntent?.status === "succeeded"
             ? 1
             : 0,
-        dates: datesToString(eventDates),
+        dates: datesToString(activityDates),
         payment: paymentData,
       };
       setLoading(true);
       const res = await activity.saveActivity(data);
       if (res?.error) setError(res.error);
       else {
-        dispatch({ type: "EVENTS_LIST", payload: { eventsList: null } });
+        dispatch({ type: "ACTIVITIES_LIST", payload: { activityList: null } });
         handleResetForm();
-        navigate(`/${ROUTES.ADMIN.ACTIVITY}/${eventId}`);
+        navigate(`/${ROUTES.ADMIN.ACTIVITY}/${activityId}`);
       }
     } catch (error) {
       setError(error.message);
@@ -192,16 +200,12 @@ const NewActivity = () => {
 
   const handleStepSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
-    setInfo("");
-    setToastMsg("");
-    setToastVisible(false);
+    resetMessages();
     if (step === 1) {
       if (!slugAvailable) if (!(await handleVerifySlug(values.slug))) return;
       if (
         !newActivityValidate.stepOne(
-          { ...values, dates: eventDates },
+          { ...values, dates: activityDates },
           verifyDates,
           setError,
           t
@@ -213,7 +217,7 @@ const NewActivity = () => {
       if (
         values.planId &&
         values.name &&
-        (values.dates || eventDates.length) &&
+        (values.dates || activityDates.length) &&
         values.addressZipCode &&
         values.addressState &&
         values.addressCity &&
@@ -221,21 +225,25 @@ const NewActivity = () => {
         values.addressNeighborhood
       ) {
         dispatch({
-          type: "EVENT_REGISTER",
-          payload: { eventRegister: { ...values, dates: eventDates } },
+          type: "ACTIVITY_REGISTER",
+          payload: { activityRegister: { ...values, dates: activityDates } },
         });
         setStep(2);
       }
     } else if (step === 2) {
       if (
-        !newActivityValidate.stepTwo({ ...values, dates: eventDates }, setError, t)
+        !newActivityValidate.stepTwo(
+          { ...values, dates: activityDates },
+          setError,
+          t
+        )
       ) {
         return;
       }
       if (values.verificationId && values.visitorGift && values.raffle) {
         dispatch({
-          type: "EVENT_REGISTER",
-          payload: { eventRegister: { ...values, dates: eventDates } },
+          type: "ACTIVITY_REGISTER",
+          payload: { activityRegister: { ...values, dates: activityDates } },
         });
         if (!state.subscription?.planId) setStep(3);
         else handleSubmit();
@@ -274,27 +282,27 @@ const NewActivity = () => {
 
   useEffect(() => {
     getData();
-    if (state.eventRegister) {
-      if (state.eventRegister.verificationId && state.eventRegister.raffle) {
+    if (state.activityRegister) {
+      if (state.activityRegister.verificationId && state.activityRegister.raffle) {
         setStep(3);
       } else if (
-        state.eventRegister.planId &&
-        state.eventRegister.name &&
-        state.eventRegister.dates &&
-        state.eventRegister.addressZipCode &&
-        state.eventRegister.addressState &&
-        state.eventRegister.addressCity &&
-        state.eventRegister.addressStreet &&
-        state.eventRegister.addressNeighborhood
+        state.activityRegister.planId &&
+        state.activityRegister.name &&
+        state.activityRegister.dates &&
+        state.activityRegister.addressZipCode &&
+        state.activityRegister.addressState &&
+        state.activityRegister.addressCity &&
+        state.activityRegister.addressStreet &&
+        state.activityRegister.addressNeighborhood
       ) {
         setStep(2);
       }
-      setValues(state.eventRegister);
-      setEventDates(
-        state.eventRegister.dates.map((d) => stringToDateObject(d))
+      setValues(state.activityRegister);
+      setActivityDates(
+        state.activityRegister.dates.map((d) => stringToDateObject(d))
       );
     }
-  }, [getData, state.eventRegister, stringToDateObject]);
+  }, [getData, state.activityRegister, stringToDateObject]);
 
   return (
     <section className="w-full">
@@ -311,14 +319,14 @@ const NewActivity = () => {
         {info && <Alert message={info} type="info" />}
         {warning && <Alert message={warning} type="warning" />}
         {step === 1 && (
-          <NewActivityFormEvent
+          <NewActivityFormActivity
             activePlans={activePlans}
             loading={loading}
             setLoading={setLoading}
             values={values}
             setValues={setValues}
-            eventDates={eventDates}
-            setEventDates={setEventDates}
+            activityDates={activityDates}
+            setActivityDates={setActivityDates}
             verifyDates={verifyDates}
             showToast={handleShowToast}
             onSubmit={handleStepSubmit}
