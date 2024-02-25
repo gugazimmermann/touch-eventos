@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CloudUpload } from "../../../../icons";
 
@@ -11,7 +11,6 @@ const ActivityDetailsCardLogo = ({
 }) => {
   const { t } = useTranslation("activity_details");
   const fileInputRef = useRef(null);
-  const [displayLogo, setDisplayLogo] = useState(logo);
 
   const handleLogoClick = () => fileInputRef.current.click();
 
@@ -28,7 +27,6 @@ const ActivityDetailsCardLogo = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64Image = reader.result;
-        setDisplayLogo(base64Image);
         onLogoChange(base64Image);
       };
       reader.readAsDataURL(file);
@@ -44,11 +42,11 @@ const ActivityDetailsCardLogo = ({
         className="w-full"
         onClick={() => handleLogoClick()}
       >
-        {displayLogo ? (
+        {logo ? (
           <img
             className="object-cover object-center w-full h-60 cursor-pointer"
             alt="Activity Logo"
-            src={displayLogo}
+            src={logo}
           />
         ) : (
           <div className="w-full h-60 flex items-center">

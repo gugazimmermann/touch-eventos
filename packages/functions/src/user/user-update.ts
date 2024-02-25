@@ -46,7 +46,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       TableName: usersTable,
       Key: { userId },
       UpdateExpression:
-        "SET #active = :active, #stripeCustomerId = :stripeCustomerId, #name = :name, #documentType = :documentType, #document = :document, #email = :email, #phoneCode = :phoneCode, #phone = :phone, #addressZipCode = :addressZipCode, #addressState = :addressState, #addressCity = :addressCity, #addressStreet = :addressStreet, #addressNumber = :addressNumber, #addressNeighborhood = :addressNeighborhood, #addressComplement = :addressComplement, #addressLatitude = :addressLatitude, #addressLongitude = :addressLongitude",
+        "SET #active = :active, #stripeCustomerId = :stripeCustomerId, #name = :name, #documentType = :documentType, #document = :document, #email = :email, #phoneCode = :phoneCode, #phone = :phone, #addressZipCode = :addressZipCode, #addressState = :addressState, #addressCity = :addressCity, #addressStreet = :addressStreet, #addressNumber = :addressNumber, #addressNeighborhood = :addressNeighborhood, #addressComplement = :addressComplement, #addressTimezone = :addressTimezone, #addressLatitude = :addressLatitude, #addressLongitude = :addressLongitude",
       ExpressionAttributeNames: {
         "#active": "active",
         "#stripeCustomerId": "stripeCustomerId",
@@ -63,6 +63,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         "#addressNumber": "addressNumber",
         "#addressNeighborhood": "addressNeighborhood",
         "#addressComplement": "addressComplement",
+        "#addressTimezone": "addressTimezone",
         "#addressLatitude": "addressLatitude",
         "#addressLongitude": "addressLongitude",
       },
@@ -82,6 +83,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         ":addressNumber": data.addressNumber,
         ":addressNeighborhood": data.addressNeighborhood,
         ":addressComplement": data.addressComplement,
+        ":addressTimezone": data.addressTimezone,
         ":addressLatitude": data.addressLatitude,
         ":addressLongitude": data.addressLongitude,
       },

@@ -219,7 +219,15 @@ const NewActivityFormActivity = ({
           options={STATESBR}
           // onBlur={(e) => handleState(e.target.value)}
         />
-        <InputFieldAutoComplete
+        <InputField
+          disabled={loading}
+          required={true}
+          placeholder={t("new_activity_address_city")}
+          value="addressCity"
+          values={values}
+          setValues={setValues}
+        />
+        {/* <InputFieldAutoComplete
           disabled={loading}
           required={true}
           placeholder={t("new_activity_address_city")}
@@ -227,7 +235,7 @@ const NewActivityFormActivity = ({
           values={values}
           setValues={setValues}
           // suggestions={cities}
-        />
+        /> */}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <InputField

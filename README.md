@@ -7,22 +7,15 @@ Usefull Commands
 * npx sst deploy --stage dev
 * npx sst remove --stage dev
 
-## AWS CLI
+## AWS CLI - Prod plans and subscriptions
+* aws dynamodb batch-write-item --request-items file://./dynamodb-data/prod.json
 
-Usefull Commands
+## Generate Fake Data for Dev - Linux
 
-* set AWS_CLI_FILE_ENCODING=UTF-8
-
-* aws dynamodb batch-write-item --request-items file://./dynamodb-data/dev.json
-* aws dynamodb list-tables --output table
-* aws dynamodb delete-table --table-name TABLE_NAME
-* aws cognito-idp list-user-pools --max-results 60
-* aws cognito-idp delete-user-pool --user-pool-id USER_POOL_ID
-
-## Generate Fake Data for Dev
-
-- run `aws dynamodb batch-write-item --request-items file://./dynamodb-data/dev.json`
-- create a activity and get the activityID
-- create the desk users `node fake-desk.cjs --activity XX --quantity XX`, this will create the file activities-desk.json.
-- with the desk itens the registers can be created, `node fake-registers.cjs --type EMAIL|SMS --quantity XX`.
+- need jq installed `sudo apt-get install jq`
+- `chmod +x start-dev.sh`
+- `./start-dev.sh --USER_POOL_ID us-east-1_XXXXXX`
+- now we have plans, subscriptions, cognito user and activity.
+- `cd fake-data` and create the desk users `node fake-desk.cjs --activity f3420389-26e8-4025-a00b-5080d2684ef3 --quantity XX`, this will create the file activities-desk.json.
+- with the desk itens the registers can be created, `node fake-registers.cjs --type EMAIL|SMS --quantity XX`, the file fake-data/activities-register.json will be created.
 - run the migrations in https://old.console.sst.dev/

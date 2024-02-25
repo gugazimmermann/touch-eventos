@@ -28,6 +28,8 @@
   "account_address_neighborhood": "Bairro",
   "account_address_neighborhood_required": "Bairro é Obrigatório",
   "account_address_complement": "Complemento",
+  "account_address_timezone": "Horário",
+  "account_created_at": "Cadastro desde: ",
   "account_update": "Atualizar Cadastro",
   "account_update_success": "Cadastro atualizado com sucesso",
   "account_update_error": "Erro ao atualizar cadastro, tente novamente",

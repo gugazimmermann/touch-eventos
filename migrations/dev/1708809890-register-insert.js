@@ -11,3 +11,11 @@ export async function up(db) {
     await db.insertInto("activities_register").values(batch).execute();
   }
 }
+
+/**
+ * @param db {Kysely<any>}
+ */
+export async function down(db) {
+  await db.deleteFrom("activities_register").execute();
+}
+

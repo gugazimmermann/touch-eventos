@@ -115,7 +115,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       .execute();
 
     item.registers = registerResults.reduce((acc, cur) => acc + cur.registration_count, 0);
-    item.registersConfirmed = registerResults.find(x => x.confirmed)?.registration_count;
+    item.registersConfirmed = registerResults.find(x => x.confirmed)?.registration_count || 0;
 
     item.surveys = [];
 

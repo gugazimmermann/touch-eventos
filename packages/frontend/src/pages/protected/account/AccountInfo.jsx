@@ -11,6 +11,7 @@ import {
   auth,
 } from "../../../services";
 import { STATESBR } from "../../../constants/states";
+import TIMEZONESBR from "../../../constants/timezones/timezones-br";
 import usePhoneCode from "../../../hooks/usePhoneCode";
 import { maskCep, maskCPF, maskCNPJ, maskPhone } from "../../../helpers/mask";
 import { validateCode } from "../../../helpers/validate";
@@ -22,6 +23,7 @@ import {
   InputFieldAutoComplete,
   SelectField,
 } from "../../../components/form";
+import { formatDate } from "../../../helpers/format";
 
 const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
   const { t } = useTranslation("account");
@@ -43,8 +45,10 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
     addressNumber: "",
     addressNeighborhood: "",
     addressComplement: "",
+    addressTimezone: "America/Sao_Paulo",
     addressLatitude: "",
     addressLongitude: "",
+    createdAt: "",
   });
   const [codeValue, setCodeValue] = useState({ code: "" });
   const [loading, setLoading] = useState(false);
@@ -216,8 +220,10 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
         addressNumber: data.addressNumber,
         addressNeighborhood: data.addressNeighborhood,
         addressComplement: data.addressComplement,
+        addressTimezone: data.addressTimezone || "America/Sao_Paulo",
         addressLatitude: data.addressLatitude,
         addressLongitude: data.addressLongitude,
+        createdAt: data.createdAt,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -373,6 +379,28 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
               placeholder={t("account_address_complement")}
               value="addressComplement"
               values={values}
+              setValues={setValues}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {/* <SelectField
+              disabled={loading || confirmEmail}
+              required={true}
+              placeholder={t("account_address_timezone")}
+              value="addressTimezone"
+              values={values}
+              setValues={setValues}
+              options={TIMEZONESBR}
+            /> */}
+            <InputField
+              disabled={true}
+              required={false}
+              placeholder={`${t("account_created_at")} ${formatDate(
+                data?.createdAt,
+                {
+                  time: false
+                }
+              )}`}
               setValues={setValues}
             />
           </div>

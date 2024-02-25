@@ -124,6 +124,7 @@ const ActivityDetails = () => {
         { logo: newLogo },
         onUploadProgress
       );
+      setValues({...values, logo: newLogo})
       setProgress(0);
       dispatch({ type: "ACTIVITIES_LIST", payload: { activitiesList: null } });
     }

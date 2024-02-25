@@ -11,3 +11,10 @@ export async function up(db) {
     .execute()
 }
 
+/**
+ * @param db {Kysely<any>}
+ */
+export async function down(db) {
+  await db.deleteFrom("activities_desk").execute();
+}
+
