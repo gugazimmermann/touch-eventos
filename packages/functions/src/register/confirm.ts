@@ -1,23 +1,38 @@
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
-import {
-  GetCommand,
-  UpdateCommand,
-  type GetCommandOutput,
-  type UpdateCommandInput,
-} from "@aws-sdk/lib-dynamodb";
+import { GetCommand, type GetCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { SendEmailCommand } from "@aws-sdk/client-ses";
 import { PublishCommand, SetSMSAttributesCommand } from "@aws-sdk/client-sns";
+import { Kysely } from "kysely";
+import { DataApiDialect } from "kysely-data-api";
+import { RDSData } from "@aws-sdk/client-rds-data";
+import { RDS } from "sst/node/rds";
+import { IActivitiesRegister } from "../database";
 import { dynamoDBClient, sesClient, snsClient } from "../aws-clients";
 import { error } from "../error";
+
+export interface Database {
+  activities_register: IActivitiesRegister;
+}
+
+const db = new Kysely<Database>({
+  dialect: new DataApiDialect({
+    mode: "mysql",
+    driver: {
+      database: RDS.Database.defaultDatabaseName,
+      secretArn: RDS.Database.secretArn,
+      resourceArn: RDS.Database.clusterArn,
+      client: new RDSData({}),
+    },
+  }),
+});
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
 ) => {
   const activitiesTable = process.env.ACTIVITIES_TABLE_NAME;
-  const activitiesRegisterTable = process.env.ACTIVITIES_REGISTER_TABLE_NAME;
   const verificationsTable = process.env.VERIFICATIONS_TABLE_NAME;
   const SURVEY_URL = process.env.SURVEY_URL;
-  if (!activitiesTable || !activitiesRegisterTable || !verificationsTable)
+  if (!activitiesTable || !verificationsTable)
     return error(500, "Internal Server Error");
 
   const activityId = event?.pathParameters?.id;
@@ -35,39 +50,35 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         Key: { activityId },
       })
     );
-    if (!activitiesResults.Item) return error(404, "Not Found: activity not found");
+    if (!activitiesResults.Item)
+      return error(404, "Not Found: activity not found");
     const activity = activitiesResults.Item;
 
     // get registration
-    const registrationsResults: GetCommandOutput = await dynamoDBClient.send(
-      new GetCommand({
-        TableName: activitiesRegisterTable,
-        Key: { registrationId: data.registrationId },
-      })
-    );
-    if (!registrationsResults.Item)
+    const registrationsResults = await db
+      .selectFrom("activities_register")
+      .selectAll()
+      .where("registrationId", "=", data.registrationId)
+      .where("activityId", "=", activityId)
+      .execute();
+
+    if (!registrationsResults.length)
       return error(404, "Not Found: Registration not found");
-    const registration = registrationsResults.Item;
+    const registration = registrationsResults[0];
 
     // confirm code
     if (registration.code !== data.code.trim().toLowerCase())
       return error(400, "Bad Request: Wrong Code");
 
-    const registerUpdateParams: UpdateCommandInput = {
-      TableName: activitiesRegisterTable,
-      Key: { registrationId: data.registrationId },
-      UpdateExpression: "SET #language = :language, #confirmed = :confirmed",
-      ExpressionAttributeNames: {
-        "#language": "language",
-        "#confirmed": "confirmed",
-      },
-      ExpressionAttributeValues: {
-        ":language": data.language,
-        ":confirmed": data.confirmedAt,
-      },
-      ReturnValues: "ALL_NEW",
-    };
-    await dynamoDBClient.send(new UpdateCommand(registerUpdateParams));
+    // update de registration
+    await db
+      .updateTable("activities_register")
+      .set({
+        confirmed: data.confirmedAt,
+        language: data.language,
+      })
+      .where("registrationId", "=", registration.registrationId)
+      .executeTakeFirst();
 
     // notification on confirm
     if (activity?.notificationOnConfirm === "YES") {
@@ -103,26 +114,26 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         await snsClient.send(
           new SetSMSAttributesCommand({
             attributes: {
-              DefaultSMSType: 'Transactional',
+              DefaultSMSType: "Transactional",
             },
-          }),
+          })
         );
         await snsClient.send(
           new PublishCommand({
             Message: `${messageSubject} - ${messageBody}`,
-            PhoneNumber: registration.phone,
+            PhoneNumber: String(registration.phone),
             MessageAttributes: {
-                  'AWS.SNS.SMS.SMSType': {
-                      DataType: 'String',
-                      StringValue: 'Transactional'
-                  }
-              }
+              "AWS.SNS.SMS.SMSType": {
+                DataType: "String",
+                StringValue: "Transactional",
+              },
+            },
           })
         );
       } else {
         await sesClient.send(
           new SendEmailCommand({
-            Destination: { ToAddresses: [registration.email] },
+            Destination: { ToAddresses: [String(registration.email)] },
             Message: {
               Body: {
                 Text: {

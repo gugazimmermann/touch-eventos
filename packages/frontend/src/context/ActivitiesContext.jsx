@@ -18,7 +18,7 @@ const activitiesReducer = (state, action) => {
       ...state,
       activitiesListArchived: action.payload.activitiesListArchived,
     };
-  } else if (action.type === "ACTIVITIES_REGISTER") {
+  } else if (action.type === "ACTIVITY_REGISTER") {
     return { ...state, activityRegister: action.payload.activityRegister };
   } else if (action.type === "ACTIVITIES_SURVEY") {
     return { ...state, survey: action.payload.survey };

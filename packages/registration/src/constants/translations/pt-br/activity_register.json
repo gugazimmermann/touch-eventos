@@ -21,6 +21,7 @@
   "agree_error": "É necessário aceitar os termos para realizar o cadastro.",
   "register": "Cadastrar",
   "register_error": "Ocorreu um erro ao salvar o cadastro, tente novamente.",
+  "already_registered": "Já Cadastrado.",
   "visitor_gift": "Retire seu brinde após o cadastro!",
   "raffle_type_survey": "Participe da Pesquisa para concorrer no Sorteio Final!",
   "raffle_type_all": "Participe do Sorteio Final!",

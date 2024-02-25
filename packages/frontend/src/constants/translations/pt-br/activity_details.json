@@ -34,7 +34,13 @@
   "activity_details_card_desk_registers_single": "cadastro",
   "activity_details_card_desk_registers_plural": "cadastros",
   "activity_details_card_details_manage_desk": "Administrar Balcão",
-
+  "activity_details_register_title": "Cadastros",
+  "activity_details_register_created_at": "Registro",
+  "activity_details_register_confirmed": "Confirmado",
+  "activity_details_register_gift": "Brinde",
+  "activity_details_register_desk": "Balcão",
+  "activity_details_register_email": "Email",
+  "activity_details_register_phone": "Telefone",
   "activity_details_desk_title": "Balcão",
   "activity_details_desk_add_access": "Adicionar Acesso",
   "activity_details_desk_add_access_user": "Usuário",
@@ -45,6 +51,6 @@
   "activity_details_desk_table_gift_delivered": "Brindes Entregues",
   "activity_details_desk_table_gift_created_at": "Criado",
   "activity_details_desk_table_gift_status": "Status",
-  "activity_details_desk_table_gift_status_active": "Status",
-  "activity_details_desk_table_gift_status_inactive": "Status"
+  "activity_details_desk_table_gift_status_active": "Ativo",
+  "activity_details_desk_table_gift_status_inactive": "Inativo"
 }

@@ -1,72 +1,57 @@
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
-import {
-  QueryCommand,
-  type QueryCommandInput,
-  type QueryCommandOutput,
-} from "@aws-sdk/lib-dynamodb";
-import { dynamoDBClient } from "../../aws-clients";
+import { Kysely } from "kysely";
+import { DataApiDialect } from "kysely-data-api";
+import { RDSData } from "@aws-sdk/client-rds-data";
+import { RDS } from "sst/node/rds";
+import { IActivitiesDesk, IActivitiesRegister } from "../../database";
 import { error } from "../../error";
+
+export interface Database {
+  activities_desk: IActivitiesDesk;
+  activities_register: IActivitiesRegister;
+}
+
+const db = new Kysely<Database>({
+  dialect: new DataApiDialect({
+    mode: "mysql",
+    driver: {
+      database: RDS.Database.defaultDatabaseName,
+      secretArn: RDS.Database.secretArn,
+      resourceArn: RDS.Database.clusterArn,
+      client: new RDSData({}),
+    },
+  }),
+});
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
 ) => {
-  const activitiesDeskTable = process.env.ACTIVITIES_DESK_TABLE_NAME;
-  const activitiesRegisterTable = process.env.ACTIVITIES_REGISTER_TABLE_NAME;
-  if (!activitiesDeskTable || !activitiesRegisterTable)
-    return error(500, "Internal Server Error");
   const userId = event.requestContext.authorizer.jwt.claims.sub;
   if (!userId) return error(400, "Bad Request: Missing User Id");
   const activityId = event?.pathParameters?.activityId;
   if (!activityId) return error(400, "Bad Request: Missing Activity Id");
 
   try {
-    const deskParams: QueryCommandInput = {
-      TableName: activitiesDeskTable,
-      ExpressionAttributeNames: {
-        "#activityId": "activityId",
-        "#deskId": "deskId",
-        "#user": "user",
-        "#createdAt": "createdAt",
-        "#active": "active",
-      },
-      ExpressionAttributeValues: { ":activityId": activityId },
-      IndexName: "ActivityIndex",
-      KeyConditionExpression: "#activityId = :activityId",
-      ProjectionExpression: "#deskId, #user, #createdAt, #active",
-    };
-
-    let scanComplete = false;
-    const registers: Array<Record<string, any>> = [];
-
-    while (!scanComplete) {
-      const deskResults = await dynamoDBClient.send(
-        new QueryCommand(deskParams)
-      );
-      (deskResults?.Items || []).forEach(async (item) => registers.push(item));
-      if (deskResults.LastEvaluatedKey) {
-        deskParams.ExclusiveStartKey = deskResults.LastEvaluatedKey;
-      } else {
-        scanComplete = true;
-      }
-    }
-
-    for (const register of registers) {
-      const registrationsParams: QueryCommandInput = {
-        TableName: activitiesRegisterTable,
-        ExpressionAttributeNames: { "#deskId": "deskId" },
-        ExpressionAttributeValues: { ":deskId": register.deskId },
-        IndexName: "DeskIdIndex",
-        KeyConditionExpression: "#deskId = :deskId",
-        Select: "COUNT",
-      };
-      const registrationsResults: QueryCommandOutput =
-        await dynamoDBClient.send(new QueryCommand(registrationsParams));
-      register.gifts = registrationsResults.Count;
-    }
+    const desks = await db
+      .selectFrom("activities_desk")
+      .leftJoin(
+        "activities_register",
+        "activities_register.deskId",
+        "activities_desk.deskId"
+      )
+      .select([
+        "activities_desk.deskId",
+        "activities_desk.user",
+        "activities_desk.createdAt",
+        "activities_desk.active",
+        db.fn.count("activities_register.deskId").as("gifts"),
+      ])
+      .groupBy("activities_desk.deskId")
+      .execute();
 
     return {
       statusCode: 200,
-      body: JSON.stringify(registers),
+      body: JSON.stringify(desks),
     };
   } catch (err) {
     console.error("DynamoDB Error:", err);

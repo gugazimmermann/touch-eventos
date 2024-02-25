@@ -67,14 +67,20 @@ const Admin = () => {
         : state.activitiesListArchived;
       if (!activitiesList || force) {
         const res = await activity.getActivities(archivedActivities);
-        if (res?.error) setError(res.error);
-        else {
-          if (archivedActivities)
+        if (res?.error || res?.message) {
+          setError(res.error || res.message);
+        } else {
+          if (archivedActivities) {
             dispatch({
               type: "ACTIVITIES_LIST_ARCHIVED",
               payload: { activitiesListArchived: res },
             });
-          else dispatch({ type: "ACTIVITIES_LIST", payload: { activitiesList: res } });
+          } else {
+            dispatch({
+              type: "ACTIVITIES_LIST",
+              payload: { activitiesList: res },
+            });
+          }
           setActivities(formatData(res));
         }
       } else {

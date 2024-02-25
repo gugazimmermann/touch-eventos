@@ -188,7 +188,7 @@ const NewActivity = () => {
       const res = await activity.saveActivity(data);
       if (res?.error) setError(res.error);
       else {
-        dispatch({ type: "ACTIVITIES_LIST", payload: { activityList: null } });
+        dispatch({ type: "ACTIVITIES_LIST", payload: { activitiesList: null } });
         handleResetForm();
         navigate(`/${ROUTES.ADMIN.ACTIVITY}/${activityId}`);
       }

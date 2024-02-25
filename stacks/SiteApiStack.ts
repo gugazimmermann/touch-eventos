@@ -1,18 +1,15 @@
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { StackContext, use, Api } from "sst/constructs";
-import { DynamoDBStack } from "./DynamoDBStack";
 import { BucketdStack } from "./BucketStack";
+import { DynamoDBStack } from "./DynamoDBStack";
+import { DatabaseStack } from "./DatabaseStack";
 
 export function SiteApiStack({ stack }: StackContext) {
-  const {
-    activitiesTable,
-    plansTable,
-    verificationsTable,
-    activitiesRegisterTable,
-    activitiesDeskTable,
-  } = use(DynamoDBStack);
   const { activitiesImagesBucket } = use(BucketdStack);
+  const { activitiesTable, plansTable, verificationsTable } =
+    use(DynamoDBStack);
+  const { database } = use(DatabaseStack);
 
   const siteApi = new Api(stack, "SiteApi", {
     customDomain:
@@ -61,15 +58,14 @@ export function SiteApiStack({ stack }: StackContext) {
           environment: {
             ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
           },
           permissions: [
             activitiesTable,
             verificationsTable,
-            activitiesRegisterTable,
             activitiesImagesBucket,
           ],
+          bind: [database],
         },
       },
       "POST /register/registration/{id}": {
@@ -78,12 +74,10 @@ export function SiteApiStack({ stack }: StackContext) {
           environment: {
             ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
           },
           permissions: [
             activitiesTable,
             verificationsTable,
-            activitiesRegisterTable,
             new PolicyStatement({
               actions: ["ses:SendEmail", "SES:SendRawEmail"],
               resources: ["*"],
@@ -93,6 +87,7 @@ export function SiteApiStack({ stack }: StackContext) {
               resources: ["*"],
             }),
           ],
+          bind: [database],
         },
       },
       "POST /register/confirm/{id}": {
@@ -100,13 +95,11 @@ export function SiteApiStack({ stack }: StackContext) {
           handler: "packages/functions/src/register/confirm.handler",
           environment: {
             ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
             SURVEY_URL: String(process.env.SURVEY_URL),
           },
           permissions: [
             activitiesTable,
-            activitiesRegisterTable,
             verificationsTable,
             new PolicyStatement({
               actions: ["ses:SendEmail", "SES:SendRawEmail"],
@@ -117,6 +110,7 @@ export function SiteApiStack({ stack }: StackContext) {
               resources: ["*"],
             }),
           ],
+          bind: [database],
         },
       },
       "GET /desk/activity/{slug}": {
@@ -125,13 +119,11 @@ export function SiteApiStack({ stack }: StackContext) {
           environment: {
             ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
           },
           permissions: [
             activitiesTable,
             verificationsTable,
-            activitiesRegisterTable,
             activitiesImagesBucket,
           ],
         },
@@ -140,33 +132,27 @@ export function SiteApiStack({ stack }: StackContext) {
         function: {
           handler: "packages/functions/src/desk/access.handler",
           environment: {
-            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
-            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
             JWT_SECRET: String(process.env.JWT_SECRET),
           },
-          permissions: [activitiesTable, activitiesDeskTable],
+          bind: [database],
         },
       },
       "POST /desk/{id}/check": {
         function: {
           handler: "packages/functions/src/desk/check.handler",
           environment: {
-            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             JWT_SECRET: String(process.env.JWT_SECRET),
           },
-          permissions: [activitiesDeskTable, activitiesRegisterTable],
+          bind: [database],
         },
       },
       "POST /desk/{id}/deliver": {
         function: {
           handler: "packages/functions/src/desk/deliver.handler",
           environment: {
-            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             JWT_SECRET: String(process.env.JWT_SECRET),
           },
-          permissions: [activitiesDeskTable, activitiesRegisterTable],
+          bind: [database],
         },
       },
     },

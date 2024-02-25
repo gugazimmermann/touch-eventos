@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getTime } from "date-fns";
 import { useTranslation } from "react-i18next";
 import * as register from "../services/register";
 import { validateCode } from "../helpers/validate";
@@ -34,7 +33,7 @@ const Confirm = () => {
       activityId: activity.activityId,
       code: confirmationCode.code,
       language: i18n.language,
-      confirmedAt: `${getTime(new Date())}`,
+      confirmedAt: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`,
     };
     const confirmResponse = await register.confirm(activity.activityId, payload);
     if (confirmResponse?.registrationId) {

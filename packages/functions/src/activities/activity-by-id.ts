@@ -9,8 +9,30 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Kysely, sql } from "kysely";
+import { DataApiDialect } from "kysely-data-api";
+import { RDSData } from "@aws-sdk/client-rds-data";
+import { RDS } from "sst/node/rds";
 import { dynamoDBClient, s3Client } from "../aws-clients";
-import { error } from "src/error";
+import { IActivitiesRegister, IActivitiesDesk } from "../database";
+import { error } from "../error";
+
+export interface Database {
+  activities_register: IActivitiesRegister;
+  activities_desk: IActivitiesDesk;
+}
+
+const db = new Kysely<Database>({
+  dialect: new DataApiDialect({
+    mode: "mysql",
+    driver: {
+      database: RDS.Database.defaultDatabaseName,
+      secretArn: RDS.Database.secretArn,
+      resourceArn: RDS.Database.clusterArn,
+      client: new RDSData({}),
+    },
+  }),
+});
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
@@ -18,17 +40,11 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   const activitiesTable = process.env.ACTIVITIES_TABLE_NAME;
   const plansTable = process.env.PLANS_TABLE_NAME;
   const verificationsTable = process.env.VERIFICATIONS_TABLE_NAME;
-  const activitiesRegisterTable = process.env.ACTIVITIES_REGISTER_TABLE_NAME;
-  const activitiesSurveyTable = process.env.ACTIVITIES_SURVEY_TABLE_NAME;
-  const activitiesDeskTable = process.env.ACTIVITIES_DESK_TABLE_NAME
   const activitiesImagesBucket = process.env.ACTIVITIES_IMAGES_BUCKET;
   if (
     !activitiesTable ||
     !plansTable ||
     !verificationsTable ||
-    !activitiesRegisterTable ||
-    !activitiesSurveyTable ||
-    !activitiesDeskTable ||
     !activitiesImagesBucket
   )
     return error(500, "Internal Server Error");
@@ -40,8 +56,14 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   try {
     const params: QueryCommandInput = {
       TableName: activitiesTable,
-      ExpressionAttributeNames: { "#userId": "userId", "#activityId": "activityId" },
-      ExpressionAttributeValues: { ":userId": userId, ":activityId": activityId },
+      ExpressionAttributeNames: {
+        "#userId": "userId",
+        "#activityId": "activityId",
+      },
+      ExpressionAttributeValues: {
+        ":userId": userId,
+        ":activityId": activityId,
+      },
       IndexName: "UserIdEndDateIndex",
       KeyConditionExpression: "#userId = :userId",
       FilterExpression: "#activityId = :activityId",
@@ -49,7 +71,8 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
     const results: QueryCommandOutput = await dynamoDBClient.send(
       new QueryCommand(params)
     );
-    if (!results.Items?.length) return error(404, "Not Found: activity not found");
+    if (!results.Items?.length)
+      return error(404, "Not Found: activity not found");
     const item = results.Items[0];
 
     const plansParams: GetCommandInput = {
@@ -62,77 +85,39 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       Key: { verificationId: item.verificationId },
     };
 
-    const surveysParams: QueryCommandInput = {
-      TableName: activitiesSurveyTable,
-      ExpressionAttributeNames: {
-        "#surveyId": "surveyId",
-        "#activityId": "activityId",
-        "#language": "language",
-      },
-      ExpressionAttributeValues: { ":activityId": item.activityId },
-      IndexName: "ActivityIndex",
-      KeyConditionExpression: "#activityId = :activityId",
-      ProjectionExpression: "#surveyId, #activityId, #language",
-    };
-
-    const deskParams: QueryCommandInput = {
-      TableName: activitiesDeskTable,
-      ExpressionAttributeNames: { "#activityId": "activityId", "#active": "active" },
-      ExpressionAttributeValues: { ":activityId": item.activityId, ":active": 1 },
-      IndexName: "ActivityIndex",
-      KeyConditionExpression: "#activityId = :activityId",
-      FilterExpression: "#active = :active",
-      Select: "COUNT",
-    };
-
-    const [plansResults, verificationsResults, surveysResults, deskResults]: [
+    const [plansResults, verificationsResults]: [
       GetCommandOutput,
-      GetCommandOutput,
-      QueryCommandOutput,
-      QueryCommandOutput
+      GetCommandOutput
     ] = await Promise.all([
       await dynamoDBClient.send(new GetCommand(plansParams)),
       await dynamoDBClient.send(new GetCommand(verificationsParams)),
-      await dynamoDBClient.send(new QueryCommand(surveysParams) ),
-      await dynamoDBClient.send(new QueryCommand(deskParams))
     ]);
     item.plan = plansResults.Item;
     item.verification = verificationsResults.Item;
-    item.surveys = surveysResults.Items || [];
-    item.desk = deskResults.Count;
 
-    const registrationsParams: QueryCommandInput = {
-      TableName: activitiesRegisterTable,
-      ExpressionAttributeNames: {
-        "#registrationId": "registrationId",
-        "#activityId": "activityId",
-        "#confirmed": "confirmed",
-      },
-      ExpressionAttributeValues: { ":activityId": item.activityId },
-      IndexName: "ActivityIndex",
-      KeyConditionExpression: "#activityId = :activityId",
-      ProjectionExpression: "#registrationId, #activityId, #confirmed",
-    };
-    let registrationsScanComplete = false;
-    let registrations = 0;
-    let registersConfirmed = 0;
-    while (!registrationsScanComplete) {
-      const registrationsResults = await dynamoDBClient.send(
-        new QueryCommand(registrationsParams)
-      );
-      registrations += registrationsResults?.Items?.length || 0;
-      (registrationsResults?.Items || []).forEach((item) => {
-        if (item.confirmed && item.confirmed !== "") registersConfirmed++;
-      });
-      if (registrationsResults.LastEvaluatedKey) {
-        registrationsParams.ExclusiveStartKey =
-          registrationsResults.LastEvaluatedKey;
-      } else {
-        registrationsScanComplete = true;
-      }
-    }
-    item.registers = registrations;
-    item.registersConfirmed = registersConfirmed;
+    const deskResults = await db
+      .selectFrom("activities_desk")
+      .select(({ fn }) => [fn.count<number>("deskId").as("desk_count")])
+      .where("activityId", "=", item.activityId)
+      .where("active", "=", true)
+      .execute();
+
+    item.desk = deskResults?.[0]?.desk_count;
+
+    const registerResults = await db
+      .selectFrom("activities_register")
+      .select([
+        sql<number>`count(registrationId)`.as("registration_count"),
+        "confirmed",
+      ])
+      .where("activityId", "=", item.activityId)
+      .groupBy("confirmed")
+      .execute();
+
+    item.registers = registerResults.reduce((acc, cur) => acc + cur.registration_count, 0);
+    item.registersConfirmed = registerResults.find(x => x.confirmed)?.registration_count;
+
+    item.surveys = [];
 
     if (item.image) {
       const url = await getSignedUrl(

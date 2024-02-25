@@ -50,14 +50,23 @@ const Gift = () => {
   const [registration, setRegistration] = useState();
   const [deliver, setDeliver] = useState(false);
 
+  const resetMessages = () => {
+    setError("");
+    setSuccess("");
+  };
+
   const selectRandomImage = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * images.length);
     setSelectedImage(images[randomIndex]);
   }, []);
 
+  const showRegistrationValue = (data) => {
+    if (data.startsWith("+55")) return maskPhone(data.slice(3));
+    return data;
+  };
+
   const handleReset = () => {
-    setError("");
-    setSuccess("");
+    resetMessages();
     setCheckPhone({ phoneCode: "", phone: "" });
     setCheckEmail({ email: "" });
     setRegistration();
@@ -72,6 +81,7 @@ const Gift = () => {
   }, []);
 
   const handleDeliver = async () => {
+    resetMessages();
     setLoading(true);
     const deliverResponse = await desk.deliver(activity.activityId, {
       registrationId: registration.registrationId,
@@ -97,8 +107,8 @@ const Gift = () => {
   };
 
   const handleSubmit = async (e) => {
-    setError("");
     e.preventDefault();
+    resetMessages();
     const payload = {
       token: state.token,
       hash: "",
@@ -192,7 +202,9 @@ const Gift = () => {
                       <div className="mt-4 flex flex-grow">
                         <InputField
                           disabled={loading}
-                          required={activity.verification === "SMS" ? true : false}
+                          required={
+                            activity.verification === "SMS" ? true : false
+                          }
                           autocomplete="phone"
                           placeholder={t("phone")}
                           value="phone"
@@ -206,7 +218,9 @@ const Gift = () => {
                     <div className="w-full mt-4 flex flex-grow">
                       <InputField
                         disabled={loading}
-                        required={activity.verification !== "SMS" ? true : false}
+                        required={
+                          activity.verification !== "SMS" ? true : false
+                        }
                         autocomplete="email"
                         type="email"
                         placeholder={t("email")}
@@ -233,7 +247,9 @@ const Gift = () => {
                     <>
                       <div className="w-full flex flex-row justify-evenly items-center gap-4">
                         <div className="text-lg font-semibold">
-                          {registration.activityRegisterHash.split("#")[1]}
+                          {showRegistrationValue(
+                            registration.activityRegisterHash.split("#")[1]
+                          )}
                         </div>
                         <span
                           className={`px-3 py-1.5 text-lg font-bold text-center inline-block leading-none whitespace-nowrap rounded-lg ${
@@ -252,7 +268,9 @@ const Gift = () => {
                       <div className="w-full sm?w-1/2 mt-4">
                         <button
                           data-testid="desk-gift-button"
-                          disabled={!registration.confirmed}
+                          disabled={
+                            !registration.confirmed || registration.gift
+                          }
                           type="button"
                           className={`w-full px-6 py-2 font-medium tracking-wide capitalize rounded-lg ${
                             seeRegisterCanReceiveGift(registration) ===

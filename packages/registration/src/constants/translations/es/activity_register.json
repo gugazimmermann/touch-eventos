@@ -21,6 +21,7 @@
   "agree_error": "Es necesario aceptar los términos para realizar el registro.",
   "register": "Registrar",
   "register_error": "Ocurrió un error al guardar el registro, intente nuevamente.",
+  "already_registered": "Ya registrado.",
   "visitor_gift": "¡Retire su obsequio después del registro!",
   "raffle_type_survey": "¡Participe en la Encuesta para competir en el Sorteo Final!",
   "raffle_type_all": "¡Participe en el Sorteo Final!",

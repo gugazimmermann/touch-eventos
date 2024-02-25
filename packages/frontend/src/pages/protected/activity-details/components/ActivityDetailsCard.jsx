@@ -106,14 +106,14 @@ const ActivityDetailsCard = ({ data }) => {
                       {t("activity_details_card_details_visitors_gift_description")}{" "}
                       <Us className="w-5 h-5" />
                     </td>
-                    <td className="py-2">{data.visitorGiftTextPTBR}</td>
+                    <td className="py-2">{data.visitorGiftTextEN}</td>
                   </tr>
                   <tr className="border-b">
                     <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
                       {t("activity_details_card_details_visitors_gift_description")}{" "}
                       <Es className="w-5 h-5" />
                     </td>
-                    <td className="py-2">{data.visitorGiftTextPTBR}</td>
+                    <td className="py-2">{data.visitorGiftTextES}</td>
                   </tr>
                 </>
               )}

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
-import { getTime, format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import ROUTES from "../../../constants/routes";
 import { activity } from "../../../services";
 import { ArrowBackCircle } from "../../../icons";
@@ -55,7 +55,7 @@ const ActivityDetailsDesk = () => {
       deskId: uuidv4(),
       user: values.user,
       accessCode: values.accessCode,
-      createdAt: `${getTime(new Date())}`,
+      createdAt: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`,
     };
     await activity.saveDesk(activityId, payload);
     setValues({
@@ -71,12 +71,12 @@ const ActivityDetailsDesk = () => {
         type="button"
         onClick={() => handleChangeStatus(deskId)}
         className={`${
-          status === 1
+          status
             ? "bg-success-100 text-success-500"
             : "bg-danger-100 text-danger-500"
         } ml-2 inline-block whitespace-nowrap rounded-lg text-center align-baseline text-sm px-2 py-1 font-bold leading-none`}
       >
-        {status === 1
+        {status
           ? t("activity_details_desk_table_gift_status_active")
           : t("activity_details_desk_table_gift_status_inactive")}
       </button>
@@ -90,7 +90,7 @@ const ActivityDetailsDesk = () => {
   }, [activityId, getData]);
 
   return (
-    <section className="w-full px-4">
+    <section className="w-full px-4 mb-8">
       {error && <Alert message={error} type="danger" />}
       <AdminTopNav title={t("activity_details_title")} />
       <div className="flex flex-col justify-start items-start gap-4">
@@ -178,10 +178,12 @@ const ActivityDetailsDesk = () => {
                                 {d.gifts}
                               </td>
                               <td className="whitespace-nowrap p-2">
-                                {format(
-                                  new Date(parseInt(d.createdAt, 10)),
-                                  "dd/MM/yy HH:mm"
-                                )}
+                                {d.createdAt
+                                  ? format(
+                                      parseISO(d.createdAt.replace(" ", "T")),
+                                      "dd/MM/yy HH:mm"
+                                    )
+                                  : ""}
                               </td>
                               <td className="whitespace-nowrap p-2">
                                 {handleStatus(d.active, d.deskId)}

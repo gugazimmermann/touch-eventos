@@ -9,22 +9,37 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Kysely } from "kysely";
+import { DataApiDialect } from "kysely-data-api";
+import { RDSData } from "@aws-sdk/client-rds-data";
+import { RDS } from "sst/node/rds";
 import { dynamoDBClient, s3Client } from "../aws-clients";
-import { error } from "src/error";
+import { IActivitiesRegister } from "../database";
+import { error } from "../error";
+
+export interface Database {
+  activities_register: IActivitiesRegister;
+}
+
+const db = new Kysely<Database>({
+  dialect: new DataApiDialect({
+    mode: "mysql",
+    driver: {
+      database: RDS.Database.defaultDatabaseName,
+      secretArn: RDS.Database.secretArn,
+      resourceArn: RDS.Database.clusterArn,
+      client: new RDSData({}),
+    },
+  }),
+});
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
 ) => {
   const activitiesTable = process.env.ACTIVITIES_TABLE_NAME;
   const verificationsTable = process.env.VERIFICATIONS_TABLE_NAME;
-  const activitiesRegisterTable = process.env.ACTIVITIES_REGISTER_TABLE_NAME;
   const activitiesImagesBucket = process.env.ACTIVITIES_IMAGES_BUCKET;
-  if (
-    !activitiesTable ||
-    !verificationsTable ||
-    !activitiesRegisterTable ||
-    !activitiesImagesBucket
-  )
+  if (!activitiesTable || !verificationsTable || !activitiesImagesBucket)
     return error(500, "Internal Server Error");
   const userId = event.requestContext.authorizer.jwt.claims.sub;
   if (!userId) return error(400, "Bad Request: Missing User Id");
@@ -85,22 +100,19 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
           );
         }
 
-        const registrationsParams: QueryCommandInput = {
-          TableName: activitiesRegisterTable,
-          ExpressionAttributeNames: { "#activityId": "activityId" },
-          ExpressionAttributeValues: { ":activityId": item.activityId },
-          IndexName: "ActivityIndex",
-          KeyConditionExpression: "#activityId = :activityId",
-          Select: "COUNT",
-        };
-        const registrationsResults: QueryCommandOutput =
-          await dynamoDBClient.send(new QueryCommand(registrationsParams));
+       const visitorsCount = await db
+          .selectFrom("activities_register")
+          .select(({ fn }) => [
+            fn.count<number>("registrationId").as("registration_count"),
+          ])
+          .where("activityId", "=", item.activityId)
+          .execute();
 
         const { payment, ...itemRest } = item;
         userActivities.push({
           ...itemRest,
           payment: payment?.status,
-          visitors: registrationsResults.Count,
+          visitors: visitorsCount?.[0]?.registration_count,
           logo: url,
         });
       }

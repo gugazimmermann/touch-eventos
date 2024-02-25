@@ -1,9 +1,10 @@
 import { SSTConfig } from "sst";
+import { BucketdStack } from "./stacks/BucketStack";
 import { DynamoDBStack } from "./stacks/DynamoDBStack";
+import { DatabaseStack } from "./stacks/DatabaseStack";
 import { CognitoStack } from "./stacks/CognitoStack";
 import { ApiStack } from "./stacks/ApiStack";
 import { SiteApiStack } from "./stacks/SiteApiStack";
-import { BucketdStack } from "./stacks/BucketStack";
 import { FrontendStack } from "./stacks/FrontendStack";
 
 export default {
@@ -17,6 +18,7 @@ export default {
     app
       .stack(BucketdStack)
       .stack(DynamoDBStack)
+      .stack(DatabaseStack)
       .stack(CognitoStack)
       .stack(ApiStack)
       .stack(SiteApiStack)

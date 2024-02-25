@@ -26,8 +26,15 @@ const Login = () => {
   const [activity, setActivity] = useState();
   const [values, setValues] = useState(initialValues);
 
+  const resetMessages = () => {
+    setError("");
+    setInfo("");
+    setWarning("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    resetMessages();
     setLoading(true);
     try {
       const result = await desk.access(activity.activityId, values);
@@ -47,6 +54,7 @@ const Login = () => {
 
   const getData = useCallback(
     async (slug) => {
+      resetMessages();
       setLoading(true);
       try {
         const activityData = await desk.getActivityBySlug(slug);
@@ -116,7 +124,10 @@ const Login = () => {
         {warning && <Alert message={warning} type="warning" center={true} />}
         {loading && <Loading size="w-20 h-20" />}
         {activity && (
-          <form className="w-full px-4 text-center sm:text-left" onSubmit={handleSubmit}>
+          <form
+            className="w-full px-4 text-center sm:text-left"
+            onSubmit={handleSubmit}
+          >
             <h1 className="text-3xl font-bold">{activity?.name}</h1>
             <div className="my-4">
               <label className="font-semibold mb-4" htmlFor="username">

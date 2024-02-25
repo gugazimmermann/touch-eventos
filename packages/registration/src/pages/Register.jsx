@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { endOfDay, getTime, isAfter, isBefore, startOfDay } from "date-fns";
+import { endOfDay, isAfter, isBefore, startOfDay } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
 import * as register from "../services/register";
@@ -47,7 +47,7 @@ const Register = () => {
       email: "",
       phone: "",
       language: i18n.language,
-      createdAt: `${getTime(new Date())}`,
+      createdAt: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`
     };
     if (activity.verification === "SMS") {
       const phone = registrationPhone.phone.replace(/\D+/g, "");
@@ -71,7 +71,11 @@ const Register = () => {
         `/${activity.slug}/${registerResponse.registrationId}/${registerResponse.language}`
       );
     } else {
-      setError(t("register_error"));
+      if (registerResponse.error === "Already Registered") {
+        setError(t("already_registered"));
+      } else {
+        setError(t("register_error"));
+      }
     }
     setLoading(false);
   };

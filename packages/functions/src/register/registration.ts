@@ -1,14 +1,7 @@
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
 import {
   GetCommand,
-  PutCommand,
-  QueryCommand,
-  UpdateCommand,
   type GetCommandOutput,
-  type PutCommandInput,
-  type QueryCommandInput,
-  type QueryCommandOutput,
-  type UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 import {
   SendEmailCommand,
@@ -19,16 +12,36 @@ import {
   SetSMSAttributesCommand,
   type PublishCommandOutput,
 } from "@aws-sdk/client-sns";
+import { Kysely } from "kysely";
+import { DataApiDialect } from "kysely-data-api";
+import { RDSData } from "@aws-sdk/client-rds-data";
+import { RDS } from "sst/node/rds";
+import { IActivitiesRegister } from "../database";
 import { dynamoDBClient, sesClient, snsClient } from "../aws-clients";
 import { error } from "../error";
+
+export interface Database {
+  activities_register: IActivitiesRegister;
+}
+
+const db = new Kysely<Database>({
+  dialect: new DataApiDialect({
+    mode: "mysql",
+    driver: {
+      database: RDS.Database.defaultDatabaseName,
+      secretArn: RDS.Database.secretArn,
+      resourceArn: RDS.Database.clusterArn,
+      client: new RDSData({}),
+    },
+  }),
+});
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
 ) => {
   const activitiesTable = process.env.ACTIVITIES_TABLE_NAME;
   const verificationsTable = process.env.VERIFICATIONS_TABLE_NAME;
-  const activitiesRegisterTable = process.env.ACTIVITIES_REGISTER_TABLE_NAME;
-  if (!activitiesTable || !verificationsTable || !activitiesRegisterTable)
+  if (!activitiesTable || !verificationsTable)
     return error(500, "Internal Server Error");
 
   const activityId = event?.pathParameters?.id;
@@ -45,7 +58,8 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         Key: { activityId },
       })
     );
-    if (!activitiesResults.Item) return error(404, "Not Found: Activity not found");
+    if (!activitiesResults.Item)
+      return error(404, "Not Found: Activity not found");
     const activity = activitiesResults.Item;
 
     // get verification
@@ -81,44 +95,32 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
     const registerItem = {
       registrationId: data.registrationId,
       activityId: activityId,
-      email: data?.email || "-",
-      phone: data?.phone || "-",
+      email: data?.email || null,
+      phone: data?.phone || null,
       language: data.language,
       code,
-      confirmed: "",
-      gift: "",
+      confirmed: null,
+      gift: null,
+      deskId: null,
       createdAt: data.createdAt,
       activityRegisterHash,
     };
 
     // verify if already registered
-    const verifyRegisterParams: QueryCommandInput = {
-      TableName: activitiesRegisterTable,
-      ExpressionAttributeNames: {
-        "#activityRegisterHash": "activityRegisterHash",
-        "#activityId": "activityId",
-      },
-      ExpressionAttributeValues: {
-        ":activityRegisterHash": activityRegisterHash,
-        ":activityId": activityId,
-      },
-      IndexName: "ActivityRegisterHash",
-      KeyConditionExpression: "#activityRegisterHash = :activityRegisterHash",
-      FilterExpression: "#activityId = :activityId",
-    };
-    const verifyRegisterResults: QueryCommandOutput = await dynamoDBClient.send(
-      new QueryCommand(verifyRegisterParams)
-    );
+    const verifyRegister = await db
+      .selectFrom("activities_register")
+      .select(["registrationId", "confirmed"])
+      .where("registrationId", "=", data.registrationId)
+      .where("activityId", "=", activityId)
+      .execute();
 
     // registration already in database
     let alreadyExists = false;
-    if (verifyRegisterResults.Items?.length) {
+    if (verifyRegister.length) {
       // registration already confirmed
-      if (verifyRegisterResults.Items[0].confirmed)
-        return error(400, "Already Registered");
+      if (verifyRegister[0].confirmed) return error(400, "Already Registered");
       alreadyExists = true;
-      registerItem.registrationId =
-        verifyRegisterResults.Items[0].registrationId;
+      registerItem.registrationId = verifyRegister[0].registrationId;
     }
 
     // messages
@@ -174,36 +176,31 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
 
     // sent, save the registration if not exists, update if exists
     if (!alreadyExists) {
-      const registerParams: PutCommandInput = {
-        TableName: activitiesRegisterTable,
-        Item: registerItem,
-      };
-      await dynamoDBClient.send(new PutCommand(registerParams));
+      await db
+        .insertInto("activities_register")
+        .values({
+          registrationId: registerItem.registrationId,
+          activityId: registerItem.activityId,
+          email: registerItem.email,
+          phone: registerItem.phone,
+          language: registerItem.language,
+          code: registerItem.code,
+          confirmed: registerItem.confirmed,
+          gift: registerItem.gift,
+          deskId: registerItem.deskId,
+          createdAt: data.createdAt,
+          activityRegisterHash: registerItem.activityRegisterHash,
+        })
+        .executeTakeFirst();
     } else {
-      const registerUpdateParams: UpdateCommandInput = {
-        TableName: activitiesRegisterTable,
-        Key: { registrationId: registerItem.registrationId },
-        UpdateExpression:
-          "SET #email = :email, #phone = :phone, #language = :language, #code = :code, #confirmed = :confirmed, #createdAt = :createdAt",
-        ExpressionAttributeNames: {
-          "#email": "email",
-          "#phone": "phone",
-          "#language": "language",
-          "#code": "code",
-          "#confirmed": "confirmed",
-          "#createdAt": "createdAt",
-        },
-        ExpressionAttributeValues: {
-          ":email": registerItem.email,
-          ":phone": registerItem.phone,
-          ":language": registerItem.language,
-          ":code": registerItem.code,
-          ":confirmed": registerItem.confirmed,
-          ":createdAt": registerItem.createdAt,
-        },
-        ReturnValues: "ALL_NEW",
-      };
-      await dynamoDBClient.send(new UpdateCommand(registerUpdateParams));
+      await db
+        .updateTable("activities_register")
+        .set({
+          code: registerItem.code,
+          language: registerItem.language,
+        })
+        .where("registrationId", "=", registerItem.registrationId)
+        .executeTakeFirst();
     }
 
     return {

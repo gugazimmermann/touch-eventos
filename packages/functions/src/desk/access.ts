@@ -1,20 +1,33 @@
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
 import * as jwt from "jsonwebtoken";
-import {
-  QueryCommand,
-  type QueryCommandInput,
-  type QueryCommandOutput,
-} from "@aws-sdk/lib-dynamodb";
-import { dynamoDBClient } from "../aws-clients";
+import { Kysely } from "kysely";
+import { DataApiDialect } from "kysely-data-api";
+import { RDSData } from "@aws-sdk/client-rds-data";
+import { RDS } from "sst/node/rds";
+import { IActivitiesDesk } from "../database";
 import { error } from "../error";
+
+export interface Database {
+  activities_desk: IActivitiesDesk;
+}
+
+const db = new Kysely<Database>({
+  dialect: new DataApiDialect({
+    mode: "mysql",
+    driver: {
+      database: RDS.Database.defaultDatabaseName,
+      secretArn: RDS.Database.secretArn,
+      resourceArn: RDS.Database.clusterArn,
+      client: new RDSData({}),
+    },
+  }),
+});
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
 ) => {
-  const activitiesDeskTable = process.env.ACTIVITIES_DESK_TABLE_NAME;
   const JWT_SECRET = process.env.JWT_SECRET;
-  if (!activitiesDeskTable || !JWT_SECRET)
-    return error(500, "Internal Server Error");
+  if (!JWT_SECRET) return error(500, "Internal Server Error");
 
   const activityId = event?.pathParameters?.id;
   if (!activityId) return error(400, "Bad Request: Missing Activity Id");
@@ -24,29 +37,19 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
     return error(400, "Bad Request: Missing Data");
 
   try {
-    const deskParams: QueryCommandInput = {
-      TableName: activitiesDeskTable,
-      ExpressionAttributeNames: {
-        "#deskId": "deskId",
-        "#user": "user",
-        "#accessCode": "accessCode",
-        "#active": "active",
-      },
-      ExpressionAttributeValues: { ":user": data.username },
-      IndexName: "UserIndex",
-      KeyConditionExpression: "#user = :user",
-      ProjectionExpression: "#deskId, #user, #accessCode, #active",
-    };
-    const deskResults: QueryCommandOutput = await dynamoDBClient.send(
-      new QueryCommand(deskParams)
-    );
-    if (!deskResults.Items?.length)
-      return error(404, "Not Found: User not found");
-    const item = deskResults.Items[0];
+    const deskResults = await db
+      .selectFrom("activities_desk")
+      .select(["deskId", "user", "accessCode", "active"])
+      .where("user", "=", data.username)
+      .where("activityId", "=", activityId)
+      .execute();
+
+    if (!deskResults.length) return error(404, "Not Found: User not found");
+    const item = deskResults[0];
 
     if (item.accessCode !== data.accessCode)
       return error(401, "Unauthorized: Wrong Access Code");
-    if (item.active !== 1) return error(401, "Unauthorized: User Inactive");
+    if (!item.active) return error(401, "Unauthorized: User Inactive");
     const token = jwt.sign({ id: item.deskId }, JWT_SECRET, {
       expiresIn: 86400, // expires in 1 day
     });

@@ -12,4 +12,6 @@ node_modules
 .DS_Store
 
 # local env files
-.env*
+.env.dev
+.env.production
+fake-data/*.json

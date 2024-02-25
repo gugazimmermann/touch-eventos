@@ -144,75 +144,6 @@ export function DynamoDBStack({ stack }: StackContext) {
     },
   });
 
-  const activitiesRegisterTable = new Table(stack, "ActivitiesRegister", {
-    fields: {
-      registrationId: "string",
-      activityId: "string",
-      email: "string",
-      phone: "string",
-      language: "string",
-      code: "string",
-      confirmed: "string",
-      gift: "string",
-      deskId: "string",
-      createdAt: "string",
-      activityRegisterHash: "string",
-    },
-    primaryIndex: { partitionKey: "registrationId" },
-    globalIndexes: {
-      ActivityIndex: { partitionKey: "activityId" },
-      ActivityDateIndex: { partitionKey: "activityId", sortKey: "createdAt" },
-      ActivityRegisterHash: { partitionKey: "activityRegisterHash" },
-      DeskIdIndex: { partitionKey: "deskId" },
-    },
-    cdk: {
-      table: {
-        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
-      },
-    },
-  });
-
-  const activitiesSurveyTable = new Table(stack, "ActivitiesSurvey", {
-    fields: {
-      surveyId: "string",
-      activityId: "string",
-      language: "string",
-      createdAt: "string",
-    },
-    primaryIndex: { partitionKey: "surveyId" },
-    globalIndexes: {
-      ActivityIndex: { partitionKey: "activityId" },
-      ActivityDateIndex: { partitionKey: "activityId", sortKey: "createdAt" },
-      LanguageIndex: { partitionKey: "language" },
-    },
-    cdk: {
-      table: {
-        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
-      },
-    },
-  });
-
-  const activitiesDeskTable = new Table(stack, "ActivitiesDesk", {
-    fields: {
-      deskId: "string",
-      activityId: "string",
-      user: "string",
-      accessCode: "string",
-      createdAt: "string",
-      active: "number",
-    },
-    primaryIndex: { partitionKey: "deskId" },
-    globalIndexes: {
-      ActivityIndex: { partitionKey: "activityId" },
-      UserIndex: { partitionKey: "user" },
-    },
-    cdk: {
-      table: {
-        removalPolicy: stack.stage === "production"  ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
-      },
-    },
-  });
-
   stack.addOutputs({
     PlansTableName: plansTable.tableName,
     VerificationsTableName: verificationsTable.tableName,
@@ -220,9 +151,6 @@ export function DynamoDBStack({ stack }: StackContext) {
     UsersSubscriptionTable: usersSubscriptionTable.tableName,
     PaymentsTableName: paymentsTable.tableName,
     ActivitiesTableName: activitiesTable.tableName,
-    ActivitiesRegisterTableName: activitiesRegisterTable.tableName,
-    ActivitiesSurveyTable: activitiesSurveyTable.tableName,
-    ActivitiesDeskTable: activitiesDeskTable.tableName,
   });
 
   return {
@@ -232,8 +160,5 @@ export function DynamoDBStack({ stack }: StackContext) {
     usersSubscriptionTable,
     paymentsTable,
     activitiesTable,
-    activitiesRegisterTable,
-    activitiesSurveyTable,
-    activitiesDeskTable
   };
 }

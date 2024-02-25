@@ -21,6 +21,7 @@
   "agree_error": "You must accept the terms to register.",
   "register": "Register",
   "register_error": "An error occurred while saving the registration, please try again.",
+  "already_registered": "Already Registered",
   "visitor_gift": "Claim your gift after registering!",
   "raffle_type_survey": "Participate in the Survey to enter the Final Draw!",
   "raffle_type_all": "Enter the Final Draw!",

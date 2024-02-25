@@ -1,5 +1,5 @@
 {
-  "production-touch-eventos-Plans": [
+  "dev-touch-eventos-Plans": [
     {
       "PutRequest": {
         "Item": {
@@ -7,8 +7,8 @@
           "order": { "N": "1" },
           "type": { "S": "Atividade Única" },
           "duration": { "S": "3 dias" },
-          "maxDays": { "N": "3"},
-          "maxDiff": { "N": "10"},
+          "maxDays": { "N": "3" },
+          "maxDiff": { "N": "10" },
           "description": {
             "S": "Dados armazenados por 30 dias após término."
           },
@@ -25,8 +25,8 @@
           "order": { "N": "2" },
           "type": { "S": "Atividade Única" },
           "duration": { "S": "10 dias" },
-          "maxDays": { "N": "10"},
-          "maxDiff": { "N": "20"},
+          "maxDays": { "N": "10" },
+          "maxDiff": { "N": "20" },
           "description": {
             "S": "Dados armazenados por 30 dias após término."
           },
@@ -43,8 +43,8 @@
           "order": { "N": "3" },
           "type": { "S": "Atividade Única" },
           "duration": { "S": "30 dias" },
-          "maxDays": { "N": "30"},
-          "maxDiff": { "N": "40"},
+          "maxDays": { "N": "30" },
+          "maxDiff": { "N": "40" },
           "description": {
             "S": "Dados armazenados por 30 dias após término."
           },
@@ -61,8 +61,8 @@
           "order": { "N": "4" },
           "type": { "S": "Múltiplas Atividades" },
           "duration": { "S": "Semestral" },
-          "maxDays": { "N": "30"},
-          "maxDiff": { "N": "40"},
+          "maxDays": { "N": "30" },
+          "maxDiff": { "N": "40" },
           "description": {
             "S": "Sem limite de atividades. Dados não são perdidos. Opção de comparar atividades."
           },
@@ -79,12 +79,40 @@
           "order": { "N": "5" },
           "type": { "S": "Múltiplas Atividades" },
           "duration": { "S": "Anual" },
-          "maxDays": { "N": "30"},
-          "maxDiff": { "N": "40"},
+          "maxDays": { "N": "30" },
+          "maxDiff": { "N": "40" },
           "description": {
             "S": "Sem limite de atividades. Dados não são perdidos. Opção de comparar atividades."
           },
           "price": { "S": "2187.00" },
+          "createdAt": { "S": "1700922456982" },
+          "active": { "N": "1" }
+        }
+      }
+    }
+  ],
+  "dev-touch-eventos-Verifications": [
+    {
+      "PutRequest": {
+        "Item": {
+          "verificationId": { "S": "1af41119-6fac-486e-9bf6-910f5635ab32" },
+          "order": { "N": "1" },
+          "type": { "S": "EMAIL" },
+          "description": { "S": "Sem custo extra" },
+          "price": { "S": "0.00" },
+          "createdAt": { "S": "1700922456982" },
+          "active": { "N": "1" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "verificationId": { "S": "681365db-f935-4b83-bf3a-ced700a6ffc5" },
+          "order": { "N": "2" },
+          "type": { "S": "SMS" },
+          "description": { "S": "Cobrado separadamente" },
+          "price": { "S": "0.15" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }

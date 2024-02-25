@@ -1,10 +1,13 @@
 import { StackContext, use, Api } from "sst/constructs";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
-import { DynamoDBStack } from "./DynamoDBStack";
-import { CognitoStack } from "./CognitoStack";
 import { BucketdStack } from "./BucketStack";
+import { CognitoStack } from "./CognitoStack";
+import { DynamoDBStack } from "./DynamoDBStack";
+import { DatabaseStack } from "./DatabaseStack";
 
 export function ApiStack({ stack }: StackContext) {
+  const { activitiesImagesBucket } = use(BucketdStack);
+  const { cognito } = use(CognitoStack);
   const {
     plansTable,
     verificationsTable,
@@ -12,25 +15,24 @@ export function ApiStack({ stack }: StackContext) {
     usersSubscriptionTable,
     paymentsTable,
     activitiesTable,
-    activitiesRegisterTable,
-    activitiesSurveyTable,
-    activitiesDeskTable,
   } = use(DynamoDBStack);
-  const { cognito } = use(CognitoStack);
-  const { activitiesImagesBucket } = use(BucketdStack);
+  const { database } = use(DatabaseStack);
 
   const api = new Api(stack, "Api", {
-    customDomain: stack.stage === "production" ? {
-      domainName: "api.toucheventos.com.br",
-      hostedZone: "toucheventos.com.br",
-      cdk: {
-        certificate: Certificate.fromCertificateArn(
-          stack,
-          "RegistrationCertificate",
-          String(process.env.DOMAIN_CERT_ARM)
-        ),
-      },
-    }: undefined,
+    customDomain:
+      stack.stage === "production"
+        ? {
+            domainName: "api.toucheventos.com.br",
+            hostedZone: "toucheventos.com.br",
+            cdk: {
+              certificate: Certificate.fromCertificateArn(
+                stack,
+                "RegistrationCertificate",
+                String(process.env.DOMAIN_CERT_ARM)
+              ),
+            },
+          }
+        : undefined,
     authorizers: {
       jwt: {
         type: "user_pool",
@@ -71,7 +73,9 @@ export function ApiStack({ stack }: StackContext) {
       "GET /user/subscription": {
         function: {
           handler: "packages/functions/src/user/user-subscription.handler",
-          environment: { USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName },
+          environment: {
+            USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
+          },
           permissions: [usersSubscriptionTable],
         },
       },
@@ -88,7 +92,8 @@ export function ApiStack({ stack }: StackContext) {
       },
       "POST /payment/create-payment-intent": {
         function: {
-          handler: "packages/functions/src/payment/create-payment-intent.handler",
+          handler:
+            "packages/functions/src/payment/create-payment-intent.handler",
           environment: {
             PLAN_TABLE_NAME: plansTable.tableName,
             VERIFICATION_TABLE_NAME: verificationsTable.tableName,
@@ -115,7 +120,9 @@ export function ApiStack({ stack }: StackContext) {
       "GET /verifications": {
         function: {
           handler: "packages/functions/src/verifications/verifications.handler",
-          environment: { VERIFICATIONS_TABLE_NAME: verificationsTable.tableName },
+          environment: {
+            VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
+          },
           permissions: [verificationsTable],
         },
       },
@@ -123,7 +130,9 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             "packages/functions/src/verifications/verification-by-id.handler",
-          environment: { VERIFICATIONS_TABLE_NAME: verificationsTable.tableName },
+          environment: {
+            VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
+          },
           permissions: [verificationsTable],
         },
       },
@@ -133,15 +142,14 @@ export function ApiStack({ stack }: StackContext) {
           environment: {
             ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
             ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
           },
           permissions: [
             activitiesTable,
             verificationsTable,
-            activitiesRegisterTable,
             activitiesImagesBucket,
           ],
+          bind: [database],
         },
       },
       "GET /activities/{activityId}": {
@@ -151,20 +159,15 @@ export function ApiStack({ stack }: StackContext) {
             ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             PLANS_TABLE_NAME: plansTable.tableName,
             VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
-            ACTIVITIES_SURVEY_TABLE_NAME: activitiesSurveyTable.tableName,
-            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
             ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
           },
           permissions: [
             activitiesTable,
             plansTable,
             verificationsTable,
-            activitiesRegisterTable,
-            activitiesSurveyTable,
-            activitiesDeskTable,
             activitiesImagesBucket,
           ],
+          bind: [database],
         },
       },
       "GET /activities/verify-slug/{slug}": {
@@ -176,22 +179,16 @@ export function ApiStack({ stack }: StackContext) {
       },
       "GET /activities/{activityId}/registers": {
         function: {
-          handler: "packages/functions/src/activities/register/registers-by-activity-id.handler",
-          environment: {
-            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
-          },
-          permissions: [activitiesTable, activitiesRegisterTable],
+          handler:
+            "packages/functions/src/activities/register/registers-by-activity-id.handler",
+            bind: [database],
         },
       },
       "GET /activities/{activityId}/desk": {
         function: {
-          handler: "packages/functions/src/activities/desk/desks-by-activity-id.handler",
-          environment: {
-            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
-            ACTIVITIES_REGISTER_TABLE_NAME: activitiesRegisterTable.tableName,
-          },
-          permissions: [activitiesDeskTable, activitiesRegisterTable],
+          handler:
+            "packages/functions/src/activities/desk/desks-by-activity-id.handler",
+            bind: [database],
         },
       },
       "POST /activities/create": {
@@ -203,7 +200,12 @@ export function ApiStack({ stack }: StackContext) {
             PLANS_TABLE_NAME: plansTable.tableName,
             USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
           },
-          permissions: [activitiesTable, paymentsTable, plansTable, usersSubscriptionTable],
+          permissions: [
+            activitiesTable,
+            paymentsTable,
+            plansTable,
+            usersSubscriptionTable,
+          ],
         },
       },
       "POST /activities/{activityId}/image": {
@@ -219,20 +221,13 @@ export function ApiStack({ stack }: StackContext) {
       "POST /activities/{activityId}/desk": {
         function: {
           handler: "packages/functions/src/activities/desk/desk-create.handler",
-          environment: {
-            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
-            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
-          },
-          permissions: [activitiesTable, activitiesDeskTable],
+          bind: [database],
         },
       },
       "PUT /activities/{activityId}/desk/{deskId}": {
         function: {
           handler: "packages/functions/src/activities/desk/desk-status.handler",
-          environment: {
-            ACTIVITIES_DESK_TABLE_NAME: activitiesDeskTable.tableName,
-          },
-          permissions: [activitiesDeskTable],
+          bind: [database],
         },
       },
     },
