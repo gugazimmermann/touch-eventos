@@ -16,7 +16,7 @@ import { maskCep } from "../../../helpers/mask";
 import {
   FormButton,
   InputField,
-  InputFieldAutoComplete,
+  // InputFieldAutoComplete,
   SelectField,
 } from "../../../components/form";
 import { CircleCheckFilled, Search, XCircle } from "../../../icons";
@@ -115,40 +115,71 @@ const NewActivityFormActivity = ({
 
   return (
     <form onSubmit={(e) => onSubmit(e)}>
-      <div className="grid grid-cols-2 gap-4">
-        <SelectField
-          disabled={loading || state.subscription?.planId}
-          required={true}
-          placeholder={t("new_activity_plans")}
-          value="planId"
-          values={values}
-          setValues={setValues}
-          options={activePlans.map((p) => ({
-            value: p.planId,
-            text: `${p.type} - ${p.duration} - ${formatValue(p.price)}`,
-          }))}
-          onBlur={() => showMessage()}
-        />
-        <DatePicker
-          {...datePickerConfig}
-          required={true}
-          value={activityDates}
-          onChange={setActivityDates}
-          minDate={startOfDay(new Date())}
-          placeholder={t("new_activity_dates")}
-          plugins={[<DatePanel header={t("new_activity_dates")} />]}
-        />
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="planId"
+          >
+           {t("new_activity_plans")}
+          </label>
+          <SelectField
+            className="mt-0"
+            disabled={loading || state.subscription?.planId}
+            required={true}
+            value="planId"
+            values={values}
+            setValues={setValues}
+            options={activePlans.map((p) => ({
+              value: p.planId,
+              text: `${p.type} - ${p.duration} - ${formatValue(p.price)}`,
+            }))}
+            onBlur={() => showMessage()}
+          />
+        </div>
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="activityDates"
+          >
+           {t("new_activity_dates")}
+          </label>
+          <DatePicker
+            {...datePickerConfig}
+            name="activityDates"
+            required={true}
+            value={activityDates}
+            onChange={setActivityDates}
+            minDate={startOfDay(new Date())}
+            plugins={[<DatePanel header={t("new_activity_dates_panel")} />]}
+          />
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <InputField
-          disabled={loading}
-          required={true}
-          placeholder={t("new_activity_name")}
-          value="name"
-          values={values}
-          setValues={setValues}
-        />
-        <div className="mt-4 flex flex-wrap items-stretch">
+
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="name"
+          >
+            {t("new_activity_name")}
+          </label>
+          <InputField
+            disabled={loading}
+            required={true}
+            value="name"
+            values={values}
+            setValues={setValues}
+            className="mt-0"
+          />
+        </div>
+        <div className="flex flex-wrap items-stretch">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="slug"
+          >
+             {t("new_activity_friendly_url")}
+          </label>
           <input
             className="block flex-auto px-4 py-2 text-text-700 placeholder-text-500 bg-white border-y border-l rounded-l-lg"
             disabled={loading}
@@ -156,7 +187,6 @@ const NewActivityFormActivity = ({
             name="slug"
             id="slug"
             type="text"
-            placeholder={t("URL Amigável")}
             value={values["slug"]}
             onChange={(e) => {
               setValues({ ...values, slug: e.target.value });
@@ -185,48 +215,81 @@ const NewActivityFormActivity = ({
                 <Search />
               )}
             </div>
-            <span>Verificar</span>
+            <span>{t("new_activity_friendly_url_verify")}</span>
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-4">
-        <ReactFlagsSelect
-          selected={values["addressCountry"]}
-          onSelect={(code) => setValues({ ...values, addressCountry: code })}
-          searchable
-          placeholder={t("account_address_country")}
-          searchPlaceholder={t("account_address_country")}
-          className="countrySelect"
-          disabled
-        />
-        <InputField
-          disabled={loading}
-          required={true}
-          placeholder={t("new_activity_address_zipcode")}
-          value="addressZipCode"
-          values={values}
-          setValues={setValues}
-          onBlur={(e) => handleCep(e.target.value)}
-          mask={maskCep}
-        />
-        <SelectField
-          disabled={loading}
-          required={true}
-          placeholder={t("new_activity_address_state")}
-          value="addressState"
-          values={values}
-          setValues={setValues}
-          options={STATESBR}
-          // onBlur={(e) => handleState(e.target.value)}
-        />
-        <InputField
-          disabled={loading}
-          required={true}
-          placeholder={t("new_activity_address_city")}
-          value="addressCity"
-          values={values}
-          setValues={setValues}
-        />
+
+      <div className="grid grid-cols-4 gap-4 mt-4">
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="addressCountry"
+          >
+            {t("new_activity_address_country")}
+          </label>
+          <ReactFlagsSelect
+            name="addressCountry"
+            selected={values["addressCountry"]}
+            onSelect={(code) => setValues({ ...values, addressCountry: code })}
+            searchable
+            searchPlaceholder={t("new_activity_address_country")}
+            className="countrySelect"
+            disabled
+          />
+        </div>
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="addressZipCode"
+          >
+            {t("new_activity_address_zipcode")}
+          </label>
+          <InputField
+            disabled={loading}
+            required={true}
+            value="addressZipCode"
+            values={values}
+            setValues={setValues}
+            onBlur={(e) => handleCep(e.target.value)}
+            mask={maskCep}
+            className="mt-0"
+          />
+        </div>
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="addressState"
+          >
+           {t("new_activity_address_state")}
+          </label>
+          <SelectField
+            disabled={loading}
+            required={true}
+            value="addressState"
+            values={values}
+            setValues={setValues}
+            options={STATESBR}
+            className="mt-0"
+            // onBlur={(e) => handleState(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="addressCity"
+          >
+            {t("new_activity_address_city")}
+          </label>
+          <InputField
+            disabled={loading}
+            required={true}
+            value="addressCity"
+            values={values}
+            setValues={setValues}
+            className="mt-0"
+          />
+        </div>
         {/* <InputFieldAutoComplete
           disabled={loading}
           required={true}
@@ -237,40 +300,75 @@ const NewActivityFormActivity = ({
           // suggestions={cities}
         /> */}
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <InputField
-          disabled={loading}
-          required={true}
-          placeholder={t("new_activity_address_street")}
-          value="addressStreet"
-          values={values}
-          setValues={setValues}
-        />
-        <InputField
-          disabled={loading}
-          placeholder={t("new_activity_address_number")}
-          value="addressNumber"
-          values={values}
-          setValues={setValues}
-        />
+
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="addressStreet"
+          >
+            {t("new_activity_address_street")}
+          </label>
+          <InputField
+            disabled={loading}
+            required={true}
+            value="addressStreet"
+            values={values}
+            setValues={setValues}
+            className="mt-0"
+          />
+        </div>
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="addressNumber"
+          >
+            {t("new_activity_address_number")}
+          </label>
+          <InputField
+            disabled={loading}
+            value="addressNumber"
+            values={values}
+            setValues={setValues}
+            className="mt-0"
+          />
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <InputField
-          disabled={loading}
-          required={true}
-          placeholder={t("new_activity_address_neighborhood")}
-          value="addressNeighborhood"
-          values={values}
-          setValues={setValues}
-        />
-        <InputField
-          disabled={loading}
-          placeholder={t("new_activity_address_complement")}
-          value="addressComplement"
-          values={values}
-          setValues={setValues}
-        />
+
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="addressNeighborhood"
+          >
+            {t("new_activity_address_neighborhood")}
+          </label>
+          <InputField
+            disabled={loading}
+            required={true}
+            value="addressNeighborhood"
+            values={values}
+            setValues={setValues}
+            className="mt-0"
+          />
+        </div>
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="addressComplement"
+          >
+            {t("new_activity_address_complement")}
+          </label>
+          <InputField
+            disabled={loading}
+            value="addressComplement"
+            values={values}
+            setValues={setValues}
+            className="mt-0"
+          />
+        </div>
       </div>
+      
       <div className="w-full flex flex-row mt-8">
         <div className="w-1/3 flex justify-center">
           <FormButton

@@ -7,10 +7,13 @@ const InputField = ({
   setValues,
   options,
   onBlur,
+  className,
 }) => {
   return (
     <select
-      className="block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg"
+      className={`block w-full px-4 py-2 text-text-700 placeholder-text-500 bg-white border rounded-lg ${
+        className ? className : "mt-4"
+      }`}
       disabled={disabled}
       required={required}
       name={value}

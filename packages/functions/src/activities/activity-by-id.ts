@@ -14,12 +14,17 @@ import { DataApiDialect } from "kysely-data-api";
 import { RDSData } from "@aws-sdk/client-rds-data";
 import { RDS } from "sst/node/rds";
 import { dynamoDBClient, s3Client } from "../aws-clients";
-import { IActivitiesRegister, IActivitiesDesk } from "../database";
+import {
+  IActivitiesRegister,
+  IActivitiesDesk,
+  IActivitiesQuestion,
+} from "../database";
 import { error } from "../error";
 
 export interface Database {
   activities_register: IActivitiesRegister;
   activities_desk: IActivitiesDesk;
+  activities_survey_question: IActivitiesQuestion;
 }
 
 const db = new Kysely<Database>({
@@ -114,10 +119,22 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       .groupBy("confirmed")
       .execute();
 
-    item.registers = registerResults.reduce((acc, cur) => acc + cur.registration_count, 0);
-    item.registersConfirmed = registerResults.find(x => x.confirmed)?.registration_count || 0;
+    item.registers = registerResults.reduce(
+      (acc, cur) => acc + cur.registration_count,
+      0
+    );
+    item.registersConfirmed =
+      registerResults.find((x) => x.confirmed)?.registration_count || 0;
 
-    item.surveys = [];
+    item.surveys = await db
+      .selectFrom("activities_survey_question")
+      .select("language")
+      .select(({ fn }) => [fn.count<number>("questionId").as("question_count")])
+      .where("language", "in", ["pt-BR", "en", "es"])
+      .where("activityId", "=", item.activityId)
+      .where("active", "=", true)
+      .groupBy("language")
+      .execute();
 
     if (item.image) {
       const url = await getSignedUrl(

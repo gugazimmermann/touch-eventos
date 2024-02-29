@@ -84,7 +84,7 @@
           "description": {
             "S": "Sem limite de atividades. Dados não são perdidos. Opção de comparar atividades."
           },
-          "price": { "S": "2187.00" },
+          "price": { "S": "2332.80" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }

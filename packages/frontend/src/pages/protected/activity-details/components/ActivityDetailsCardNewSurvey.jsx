@@ -8,13 +8,13 @@ const ActivityDetailsCardNewSurvey = ({ activityId, surveys = [] }) => {
   const navigate = useNavigate();
 
   const findSurveyQuantityByLang = (lang) => {
-    return surveys.filter((s) => s.language === lang).length;
+    return surveys.find((s) => s.language === lang)?.question_count || 0;
   };
 
   const RenderRow = ({ lang }) => {
     return (
       <div className="relative inline-flex w-fit">
-        <div className="absolute -right-2.5 -top-1.5 z-10 rounded-full bg-primary-500  px-1.5 py-1.5 text-xs font-bold leading-none text-white">
+        <div className="absolute -right-2.5 -top-1.5 z-10 rounded-full bg-primary-500  px-2 py-1.5 text-xs font-bold leading-none text-white">
           {findSurveyQuantityByLang(lang)}
         </div>
         <button

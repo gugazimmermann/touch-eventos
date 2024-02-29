@@ -35,3 +35,8 @@ export { default as CircleCheckFilled } from './CircleCheckFilled';
 export { default as Search } from './Search';
 export { default as XCircle } from './XCircle';
 export { default as Clipboard } from './Clipboard';
+export { default as AddUser } from './AddUser';
+export { default as SearchTable } from './SearchTable';
+export { default as ArrowsSort } from './ArrowsSort';
+export { default as Spreadsheet } from './Spreadsheet';
+export { default as Message } from './Message';

@@ -115,9 +115,43 @@ export function FrontendStack({ stack, app }: StackContext) {
     }
   });
 
+  const survey = new StaticSite(stack, "Survey", {
+    customDomain:
+      stack.stage === "production"
+        ? {
+            domainName: "pesquisa.toucheventos.com.br",
+            hostedZone: "toucheventos.com.br",
+            cdk: {
+              certificate: Certificate.fromCertificateArn(
+                stack,
+                "RegistrationCertificate",
+                String(process.env.DOMAIN_CERT_ARM)
+              ),
+            },
+          }
+        : undefined,
+    path: "packages/survey",
+    buildCommand: "npm run build",
+    buildOutput: "build",
+    dev: {
+      url: "http://localhost:3009",
+    },
+    environment: {
+      REACT_APP_SITE_TITLE: "Touch Eventos - Pesquisa",
+      REACT_APP_SITE_URL: String(process.env.SITE_URL),
+      REACT_APP_SITE_API_URL: siteApi.customDomainUrl || siteApi.url,
+    },
+    cdk: {
+      bucket: {
+        removalPolicy: RemovalPolicy.DESTROY
+      }
+    }
+  });
+
   stack.addOutputs({
     FrontendUrl: frontend.customDomainUrl || frontend.url,
     RegistrationUrl: registration.customDomainUrl || registration.url,
     DeskUrl: desk.customDomainUrl || desk.url,
+    SurveyUrl: survey.customDomainUrl || survey.url,
   });
 }

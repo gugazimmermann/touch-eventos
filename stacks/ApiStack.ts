@@ -230,6 +230,19 @@ export function ApiStack({ stack }: StackContext) {
           bind: [database],
         },
       },
+      "POST /activities/{activityId}/survey": {
+        function: {
+          handler: "packages/functions/src/activities/survey/survey-create.handler",
+          bind: [database],
+        },
+      },
+      "GET /activities/{activityId}/survey/{lang}": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/survey-by-activity-id.handler",
+            bind: [database],
+        },
+      },
     },
   });
 

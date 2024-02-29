@@ -29,7 +29,6 @@ body {
 .countrySelect > button {
   @apply w-full;
   @apply px-4;
-  @apply mt-4;
   @apply text-text-700;
   @apply placeholder-text-500;
   @apply bg-white;

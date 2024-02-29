@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+ /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -74,10 +74,9 @@ const NewActivityFormStripeCheckoutForm = ({
         },
       },
     });
-    if (error.type === "card_error" || error.type === "validation_error")
-      setError(error.message);
+    if (error.type === "card_error" || error.type === "validation_error") setError(error.message);
     else setError(t("new_activity_payment_fail"));
-    setLoading(true);
+    setLoading(false);
   };
 
   const paymentElementOptions = {

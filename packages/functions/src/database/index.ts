@@ -20,3 +20,26 @@ export interface  IActivitiesDesk {
   createdAt: string;
   active: boolean;
 }
+
+export interface IActivitiesQuestion {
+  questionId?: number;
+  activityId: string;
+  question: string;
+  required: boolean;
+  type: string;
+  language: string;
+  order: number;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface IActivitiesAnswer {
+  answerId?: number;
+  questionId: bigint;
+  activityId: string;
+  answer?: string;
+  language: string;
+  order: number;
+  active: boolean;
+  createdAt: string;
+}

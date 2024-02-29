@@ -14,6 +14,7 @@ import { AdminTopNav } from "../../../components/layout";
 import StepHeader from "./NewActivityStepHeader";
 import NewActivityFormActivity from "./NewActivityFormActivity";
 import NewActivityFormSurvey from "./NewActivityFormSurvey";
+import NewActivityFormMessage from "./NewActivityFormMessage";
 import NewActivityFormStripe from "./NewActivityFormStripe";
 
 const initialValues = {
@@ -33,16 +34,20 @@ const initialValues = {
   addressLongitude: "",
   verificationId: "",
   visitorGift: "",
-  visitorGiftTextPTBR: "",
-  visitorGiftTextEN: "",
-  visitorGiftTextES: "",
   raffle: "",
+  surveyLastDay: "",
+  raffleDay: "",
   raffleType: "",
-  raffleTextPTBR: "",
-  raffleTextEN: "",
-  raffleTextES: "",
   notificationOnConfirm: "",
   notificationOnActivityEnd: "",
+  raffleAutomatic: true,
+  visitorGiftText: "",
+  raffleText: "",
+  surveyText: "",
+  confirmationText: "",
+  notificationOnConfirmText: "",
+  notificationOnEndText: "",
+  raffleAutomaticText: "",
 };
 
 const NewActivity = () => {
@@ -78,7 +83,7 @@ const NewActivity = () => {
     setInfo("");
     setToastMsg("");
     setToastVisible(false);
-  }
+  };
 
   const handleShowToast = (msg) => {
     setToastMsg(msg);
@@ -128,7 +133,13 @@ const NewActivity = () => {
       setInfo(verify);
       return verify;
     }
-  }, [activePlans, activityDates, setInfo, validateActivityDates, values.planId]);
+  }, [
+    activePlans,
+    activityDates,
+    setInfo,
+    validateActivityDates,
+    values.planId,
+  ]);
 
   const verifySubscriptionDate = useCallback(() => {
     if (state?.subscription?.endDate) {
@@ -188,7 +199,10 @@ const NewActivity = () => {
       const res = await activity.saveActivity(data);
       if (res?.error) setError(res.error);
       else {
-        dispatch({ type: "ACTIVITIES_LIST", payload: { activitiesList: null } });
+        dispatch({
+          type: "ACTIVITIES_LIST",
+          payload: { activitiesList: null },
+        });
         handleResetForm();
         navigate(`/${ROUTES.ADMIN.ACTIVITY}/${activityId}`);
       }
@@ -245,9 +259,17 @@ const NewActivity = () => {
           type: "ACTIVITY_REGISTER",
           payload: { activityRegister: { ...values, dates: activityDates } },
         });
-        if (!state.subscription?.planId) setStep(3);
-        else handleSubmit();
+        setStep(3);
       }
+    } else if (step === 3) {
+      console.log(values)
+      dispatch({
+        type: "ACTIVITY_REGISTER",
+        payload: { activityRegister: { ...values, dates: activityDates } },
+      });
+      setStep(4);
+      if (!state.subscription?.planId) setStep(4);
+      else handleSubmit();
     }
   };
 
@@ -282,30 +304,24 @@ const NewActivity = () => {
 
   useEffect(() => {
     getData();
+    console.log(state.activityRegister)
     if (state.activityRegister) {
-      if (state.activityRegister.verificationId && state.activityRegister.raffle) {
-        setStep(3);
-      } else if (
-        state.activityRegister.planId &&
-        state.activityRegister.name &&
-        state.activityRegister.dates &&
-        state.activityRegister.addressZipCode &&
-        state.activityRegister.addressState &&
-        state.activityRegister.addressCity &&
-        state.activityRegister.addressStreet &&
-        state.activityRegister.addressNeighborhood
-      ) {
-        setStep(2);
-      }
       setValues(state.activityRegister);
       setActivityDates(
         state.activityRegister.dates.map((d) => stringToDateObject(d))
       );
+      if (state.activityRegister.confirmationText) {
+        setStep(4);
+      } else if (state.activityRegister.verificationId) {
+        setStep(3);
+      } else if (state.activityRegister.planId) {
+        setStep(2);
+      }
     }
-  }, [getData, state.activityRegister, stringToDateObject]);
+  }, []);
 
   return (
-    <section className="w-full">
+    <section className="w-full mb-8">
       <AdminTopNav title={t("new_activity_title")} />
       <div className="flex flex-col justify-center mx-auto bg-white p-4 rounded-lg">
         <StepHeader
@@ -342,12 +358,25 @@ const NewActivity = () => {
             loading={loading}
             values={values}
             setValues={setValues}
+            activityDates={activityDates}
             onSubmit={handleStepSubmit}
             setStep={setStep}
             showToast={handleShowToast}
+            activePlans={activePlans}
           />
         )}
         {step === 3 && (
+          <NewActivityFormMessage
+            activeVerifications={activeVerifications}
+            loading={loading}
+            values={values}
+            setValues={setValues}
+            onSubmit={handleStepSubmit}
+            setStep={setStep}
+            setError={setError}
+          />
+        )}
+        {step === 4 && (
           <NewActivityFormStripe
             activePlans={activePlans}
             planId={values.planId}

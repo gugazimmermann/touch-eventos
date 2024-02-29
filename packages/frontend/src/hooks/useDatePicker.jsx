@@ -60,7 +60,9 @@ const useDatePicker = () => {
   const verifyMaxDates = useCallback(
     (maxDays, dates) =>
       dates.length > maxDays
-        ? `${t("new_activity_dates_max")} ${maxDays} ${t("new_activity_dates_days")}`
+        ? `${t("new_activity_dates_max")} ${maxDays} ${t(
+            "new_activity_dates_days"
+          )}`
         : false,
     [t]
   );
@@ -106,7 +108,12 @@ const useDatePicker = () => {
     months: getMonths(),
     format: datePickerFormat(),
     inputClass:
-      "block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg",
+      "w-full px-4 py-2 text-text-700 placeholder-text-500 bg-white border rounded-lg",
+  };
+
+  const datePickerSurveyConfig = {
+    ...datePickerConfig,
+    multiple: false,
   };
 
   const validateActivityDates = useCallback(
@@ -144,6 +151,7 @@ const useDatePicker = () => {
 
   return {
     datePickerConfig,
+    datePickerSurveyConfig,
     validateActivityDates,
     dateToTimestap,
     datesToString,

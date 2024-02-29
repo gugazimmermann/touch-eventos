@@ -1,0 +1,5 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Disallow:
+Allow: /
+Sitemap: https://cadastros.toucheventos.com.br/sitemap.xml

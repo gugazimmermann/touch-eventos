@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Activity, CheckList, CreditCard } from "../../../icons";
+import { Activity, CheckList, CreditCard, Message } from "../../../icons";
 
 const NewActivityStepHeader = ({ step, setStep, paymentSuccess }) => {
   const { t } = useTranslation("new_activity");
@@ -56,7 +56,8 @@ const NewActivityStepHeader = ({ step, setStep, paymentSuccess }) => {
     <ul className="relative m-0 flex list-none justify-between overflow-hidden p-0 transition-[height] duration-200 ease-in-out">
       {renderStep(1, t("new_activity_step_details"), <Activity />)}
       {renderStep(2, t("new_activity_step_survey"), <CheckList />)}
-      {renderStep(3, t("new_activity_step_payment"), <CreditCard />)}
+      {renderStep(3, t("new_activity_step_messages"), <Message />)}
+      {renderStep(4, t("new_activity_step_payment"), <CreditCard />)}
     </ul>
   );
 };

@@ -155,6 +155,22 @@ export function SiteApiStack({ stack }: StackContext) {
           bind: [database],
         },
       },
+      "GET /survey/activity/{slug}": {
+        function: {
+          handler: "packages/functions/src/survey/activity-by-slug.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
+            ACTIVITIES_IMAGES_BUCKET: activitiesImagesBucket.bucketName,
+          },
+          permissions: [
+            activitiesTable,
+            verificationsTable,
+            activitiesImagesBucket,
+          ],
+          bind: [database],
+        },
+      },
     },
   });
 
