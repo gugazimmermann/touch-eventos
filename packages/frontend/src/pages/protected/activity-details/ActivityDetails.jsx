@@ -14,6 +14,7 @@ import {
   ActivityDetailsCard,
   ActivityDetailsCardDesk,
 } from "./components";
+import { format } from "date-fns";
 
 const ActivityDetails = () => {
   const { t } = useTranslation("activity_details");
@@ -66,22 +67,13 @@ const ActivityDetails = () => {
       ...values,
       activityId: data.activityId,
       userId: data.userId,
+      logo: data.logo,
+      name: data.name,
+      slug: data.slug,
       active: data.active,
       payment: data.payment,
       plan: data.plan,
       verification: data.verification,
-      visitorGift: data.visitorGift,
-      visitorGiftTextPTBR: data.visitorGiftTextPTBR,
-      visitorGiftTextEN: data.visitorGiftTextEN,
-      visitorGiftTextES: data.visitorGiftTextES,
-      raffle: data.raffle,
-      raffleType: data.raffleType,
-      raffleTextPTBR: data.raffleTextPTBR,
-      raffleTextEN: data.raffleTextEN,
-      raffleTextES: data.raffleTextES,
-      logo: data.logo,
-      name: data.name,
-      slug: data.slug,
       dates: JSON.parse(data.dates),
       startDate: data.startDate,
       endDate: data.endDate,
@@ -94,10 +86,23 @@ const ActivityDetails = () => {
       addressComplement: data.addressComplement,
       addressLatitude: data.addressLatitude,
       addressLongitude: data.addressLongitude,
+      confirmationText: data.confirmationText,
+      visitorGift: data.visitorGift,
+      visitorGiftText: data.visitorGiftText,
+      raffle: data.raffle,
+      raffleType: data.raffleType,
+      raffleDay: data.raffleDay,
+      raffleText: data.raffleText,
+      raffleAutomatic: data.raffleAutomatic,
+      raffleAutomaticText: data.raffleAutomaticText,
       notificationOnConfirm: data.notificationOnConfirm,
+      notificationOnConfirmText: data.notificationOnConfirmText,
       notificationOnActivityEnd: data.notificationOnActivityEnd,
+      notificationOnEndText: data.notificationOnEndText,
       registers: data.registers,
       registersConfirmed: data.registersConfirmed,
+      surveyLastDay: data.surveyLastDay,
+      surveyText: data.surveyText,
       surveys: data.surveys,
       surveysStarted: 0,
       surveysCompleted: 0,
@@ -124,7 +129,7 @@ const ActivityDetails = () => {
         { logo: newLogo },
         onUploadProgress
       );
-      setValues({...values, logo: newLogo})
+      setValues({ ...values, logo: newLogo });
       setProgress(0);
       dispatch({ type: "ACTIVITIES_LIST", payload: { activitiesList: null } });
     }
@@ -179,20 +184,14 @@ const ActivityDetails = () => {
                 registers={values.registers}
                 registersConfirmed={values.registersConfirmed}
               />
-              {values.surveysStarted > 0 ? (
-                <ActivityDetailsCardSurvey
-                  activityId={activityId}
-                  surveysStarted={values.surveysStarted}
-                  surveysCompleted={values.surveysCompleted}
-                />
-              ) : (
-                <ActivityDetailsCardNewSurvey
-                  activityId={activityId}
-                  surveys={values.surveys}
-                />
-              )}
+              <ActivityDetailsCardSurvey
+                activityId={activityId}
+                surveys={values.surveys}
+                surveysStarted={values.surveysStarted}
+                surveysCompleted={values.surveysCompleted}
+              />
             </div>
-            <ActivityDetailsQRCode activityId={values.activityId} />
+            <ActivityDetailsQRCode slug={values.slug} />
           </div>
           <ActivityDetailsCard data={values} />
           {values.visitorGift === "YES" && (

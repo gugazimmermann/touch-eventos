@@ -33,7 +33,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         "#startDate": "startDate",
         "#name": "name",
         "#slug": "slug",
-        "#logo": "logo",
+        "#image": "image",
         "#verificationId": "verificationId",
         "#visitorGift": "visitorGift",
       },
@@ -41,7 +41,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       IndexName: "SlugIndex",
       KeyConditionExpression: "#slug = :slug",
       ProjectionExpression:
-        "#activityId, #active, #payment, #endDate, #startDate, #name, #slug, #logo, #verificationId, #visitorGift",
+        "#activityId, #active, #payment, #endDate, #startDate, #name, #slug, #image, #verificationId, #visitorGift",
     };
     const activitiesResults: QueryCommandOutput = await dynamoDBClient.send(
       new QueryCommand(activitiesParams)

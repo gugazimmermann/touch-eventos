@@ -53,7 +53,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         .values({
           activityId: activityId,
           question: survey.question,
-          required: data.required,
+          required: data.required ? true : false,
           type: survey.type,
           language: data.lang,
           order: i,

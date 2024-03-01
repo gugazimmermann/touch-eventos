@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { isAfter, isBefore } from "date-fns";
 import { maskCep } from "../../../../helpers/mask";
-import { formatValue } from "../../../../helpers/format";
+import { formatDate, formatValue } from "../../../../helpers/format";
 import { Clipboard } from "../../../../icons";
 import { Br, Es, Us } from "react-flags-select";
 
@@ -92,62 +92,18 @@ const ActivityDetailsCard = ({ data }) => {
                 title={t("activity_details_card_details_visitors_gift")}
                 content={showGiftText(data.visitorGift)}
               />
-              {data.visitorGift === "YES" && (
-                <>
-                  <tr className="border-b">
-                    <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
-                      {t("activity_details_card_details_visitors_gift_description")}{" "}
-                      <Br className="w-5 h-5" />
-                    </td>
-                    <td className="py-2">{data.visitorGiftTextPTBR}</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
-                      {t("activity_details_card_details_visitors_gift_description")}{" "}
-                      <Us className="w-5 h-5" />
-                    </td>
-                    <td className="py-2">{data.visitorGiftTextEN}</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
-                      {t("activity_details_card_details_visitors_gift_description")}{" "}
-                      <Es className="w-5 h-5" />
-                    </td>
-                    <td className="py-2">{data.visitorGiftTextES}</td>
-                  </tr>
-                </>
-              )}
+              <tr className="border-b">
+                <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
+                  {t("Data Final da Pesquisa")}
+                </td>
+                <td className="py-2">
+                  {formatDate(data.surveyLastDay, { time: false })}
+                </td>
+              </tr>
               <ActivityRow
-                title={t("activity_details_card_details_raffle")}
-                content={showFaffleText(data.raffle, data.raffleType)}
-              />
-              {data.raffle === "YES" && (
-                <>
-                  <tr className="border-b">
-                    <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
-                      {t("activity_details_card_details_raffle_description")}{" "}
-                      <Br className="w-5 h-5" />
-                    </td>
-                    <td className="py-2">{data.raffleTextPTBR}</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
-                      {t("activity_details_card_details_raffle_description")}{" "}
-                      <Us className="w-5 h-5" />
-                    </td>
-                    <td className="py-2">{data.raffleTextEN}</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
-                      {t("activity_details_card_details_raffle_description")}{" "}
-                      <Es className="w-5 h-5" />
-                    </td>
-                    <td className="py-2">{data.raffleTextES}</td>
-                  </tr>
-                </>
-              )}
-              <ActivityRow
-                title={t("activity_details_card_details_notifY_survey_on_confirm")}
+                title={t(
+                  "activity_details_card_details_notifY_survey_on_confirm"
+                )}
                 content={showGiftText(data.notificationOnConfirm)}
               />
               <ActivityRow
@@ -156,7 +112,7 @@ const ActivityDetailsCard = ({ data }) => {
               />
               <tr className="border-b">
                 <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
-                  {t("activity_details_card_details_friendly_url")}
+                  {t("URL da Pesquisa")}
                   <button
                     type="button"
                     onClick={() => {
@@ -170,8 +126,43 @@ const ActivityDetailsCard = ({ data }) => {
                     <Clipboard />
                   </button>
                 </td>
-                <td className="py-2">{`${process.env.REACT_APP_SITE_SURVEY_URL}/${data.slug}`}</td>
+                <td className="py-2">
+                  <a
+                    href={`${String(process.env.REACT_APP_SITE_SURVEY_URL)}/${
+                      data.slug
+                    }`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:underline"
+                  >
+                    {`${process.env.REACT_APP_SITE_SURVEY_URL}/${data.slug}`}
+                  </a>
+                </td>
               </tr>
+              <ActivityRow
+                title={t("activity_details_card_details_raffle")}
+                content={showFaffleText(data.raffle, data.raffleType)}
+              />
+              {data.raffle === "YES" && (
+                <>
+                  <tr className="border-b">
+                    <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
+                      {t("Sorteio Automático")}
+                    </td>
+                    <td className="py-2">
+                      {data.raffleAutomatic ? "Sim" : "Não"}
+                    </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="whitespace-nowrap p-2 font-bold flex items-center gap-2">
+                      {t("Dia do Sorteio")}
+                    </td>
+                    <td className="py-2">
+                      {formatDate(data.raffleDay, { time: false })}
+                    </td>
+                  </tr>
+                </>
+              )}
             </tbody>
           </table>
         </div>

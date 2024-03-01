@@ -49,6 +49,9 @@ const ActivityDetailsDesk = lazyLoad(
 const ActivityDetailsSurvey = lazyLoad(
   import("../pages/protected/activity-details/ActivityDetailsSurvey")
 );
+const ActivityDetailsDefaultSurvey = lazyLoad(
+  import("../pages/protected/activity-details/ActivityDetailsDefaultSurvey")
+);
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -121,6 +124,10 @@ export const router = createBrowserRouter(
         <Route
           path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.SURVEYS}/:lang?`}
           element={<ActivityDetailsSurvey />}
+        />
+                <Route
+          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.DEFAULT_SURVEYS}`}
+          element={<ActivityDetailsDefaultSurvey />}
         />
       </Route>
     </>

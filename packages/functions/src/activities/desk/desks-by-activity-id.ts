@@ -46,6 +46,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         "activities_desk.active",
         db.fn.count("activities_register.deskId").as("gifts"),
       ])
+      .where("activities_desk.activityId", "=", activityId)
       .groupBy("activities_desk.deskId")
       .execute();
 

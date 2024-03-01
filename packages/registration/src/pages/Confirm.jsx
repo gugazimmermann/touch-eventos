@@ -116,7 +116,7 @@ const Confirm = () => {
                     </h1>
 
                     <form
-                      className="w-3/4 mx-auto px-4"
+                      className="w-3/4 mx-auto px-4 mb-8"
                       onSubmit={handleSubmit}
                     >
                       <InputField
@@ -140,37 +140,25 @@ const Confirm = () => {
                       </div>
                     </form>
 
-                    <div className="p-8">
-                      {activity.visitorGift === "YES" && (
-                        <div className="flex flex-col items-center justify-center">
-                          <Gift className="w-8 h-8 text-success-500" />
-                          <div>
-                            {i18n.language === "pt-BR"
-                              ? activity.visitorGiftTextPTBR
-                              : i18n.language === "en"
-                              ? activity.visitorGiftTextEN
-                              : activity.visitorGiftTextES}
+                    <div className="px-12 mb-8">
+                        {activity.visitorGift === "YES" && (
+                          <div className="flex flex-col items-center justify-center">
+                            <Gift className="w-8 h-8 text-success-500" />
+                            <div>{activity.visitorGiftText}</div>
                           </div>
-                        </div>
-                      )}
-                      {activity.raffle === "YES" ? (
-                        <div className="flex flex-col items-center justify-center mt-4">
-                          <Survey className="w-8 h-8 text-success-500" />
-                          <div>
-                            {i18n.language === "pt-BR"
-                              ? activity.raffleTextPTBR
-                              : i18n.language === "en"
-                              ? activity.raffleTextEN
-                              : activity.raffleTextES}
+                        )}
+                        {activity.raffle === "YES" ? (
+                          <div className="flex flex-col items-center justify-center mt-4">
+                            <Survey className="w-8 h-8 text-success-500" />
+                            <div>{activity.raffleText}</div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center mt-4">
-                          <Survey className="w-8 h-8 text-success-500" />
-                          <div>{t("raffle_no")}</div>
-                        </div>
-                      )}
-                    </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center mt-4">
+                            <Survey className="w-8 h-8 text-success-500" />
+                            <div>{activity.surveyText}</div>
+                          </div>
+                        )}
+                      </div>
                   </div>
                 </div>
               )}

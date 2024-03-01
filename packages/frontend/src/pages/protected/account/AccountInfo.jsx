@@ -288,12 +288,14 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
               setValues={setValues}
             />
             <div className="grid grid-cols-2 gap-4">
-              <PhoneCodeSelect
-                disabled={loading || confirmEmail}
-                value="phoneCode"
-                values={values}
-                setValues={setValues}
-              />
+              <div className="mt-4">
+                <PhoneCodeSelect
+                  disabled={loading || confirmEmail}
+                  value="phoneCode"
+                  values={values}
+                  setValues={setValues}
+                />
+              </div>
               <InputField
                 disabled={loading || confirmEmail}
                 required={false}
@@ -307,17 +309,19 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
             </div>
           </div>
           <div className="grid grid-cols-4 gap-4">
-            <ReactFlagsSelect
-              selected={values["addressCountry"]}
-              onSelect={(code) =>
-                setValues({ ...values, addressCountry: code })
-              }
-              searchable
-              placeholder={t("account_address_country")}
-              searchPlaceholder={t("account_address_country")}
-              className="countrySelect"
-              disabled
-            />
+            <div className="mt-4">
+              <ReactFlagsSelect
+                selected={values["addressCountry"]}
+                onSelect={(code) =>
+                  setValues({ ...values, addressCountry: code })
+                }
+                searchable
+                placeholder={t("account_address_country")}
+                searchPlaceholder={t("account_address_country")}
+                className="countrySelect"
+                disabled
+              />
+            </div>
             <InputField
               disabled={loading || confirmEmail}
               required={true}
@@ -398,7 +402,7 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
               placeholder={`${t("account_created_at")} ${formatDate(
                 data?.createdAt,
                 {
-                  time: false
+                  time: false,
                 }
               )}`}
               setValues={setValues}

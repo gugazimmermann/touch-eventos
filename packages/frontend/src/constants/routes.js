@@ -23,6 +23,7 @@ const ROUTES = Object.freeze({
     NEWACTIVITY: "atividade/nova",
     ACTIVITY: "atividade",
     REGISTERS: "cadastros",
+    DEFAULT_SURVEYS: "pesquisa-padrao",
     SURVEYS: "pesquisas",
     DESK: "balcao",
   },

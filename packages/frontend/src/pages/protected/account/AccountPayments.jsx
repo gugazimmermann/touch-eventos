@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {useActivities} from '../../../context/ActivitiesContext';
 import { account, stripe } from "../../../services";
 import { formatDate, formatValue } from "../../../helpers/format";
 import { Table, TableStatus } from "../../../components/table";
@@ -8,7 +7,6 @@ import { Alert, Loading, Title } from "../../../components";
 
 const AccountPayments = () => {
   const { t } = useTranslation("account");
-  const {state} = useActivities();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [payments, setPayments] = useState([]);
@@ -24,11 +22,13 @@ const AccountPayments = () => {
       setPayments(
         paymentsData.map((d) => ({
           date: formatDate(d.date, {
-            timezone: state.addressTimezone
+            time: true,
+            // timezone: state.addressTimezone
           }),
           plan: d.plan,
           value: formatValue(d.value, {
-            timezone: state.addressTimezone
+            time: true,
+            // timezone: state.addressTimezone
           }),
           status: (
             <TableStatus
@@ -45,7 +45,8 @@ const AccountPayments = () => {
       setCards(
         cardsData.paymentMethods.map((c) => ({
           date: formatDate(c.created, {
-            timezone: state.addressTimezone
+            time: false,
+            // timezone: state.addressTimezone,
           }),
           brand: c.brand.toLocaleUpperCase(),
           expiration: c.expiration,
@@ -56,7 +57,7 @@ const AccountPayments = () => {
       setError(error);
     }
     setLoading(false);
-  }, [state.addressTimezone, t]);
+  }, [t]);
 
   useEffect(() => {
     fetchData();

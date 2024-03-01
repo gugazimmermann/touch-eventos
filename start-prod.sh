@@ -1,7 +1,7 @@
 #!/bin/bash
 
 USER_POOL_ID=""
-DYNAMO_DATA_PATH="dynamodb-data/initial_data-dev.json"
+DYNAMO_DATA_PATH="dynamodb-data/initial_data.json"
 
 usage() {
     echo "Usage: $0 --USER_POOL_ID <UserPoolId>"
@@ -66,7 +66,7 @@ aws cognito-idp admin-set-user-password \
     --permanent
 
 aws dynamodb put-item \
-    --table-name "dev-touch-eventos-Users" \
+    --table-name "production-touch-eventos-Users" \
     --item "{
         \"userId\": {\"S\": \"$CREATE_USER_OUTPUT\"},
         \"email\": {\"S\": \"gugazimmermann@gmail.com\"},
@@ -93,7 +93,7 @@ aws dynamodb put-item \
 aws dynamodb batch-write-item --request-items file://"$DYNAMO_DATA_PATH"
 
 aws dynamodb put-item \
-    --table-name "dev-touch-eventos-Activities" \
+    --table-name "production-touch-eventos-Activities" \
     --item "{   
         \"activityId\": {\"S\": \"f3420389-26e8-4025-a00b-5080d2684ef3\"},
         \"userId\": {\"S\": \"$CREATE_USER_OUTPUT\"},                
@@ -151,7 +151,7 @@ aws dynamodb put-item \
     }"
 
 aws dynamodb put-item \
-    --table-name "dev-touch-eventos-Payments" \
+    --table-name "production-touch-eventos-Payments" \
     --item "{
           \"paymentId\": {\"S\": \"696dfbbd-3c8f-4dff-aaa0-6e855f34d7b9\"},
           \"date\": {\"S\": \"1709295768000\"},

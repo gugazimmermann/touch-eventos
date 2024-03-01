@@ -1,5 +1,5 @@
 {
-  "production-touch-eventos-Plans": [
+  "dev-touch-eventos-Plans": [
     {
       "PutRequest": {
         "Item": {
@@ -12,7 +12,10 @@
           "description": {
             "S": "Dados armazenados por 30 dias após término."
           },
-          "price": { "S": "100.00" },
+          "discount":{
+            "S": ""
+          },
+          "price": { "S": "117.90" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
@@ -30,7 +33,10 @@
           "description": {
             "S": "Dados armazenados por 30 dias após término."
           },
-          "price": { "S": "180.00" },
+          "discount":{
+            "S": "25% por dia"
+          },
+          "price": { "S": "294.75" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
@@ -48,7 +54,10 @@
           "description": {
             "S": "Dados armazenados por 30 dias após término."
           },
-          "price": { "S": "324.00" },
+          "discount":{
+            "S": "50% por dia"
+          },
+          "price": { "S": "589.50" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
@@ -66,7 +75,10 @@
           "description": {
             "S": "Sem limite de atividades. Dados não são perdidos. Opção de comparar atividades."
           },
-          "price": { "S": "1458.00" },
+          "discount":{
+            "S": "75% por dia"
+          },
+          "price": { "S": "1768.50" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
@@ -84,14 +96,17 @@
           "description": {
             "S": "Sem limite de atividades. Dados não são perdidos. Opção de comparar atividades."
           },
-          "price": { "S": "2187.00" },
+          "discount":{
+            "S": "85% por dia"
+          },
+          "price": { "S": "2122.20" },
           "createdAt": { "S": "1700922456982" },
           "active": { "N": "1" }
         }
       }
     }
   ],
-  "production-touch-eventos-Verifications": [
+  "dev-touch-eventos-Verifications": [
     {
       "PutRequest": {
         "Item": {

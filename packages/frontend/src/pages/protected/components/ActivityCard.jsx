@@ -23,7 +23,7 @@ const ActivityCard = ({ data }) => {
     <div className="w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-lg">
       <Link to={`/${ROUTES.ADMIN.ACTIVITY}/${data.activityId}`}>
         <img
-          className="object-contain w-full h-36 bg-background-200"
+          className="object-center w-full h-36 bg-background-200"
           src={data.logo}
           alt="avatar"
         />

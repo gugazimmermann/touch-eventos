@@ -47,7 +47,7 @@ const Register = () => {
       email: "",
       phone: "",
       language: i18n.language,
-      createdAt: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`
+      createdAt: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`,
     };
     if (activity.verification === "SMS") {
       const phone = registrationPhone.phone.replace(/\D+/g, "");
@@ -65,7 +65,10 @@ const Register = () => {
       payload.email = registrationEmail.email;
     }
     setLoading(true);
-    const registerResponse = await register.register(activity.activityId, payload);
+    const registerResponse = await register.register(
+      activity.activityId,
+      payload
+    );
     if (registerResponse?.registrationId) {
       navigate(
         `/${activity.slug}/${registerResponse.registrationId}/${registerResponse.language}`
@@ -91,7 +94,9 @@ const Register = () => {
           const startDate = startOfDay(
             new Date(parseInt(activityData.startDate, 10))
           );
-          const endDate = endOfDay(new Date(parseInt(activityData.endDate, 10)));
+          const endDate = endOfDay(
+            new Date(parseInt(activityData.endDate, 10))
+          );
           const today = startOfDay(new Date());
           if (isBefore(today, startDate)) {
             setInfo(t("activity_not_started"));
@@ -101,7 +106,9 @@ const Register = () => {
           if (activityData.payment !== "success") {
             if (activityData.registrations < 10) {
               setInfo(
-                `${t("activity_trial_remain")} ${10 - activityData.registrations}`
+                `${t("activity_trial_remain")} ${
+                  10 - activityData.registrations
+                }`
               );
             } else {
               setWarning(t("activity_trial_over"));
@@ -240,7 +247,7 @@ const Register = () => {
                             </div>
                           </label>
                         </div>
-                        <div className="w-full text-center">
+                        <div className="w-full text-center mb-8 mt-4">
                           <FormButton
                             testid="register-send-button"
                             text={t("register")}
@@ -252,43 +259,22 @@ const Register = () => {
                         </div>
                       </form>
 
-                      <div className="p-8">
-                        {activity.visitorGift === "YES" &&
-                          ((i18n.language === "pt-BR" &&
-                          activity.visitorGiftTextPTBR) ||
-                            (i18n.language === "en" &&
-                            activity.visitorGiftTextEN) ||
-                            (i18n.language === "es" &&
-                            activity.visitorGiftTextES)) && (
-                            <div className="flex flex-col items-center justify-center">
-                              <Gift className="w-8 h-8 text-success-500" />
-                              <div>
-                                {i18n.language === "pt-BR"
-                                  ? activity.visitorGiftTextPTBR
-                                  : i18n.language === "en"
-                                  ? activity.visitorGiftTextEN
-                                  : activity.visitorGiftTextES}
-                              </div>
-                            </div>
-                          )}
-                        {activity.raffle === "YES" &&
-                        ((i18n.language === "pt-BR" && activity.raffleTextPTBR) ||
-                          (i18n.language === "en" && activity.raffleTextEN) ||
-                          (i18n.language === "es" && activity.raffleTextES)) ? (
+                      <div className="px-12 mb-8">
+                        {activity.visitorGift === "YES" && (
+                          <div className="flex flex-col items-center justify-center">
+                            <Gift className="w-8 h-8 text-success-500" />
+                            <div>{activity.visitorGiftText}</div>
+                          </div>
+                        )}
+                        {activity.raffle === "YES" ? (
                           <div className="flex flex-col items-center justify-center mt-4">
                             <Survey className="w-8 h-8 text-success-500" />
-                            <div>
-                              {i18n.language === "pt-BR"
-                                ? activity.raffleTextPTBR
-                                : i18n.language === "en"
-                                ? activity.raffleTextEN
-                                : activity.raffleTextES}
-                            </div>
+                            <div>{activity.raffleText}</div>
                           </div>
                         ) : (
                           <div className="flex flex-col items-center justify-center mt-4">
                             <Survey className="w-8 h-8 text-success-500" />
-                            <div>{t("raffle_no")}</div>
+                            <div>{activity.surveyText}</div>
                           </div>
                         )}
                       </div>

@@ -2,7 +2,7 @@ import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { QRCodeSVG } from "qrcode.react";
 
-const ActivityDetailsQRCode = ({ activityId }) => {
+const ActivityDetailsQRCode = ({ slug }) => {
   const { t } = useTranslation("activity_details");
   const qrCodeRef = useRef(null);
 
@@ -18,12 +18,12 @@ const ActivityDetailsQRCode = ({ activityId }) => {
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const imageUri = canvas.toDataURL("image/png");
       const link = document.createElement("a");
-      link.download = `qrcode-${activityId}.png`;
+      link.download = `qrcode-${slug}.png`;
       link.href = imageUri;
       link.click();
     };
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
-  }, [activityId]);
+  }, [slug]);
 
   return (
     <div className="w-1/3 flex flex-col justify-between items-center bg-white rounded-lg shadow-lg">
@@ -35,7 +35,7 @@ const ActivityDetailsQRCode = ({ activityId }) => {
         className="min-w-full flex justify-center items-center"
       >
         <QRCodeSVG
-          value={`${process.env.REACT_APP_SITE_REGISTRATION_URL}/${activityId}`}
+          value={`${process.env.REACT_APP_SITE_REGISTRATION_URL}/${slug}`}
           size={4096}
           className="w-52 h-52"
         />

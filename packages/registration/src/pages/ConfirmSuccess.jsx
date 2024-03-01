@@ -15,7 +15,8 @@ const ConfirmSuccess = () => {
   const [warning, setWarning] = useState("");
   const [activity, setActivity] = useState();
 
-  const getData = useCallback(async (slug) => {
+  const getData = useCallback(
+    async (slug) => {
       setLoading(true);
       try {
         const activityData = await register.getActivityBySlug(slug);
@@ -79,22 +80,16 @@ const ConfirmSuccess = () => {
                       {t("confirmation_success")}
                     </h1>
 
-                    <div className="p-8">
+                    <div className="px-12 mb-8">
                       {activity.raffle === "YES" ? (
                         <div className="flex flex-col items-center justify-center mt-4">
                           <Survey className="w-8 h-8 text-success-500" />
-                          <div>
-                            {i18n.language === "pt-BR"
-                              ? activity.raffleTextPTBR
-                              : i18n.language === "en"
-                              ? activity.raffleTextEN
-                              : activity.raffleTextES}
-                          </div>
+                          <div>{activity.raffleText}</div>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center mt-4">
                           <Survey className="w-8 h-8 text-success-500" />
-                          <div>{t("raffle_no")}</div>
+                          <div> {activity.surveyText}</div>
                         </div>
                       )}
                     </div>

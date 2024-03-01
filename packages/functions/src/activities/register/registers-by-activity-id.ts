@@ -48,6 +48,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         "activities_register.phone",
         "activities_desk.user as deskUser",
       ])
+      .where("activities_register.activityId", "=", activityId)
       .groupBy("activities_register.registrationId")
       .execute();
 

@@ -15,6 +15,7 @@ export function FrontendStack({ stack, app }: StackContext) {
       stack.stage === "production"
         ? {
             domainName: "toucheventos.com.br",
+            domainAlias: "www.toucheventos.com.br",
             cdk: {
               certificate: Certificate.fromCertificateArn(
                 stack,
@@ -124,7 +125,7 @@ export function FrontendStack({ stack, app }: StackContext) {
             cdk: {
               certificate: Certificate.fromCertificateArn(
                 stack,
-                "RegistrationCertificate",
+                "SurveyCertificate",
                 String(process.env.DOMAIN_CERT_ARM)
               ),
             },

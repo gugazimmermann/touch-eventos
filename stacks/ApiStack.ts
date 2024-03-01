@@ -243,6 +243,13 @@ export function ApiStack({ stack }: StackContext) {
             bind: [database],
         },
       },
+      "GET /activities/{activityId}/default-survey": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/default-survey.handler",
+            bind: [database],
+        },
+      },
     },
   });
 

@@ -6,5 +6,9 @@
     "us-east-1d",
     "us-east-1e",
     "us-east-1f"
-  ]
+  ],
+  "hosted-zone:account=975050164143:domainName=toucheventos.com.br:region=us-east-1": {
+    "Id": "/hostedzone/Z101574233I71PR2YBDXV",
+    "Name": "toucheventos.com.br."
+  }
 }

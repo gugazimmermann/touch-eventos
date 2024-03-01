@@ -10,10 +10,10 @@ export async function up(db) {
       col.autoIncrement().primaryKey()
     )
     .addColumn("question", "varchar(255)", (col) => col.notNull())
-    .addColumn("required", "boolean", (col) => col.notNull())
+    .addColumn("required", "boolean")
     .addColumn("type", "varchar(255)", (col) => col.notNull())
     .addColumn("language", "varchar(255)", (col) => col.notNull())
-    .addColumn("order", "integer", (col) => col.notNull())
+    .addColumn("order", "integer")
     .addColumn("active", "boolean", (col) => col.notNull())
     .addColumn("createdAt", "datetime", (col) => col.notNull())
     .execute();
@@ -24,7 +24,7 @@ export async function up(db) {
     .addColumn("questionId", "varchar(255)", (col) => col.notNull())
     .addColumn("answer", "varchar(255)")
     .addColumn("language", "varchar(255)", (col) => col.notNull())
-    .addColumn("order", "integer", (col) => col.notNull())
+    .addColumn("order", "integer")
     .addColumn("active", "boolean", (col) => col.notNull())
     .addColumn("createdAt", "datetime", (col) => col.notNull())
     .execute();

@@ -43,3 +43,24 @@ export interface IActivitiesAnswer {
   active: boolean;
   createdAt: string;
 }
+
+export interface IActivitiesDefaultQuestion {
+  questionId?: number;
+  question: string;
+  required: boolean;
+  type: string;
+  language: string;
+  order: number;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface IActivitiesDefaultAnswer {
+  answerId?: number;
+  questionId: bigint;
+  answer?: string;
+  language: string;
+  order: number;
+  active: boolean;
+  createdAt: string;
+}

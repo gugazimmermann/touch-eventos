@@ -44,7 +44,7 @@ const ActivityDetailsCardLogo = ({
       >
         {logo ? (
           <img
-            className="object-cover object-center w-full h-60 cursor-pointer"
+            className="object-center w-full h-60 cursor-pointer"
             alt="Activity Logo"
             src={logo}
           />

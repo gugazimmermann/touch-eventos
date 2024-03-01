@@ -59,7 +59,11 @@ const ActivityDetailsSurvey = () => {
   const [visibleItems, setVisibleItems] = useState({});
 
   const formatSurveyData = (data) => {
-    const grouped = data.reduce((acc, current) => {
+    const sortedData = data.sort((a, b) => {
+      if (a.order === b.order) return (a.answerOrder || 0) - (b.answerOrder || 0);
+      return a.order - b.order;
+    });
+    const grouped = sortedData.reduce((acc, current) => {
       if (!acc[current.questionId]) {
         acc[current.questionId] = {
           question: current.question,
@@ -123,8 +127,8 @@ const ActivityDetailsSurvey = () => {
   const onAnswerDragEnd = (result) => {
     if (!result.destination) return;
     const newAnswers = Array.from(values.answers);
-    const [reorderedItem] = newAnswers.splice(newAnswers.source.index, 1);
-    newAnswers.splice(newAnswers.destination.index, 0, reorderedItem);
+    const [reorderedItem] = newAnswers.splice(result.source.index, 1);
+    newAnswers.splice(result.destination.index, 0, reorderedItem);
     setValues({ ...values, answers: newAnswers });
   };
 
@@ -183,12 +187,13 @@ const ActivityDetailsSurvey = () => {
         >
           <ArrowBackCircle />
           <h2 className="text-2xl text-strong ml-2">
-            {t("Pesquisa")} -{" "}
+            {/* {t("Pesquisa")} -{" "}
             {lang === "en"
               ? "Inglês"
               : lang === "es"
               ? "Espanhol"
-              : "Português"}
+              : "Português"} */}
+            {t("Pesquisa - Perguntas")}
           </h2>
         </button>
         {loading ? (
@@ -306,7 +311,7 @@ const ActivityDetailsSurvey = () => {
                             >
                               {values.answers.map((answer, index) => (
                                 <Draggable
-                                  key={answer}
+                                  key={`${answer}#${index}`}
                                   draggableId={answer}
                                   index={index}
                                 >
@@ -348,7 +353,7 @@ const ActivityDetailsSurvey = () => {
                 </form>
               </div>
             </div>
-            {survey.length > 0 && (
+
               <DragDropContext onDragEnd={onQuestionDragEnd}>
                 <Droppable droppableId="droppable-survey">
                   {(provided) => (
@@ -358,9 +363,9 @@ const ActivityDetailsSurvey = () => {
                       className="w-full bg-white rounded-lg shadow-lg"
                     >
                       <div className="container px-4 mx-auto my-4">
-                        {survey.map((s, i) => (
+                        {survey.length > 0 && survey.map((s, i) => (
                           <Draggable
-                            key={s.question}
+                            key={`${s.question}#${i}`}
                             draggableId={s.question}
                             index={i}
                           >
@@ -479,7 +484,7 @@ const ActivityDetailsSurvey = () => {
                   )}
                 </Droppable>
               </DragDropContext>
-            )}
+
           </>
         )}
       </div>
