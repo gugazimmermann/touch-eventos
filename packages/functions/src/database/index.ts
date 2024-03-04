@@ -12,7 +12,7 @@ export interface IActivitiesRegister {
   activityRegisterHash: string;
 }
 
-export interface  IActivitiesDesk {
+export interface IActivitiesDesk {
   deskId: string;
   activityId: string;
   user: string;
@@ -62,5 +62,37 @@ export interface IActivitiesDefaultAnswer {
   language: string;
   order: number;
   active: boolean;
+  createdAt: string;
+}
+
+export interface IActivitiesVisitors {
+  visitorId?: number;
+  name: string;
+  email: string;
+  phone: string;
+  state: string;
+  city: string;
+  createdAt: string;
+}
+
+export interface IActivitiesVisitorsDefaultSurvey {
+  visitorAnswerId?: number;
+  visitorId: bigint;
+  activityId: string;
+  registrationId: string;
+  questionId: bigint;
+  answerId: bigint;
+  custonAnswer: string;
+  createdAt: string;
+}
+
+export interface IActivitiesVisitorsSurvey {
+  visitorAnswerId?: number;
+  visitorId: bigint;
+  activityId: string;
+  registrationId: string;
+  questionId: bigint;
+  answerId: bigint;
+  custonAnswer: string;
   createdAt: string;
 }

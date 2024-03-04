@@ -9,12 +9,13 @@ import {
   differenceInDays,
   getTime,
   parseISO,
+  startOfDay,
 } from "date-fns";
 import { pt, enUS, es } from "date-fns/locale";
 import { maskCapitalize } from "../helpers/mask";
 
 const useDatePicker = () => {
-  const { i18n, t } = useTranslation("admin");
+  const { i18n, t } = useTranslation("new_activity");
   const [locale, setLocale] = useState("en");
 
   useEffect(() => {
@@ -57,8 +58,7 @@ const useDatePicker = () => {
     return months;
   };
 
-  const verifyMaxDates = useCallback(
-    (maxDays, dates) =>
+  const verifyMaxDates = useCallback((maxDays, dates) =>
       dates.length > maxDays
         ? `${t("new_activity_dates_max")} ${maxDays} ${t(
             "new_activity_dates_days"
@@ -67,8 +67,7 @@ const useDatePicker = () => {
     [t]
   );
 
-  const verifyDuration = useCallback(
-    (maxDiff, dates) => {
+  const verifyDuration = useCallback((maxDiff, dates) => {
       if (dates.length >= 2) {
         const formatDate = (date) =>
           `${date.year}-${
@@ -77,8 +76,8 @@ const useDatePicker = () => {
         const firstDay = formatDate(dates[0]);
         const lastDay = formatDate(dates[dates.length - 1]);
         const diffDays = differenceInDays(
-          parseISO(lastDay),
-          parseISO(firstDay)
+          startOfDay(parseISO(lastDay)),
+          startOfDay(parseISO(firstDay))
         );
         return diffDays + 1 > maxDiff
           ? `${t("new_activity_dates_duration")} ${maxDiff} ${t(
@@ -133,6 +132,10 @@ const useDatePicker = () => {
     return getTime(new Date(year, month - 1, day));
   }, []);
 
+  const dateToString = useCallback((date) => {
+    return date.format();
+  }, []);
+
   const datesToString = useCallback((dates) => {
     const formatedDates = [];
     dates.forEach((d) => formatedDates.push(d.format()));
@@ -154,6 +157,7 @@ const useDatePicker = () => {
     datePickerSurveyConfig,
     validateActivityDates,
     dateToTimestap,
+    dateToString,
     datesToString,
     stringToDateObject,
   };

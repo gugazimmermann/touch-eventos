@@ -11,7 +11,7 @@ import {
   auth,
 } from "../../../services";
 import { STATESBR } from "../../../constants/states";
-import TIMEZONESBR from "../../../constants/timezones/timezones-br";
+// import TIMEZONESBR from "../../../constants/timezones/timezones-br";
 import usePhoneCode from "../../../hooks/usePhoneCode";
 import { maskCep, maskCPF, maskCNPJ, maskPhone } from "../../../helpers/mask";
 import { validateCode } from "../../../helpers/validate";
@@ -342,15 +342,23 @@ const AccountInfo = ({ data, fetchData, reload, confirmEmail }) => {
               options={STATESBR}
               // onBlur={(e) => handleState(e.target.value)}
             />
-            <InputFieldAutoComplete
+            <InputField
               disabled={loading || confirmEmail}
               required={true}
               placeholder={t("account_address_city")}
               value="addressCity"
               values={values}
               setValues={setValues}
-              // suggestions={cities}
             />
+            {/* <InputFieldAutoComplete
+              disabled={loading || confirmEmail}
+              required={true}
+              placeholder={t("account_address_city")}
+              value="addressCity"
+              values={values}
+              setValues={setValues}
+              suggestions={cities} 
+            />*/}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <InputField

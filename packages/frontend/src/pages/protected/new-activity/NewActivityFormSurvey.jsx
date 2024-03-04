@@ -59,17 +59,15 @@ const NewActivityFormSurvey = ({
     if (!values.surveyLastDay || !values.raffleDay) {
       setValues({
         ...values,
-        surveyLastDay: getMinLastDay,
-        raffleDay: getMinDay,
+        surveyLastDay: getMinLastDay.unix * 1000,
+        raffleDay: getMinDay.unix * 1000,
       });
     }
   }, [activePlans, activityDates, setValues, values]);
 
   useEffect(() => {
-    const getMinDay = new DateObject(values.surveyLastDay);
-    getMinDay.add(1, "days");
-    if (values.surveyLastDay >= values.raffleDay) {
-      setValues({ ...values, raffleDay: getMinDay });
+    if (values.raffleDay.unix <= values.surveyLastDay) {
+      setValues({ ...values, raffleDay: new DateObject(values.surveyLastDay).add(1, "days").unix * 1000 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.surveyLastDay]);
@@ -227,7 +225,7 @@ const NewActivityFormSurvey = ({
             required={true}
             value={values.surveyLastDay}
             onChange={(v) =>
-              setValues({ ...values, surveyLastDay: dateToTimestap(v) })
+              setValues({ ...values, surveyLastDay: v.unix * 1000 })
             }
             minDate={minLastDay}
             maxDate={maxLastDay}
@@ -252,7 +250,7 @@ const NewActivityFormSurvey = ({
                 : values.raffleDay
             }
             onChange={(v) =>
-              setValues({ ...values, raffleDay: dateToTimestap(v) })
+              setValues({ ...values, raffleDay: v.unix * 1000 })
             }
             minDate={new DateObject(values.surveyLastDay).add(1, "days")}
             maxDate={maxDay}

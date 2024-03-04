@@ -190,3 +190,35 @@ export const saveSurvey = async (activityId, lang, survey) => {
     return err;
   }
 };
+
+export const getDefaultSurveyAnwsers = async (activityId) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/default-survey-anwsers`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getSurveyAnwsers = async (activityId, lang) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/${lang}/anwsers`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};

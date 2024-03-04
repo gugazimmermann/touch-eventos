@@ -8,6 +8,7 @@ import {
   compareAsc,
   compareDesc,
   isValid,
+  addHours,
 } from "date-fns";
 import ROUTES from "../../../constants/routes";
 import { activity } from "../../../services";
@@ -226,7 +227,7 @@ const ActivityDetailsRegisters = () => {
 
   const formatData = (rawData) => {
     const formatDate = (d) =>
-      format(parseISO(d.replace(" ", "T")), "dd/MM/yy HH:mm");
+      format(addHours(parseISO(d.replace(" ", "T")), -3), "dd/MM/yy HH:mm");
     return rawData.map((d) => ({
       createdAt: { value: formatDate(d.createdAt)},
       confirmed: { value: d.confirmed ? formatDate(d.confirmed) : ""},

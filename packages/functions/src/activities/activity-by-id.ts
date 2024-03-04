@@ -18,6 +18,7 @@ import {
   IActivitiesRegister,
   IActivitiesDesk,
   IActivitiesQuestion,
+  IActivitiesVisitorsDefaultSurvey,
 } from "../database";
 import { error } from "../error";
 
@@ -25,6 +26,7 @@ export interface Database {
   activities_register: IActivitiesRegister;
   activities_desk: IActivitiesDesk;
   activities_survey_question: IActivitiesQuestion;
+  activities_visitors_default_survey: IActivitiesVisitorsDefaultSurvey;
 }
 
 const db = new Kysely<Database>({
@@ -109,32 +111,45 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
 
     item.desk = deskResults?.[0]?.desk_count;
 
-    const registerResults = await db
+    const registersAll = await db
       .selectFrom("activities_register")
-      .select([
-        sql<number>`count(registrationId)`.as("registration_count"),
-        "confirmed",
+      // .select([sql<number>`count(registrationId)`.as("registration_total")])
+      .select(({ fn }) => [
+        fn.count<number>("registrationId").as("registration_total"),
       ])
       .where("activityId", "=", item.activityId)
-      .groupBy("confirmed")
       .execute();
+    item.registers = registersAll[0].registration_total;
 
-    item.registers = registerResults.reduce(
-      (acc, cur) => acc + cur.registration_count,
-      0
-    );
-    item.registersConfirmed =
-      registerResults.find((x) => x.confirmed)?.registration_count || 0;
+    const registersConfirmed = await db
+      .selectFrom("activities_register")
+      // .select([sql<number>`count(registrationId)`.as("registration_confirmed")])
+      .select(({ fn }) => [
+        fn.count<number>("registrationId").as("registration_confirmed"),
+      ])
+      .where("activityId", "=", item.activityId)
+      .where("confirmed", "is not", null)
+      .execute();
+    item.registersConfirmed = registersConfirmed[0].registration_confirmed;
 
     item.surveys = await db
       .selectFrom("activities_survey_question")
       .select("language")
       .select(({ fn }) => [fn.count<number>("questionId").as("question_count")])
-      .where("language", "in", ["pt-BR", "en", "es"])
+      // .where("language", "in", ["pt-BR", "en", "es"])
       .where("activityId", "=", item.activityId)
       .where("active", "=", true)
       .groupBy("language")
       .execute();
+
+    const surveysVisitors = await db
+      .selectFrom("activities_visitors_default_survey")
+      .select(({ fn }) => [fn.count<number>("visitorId").as("visitors_count")])
+      .where("activityId", "=", item.activityId)
+      .groupBy("visitorId")
+      .execute();
+
+    item.surveysVisitors = surveysVisitors.length;
 
     if (item.image) {
       const url = await getSignedUrl(

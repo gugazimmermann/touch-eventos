@@ -103,7 +103,7 @@ const ActivityDetailsDefaultSurvey = () => {
               <div className="container px-4 mx-auto my-4">
                 {survey.length > 0 &&
                   survey.map((s, i) => (
-                    <div className="rounded-t-lg border border-neutral-200 mb-2">
+                    <div key={`q#${i}`} className="rounded-t-lg border border-neutral-200 mb-2">
                       <h2 className="mb-0">
                         <div className="flex w-full items-center rounded-t-xl border-0 px-4 py-2 text-left border-b border-slate-200">
                           {i + 1} - {s.question}

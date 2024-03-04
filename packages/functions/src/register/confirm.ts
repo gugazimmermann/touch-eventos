@@ -94,21 +94,22 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       const verification = verificationsResults.Item;
 
       // messages
-      let messageSubject = `${activity.name} - Lembrete da pesquisa!`;
-      let messageBody = `Olá! Não se não se esqueça de participar da nossa pesquisa${
-        activity.raffle === "YES" ? " e concorrer no sorteio" : ""
-      }, acesse: ${SURVEY_URL}/${activity.slug}`;
-      if (data.language === "en") {
-        messageSubject = `${activity.name} - Survey Reminder!`;
-        messageBody = `Hello! Don't forget to participate in our survey${
-          activity.raffle === "YES" ? " and enter the raffle" : ""
-        }, visit: ${SURVEY_URL}/${activity.slug}`;
-      } else if (data.language === "es") {
-        messageSubject = `${activity.name} - ¡Recordatorio de la encuesta!`;
-        messageBody = `¡Hola! No olvides participar en nuestra encuesta${
-          activity.raffle === "YES" ? " y participar en el sorteo" : ""
-        }, accede a: ${SURVEY_URL}/${activity.slug}`;
-      }
+
+
+
+      let emailSubject = `${activity.name} - Lembrete da pesquisa!`;
+      let messageBody = activity.notificationOnConfirmText.replace(`{${SURVEY_URL}/${activity.slug}}`, `${SURVEY_URL}/${activity.slug}`);
+      // if (data.language === "en") {
+      //   messageSubject = `${activity.name} - Survey Reminder!`;
+      //   messageBody = `Hello! Don't forget to participate in our survey${
+      //     activity.raffle === "YES" ? " and enter the raffle" : ""
+      //   }, visit: ${SURVEY_URL}/${activity.slug}`;
+      // } else if (data.language === "es") {
+      //   messageSubject = `${activity.name} - ¡Recordatorio de la encuesta!`;
+      //   messageBody = `¡Hola! No olvides participar en nuestra encuesta${
+      //     activity.raffle === "YES" ? " y participar en el sorteo" : ""
+      //   }, accede a: ${SURVEY_URL}/${activity.slug}`;
+      // }
 
       if (verification.type === "SMS") {
         await snsClient.send(
@@ -120,7 +121,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         );
         await snsClient.send(
           new PublishCommand({
-            Message: `${messageSubject} - ${messageBody}`,
+            Message: messageBody,
             PhoneNumber: String(registration.phone),
             MessageAttributes: {
               "AWS.SNS.SMS.SMSType": {
@@ -140,7 +141,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
                   Data: messageBody,
                 },
               },
-              Subject: { Data: messageSubject },
+              Subject: { Data: emailSubject },
             },
             Source: "no-reply@toucheventos.com.br",
           })

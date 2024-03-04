@@ -25,6 +25,7 @@ const ROUTES = Object.freeze({
     REGISTERS: "cadastros",
     DEFAULT_SURVEYS: "pesquisa-padrao",
     SURVEYS: "pesquisas",
+    ANSWERS: "respostas",
     DESK: "balcao",
   },
   ACTIVITIES: {

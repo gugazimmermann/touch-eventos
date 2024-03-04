@@ -1,5 +1,148 @@
 const surveyQuestionItems = [
   {
+    questionId: 1,
+    question: "Nome:",
+    required: true,
+    type: "special",
+    language: "pt-BR",
+    order: 1,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 2,
+    question: "Email:",
+    required: false,
+    type: "special",
+    language: "pt-BR",
+    order: 2,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 3,
+    question: "Telefone:",
+    required: false,
+    type: "special",
+    language: "pt-BR",
+    order: 3,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 4,
+    question: "Em qual estado você mora?",
+    required: true,
+    type: "special",
+    language: "pt-BR",
+    order: 4,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 5,
+    question: "Em qual cidade você mora?",
+    required: true,
+    type: "special",
+    language: "pt-BR",
+    order: 5,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 6,
+    question: "Qual é o seu gênero?",
+    required: true,
+    type: "single",
+    language: "pt-BR",
+    order: 6,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 7,
+    question: "Se outro, qual? (por favor, especifique)",
+    required: false,
+    type: "descriptive",
+    language: "pt-BR",
+    order: 7,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 8,
+    question: "Qual é a sua faixa etária?",
+    required: true,
+    type: "single",
+    language: "pt-BR",
+    order: 8,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 9,
+    question: "Qual é o seu estado civil?",
+    required: true,
+    type: "single",
+    language: "pt-BR",
+    order: 9,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 10,
+    question: "Qual é o seu nível de escolaridade?",
+    required: true,
+    type: "single",
+    language: "pt-BR",
+    order: 10,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 11,
+    question: "Qual é a sua ocupação?",
+    required: false,
+    type: "descriptive",
+    language: "pt-BR",
+    order: 11,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 12,
+    question: "Quais redes sociais você usa com mais frequência? ",
+    required: true,
+    type: "multiple",
+    language: "pt-BR",
+    order: 12,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 13,
+    question: "Gostaria de ser informado(a) sobre futuras atividades?",
+    required: true,
+    type: "objective",
+    language: "pt-BR",
+    order: 13,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+  {
+    questionId: 14,
+    question: "Como você prefere ser informado(a)?",
+    required: true,
+    type: "multiple",
+    language: "pt-BR",
+    order: 14,
+    active: 1,
+    createdAt: "2024-02-25 22:33:34",
+  },
+];
+
+const surveyAnswerItems = [
+  {
     questionId: 6,
     answer: "Feminino",
     language: "pt-BR",
@@ -248,7 +391,7 @@ const surveyQuestionItems = [
     createdAt: "2024-02-25 22:33:34",
   },
   {
-    questionId: 15,
+    questionId: 14,
     answer: "WhatsApp",
     language: "pt-BR",
     order: 2,
@@ -256,7 +399,7 @@ const surveyQuestionItems = [
     createdAt: "2024-02-25 22:33:34",
   },
   {
-    questionId: 16,
+    questionId: 14,
     answer: "SMS - Messagem de Texto",
     language: "pt-BR",
     order: 3,
@@ -267,12 +410,18 @@ const surveyQuestionItems = [
 
 async function up(db) {
   await db
+    .insertInto("activities_survey_default_question")
+    .values(surveyQuestionItems)
+    .execute();
+
+  await db
     .insertInto("activities_survey_default_answer")
     .values(surveyQuestionItems)
     .execute();
 }
 
 async function down(db) {
+  await db.deleteFrom("activities_survey_default_question").execute();
   await db.deleteFrom("activities_survey_default_answer").execute();
 }
 

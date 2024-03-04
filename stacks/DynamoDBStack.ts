@@ -117,6 +117,7 @@ export function DynamoDBStack({ stack }: StackContext) {
       visitorGift: "number",
       raffle: "number",
       raffleType: "string",
+      raffleDay: "string",
       startDate: "string",
       endDate: "string",
       city: "string",
@@ -136,6 +137,8 @@ export function DynamoDBStack({ stack }: StackContext) {
       StateStartDateIndex: { partitionKey: "state", sortKey: "startDate" },
       ActiveIndex: { partitionKey: "active", sortKey: "createdAt" },
       SlugIndex: { partitionKey: "slug" },
+      EndDateIndex: { partitionKey: "endDate" },
+      RaffleDayIndex: { partitionKey: "raffleDay" },
     },
     cdk: {
       table: {

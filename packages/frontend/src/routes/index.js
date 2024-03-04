@@ -39,7 +39,9 @@ const Account = lazyLoad(import("../pages/protected/account/Account"));
 const NewActivity = lazyLoad(
   import("../pages/protected/new-activity/NewActivity")
 );
-const ActivityDetails = lazyLoad(import("../pages/protected/activity-details/ActivityDetails"));
+const ActivityDetails = lazyLoad(
+  import("../pages/protected/activity-details/ActivityDetails")
+);
 const ActivityDetailsRegisters = lazyLoad(
   import("../pages/protected/activity-details/ActivityDetailsRegisters")
 );
@@ -51,6 +53,9 @@ const ActivityDetailsSurvey = lazyLoad(
 );
 const ActivityDetailsDefaultSurvey = lazyLoad(
   import("../pages/protected/activity-details/ActivityDetailsDefaultSurvey")
+);
+const ActivityDetailsSurveyAnswers = lazyLoad(
+  import("../pages/protected/activity-details/ActivityDetailsSurveyAnswers")
 );
 
 export const router = createBrowserRouter(
@@ -125,9 +130,13 @@ export const router = createBrowserRouter(
           path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.SURVEYS}/:lang?`}
           element={<ActivityDetailsSurvey />}
         />
-                <Route
+        <Route
           path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.DEFAULT_SURVEYS}`}
           element={<ActivityDetailsDefaultSurvey />}
+        />
+        <Route
+          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.ANSWERS}`}
+          element={<ActivityDetailsSurveyAnswers />}
         />
       </Route>
     </>

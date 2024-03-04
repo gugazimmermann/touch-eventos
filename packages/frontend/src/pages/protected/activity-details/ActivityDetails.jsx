@@ -9,12 +9,10 @@ import {
   ActivityDetailsCardLogo,
   ActivityDetailsCardRegister,
   ActivityDetailsCardSurvey,
-  ActivityDetailsCardNewSurvey,
   ActivityDetailsQRCode,
   ActivityDetailsCard,
   ActivityDetailsCardDesk,
 } from "./components";
-import { format } from "date-fns";
 
 const ActivityDetails = () => {
   const { t } = useTranslation("activity_details");
@@ -51,8 +49,7 @@ const ActivityDetails = () => {
     registers: 0,
     registersConfirmed: 0,
     surveys: [],
-    surveysStarted: 0,
-    surveysCompleted: 0,
+    surveysVisitors: 0,
     desk: 0,
   });
   const [loading, setLoading] = useState(false);
@@ -104,8 +101,7 @@ const ActivityDetails = () => {
       surveyLastDay: data.surveyLastDay,
       surveyText: data.surveyText,
       surveys: data.surveys,
-      surveysStarted: 0,
-      surveysCompleted: 0,
+      surveysVisitors: data.surveysVisitors,
       desk: data.desk,
     });
     if (data?.payment !== "success")
@@ -178,7 +174,7 @@ const ActivityDetails = () => {
               setToastVisible={setToastVisible}
               setToastMessage={setToastMessage}
             />
-            <div className="w-1/3 flex flex-col gap-4">
+            <div className="w-2/5 flex flex-col gap-4">
               <ActivityDetailsCardRegister
                 activityId={activityId}
                 registers={values.registers}
@@ -187,8 +183,7 @@ const ActivityDetails = () => {
               <ActivityDetailsCardSurvey
                 activityId={activityId}
                 surveys={values.surveys}
-                surveysStarted={values.surveysStarted}
-                surveysCompleted={values.surveysCompleted}
+                surveysVisitors={values.surveysVisitors}
               />
             </div>
             <ActivityDetailsQRCode slug={values.slug} />

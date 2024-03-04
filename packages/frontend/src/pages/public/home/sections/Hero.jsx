@@ -46,17 +46,19 @@ export default function Hero() {
   const { t } = useTranslation("home");
 
   return (
-    <section className="w-full bg-success-500 pt-16">
-      <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center">
-        <div className="flex flex-col md:w-1/2 justify-center items-start text-center text-strong md:text-left">
-          <p className="uppercase text-3xl">{t("hero_title")}</p>
-          <h1 className="my-4 text-3xl sm:text-4xl font-bold leading-tight">
+    <section className="w-full bg-success-500 pt-8">
+      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-center items-center">
+        <div className="flex flex-col md:w-1/2 justify-center items-center text-center text-strong md:text-left pt-8">
+          <p className="uppercase text-3xl text-center">{t("hero_title")}</p>
+          <h1 className="my-4 text-2xl font-bold text-center">
             {t("hero_call")}
           </h1>
-          <p className="leading-normal text-2xl mb-8">{t("hero_subtile")}</p>
+          <p className="text-xl mb-8 text-center">
+            {t("hero_subtile")}
+          </p>
         </div>
-        <div className="w-full pb-16 md:w-1/2 sm:pb-0">
-          <img alt="hero" className="w-full md:w-4/5 mx-auto" src={Survey} />
+        <div className="w-full md:w-1/2 pb-8">
+          <img alt="hero" className="w-full mx-auto" src={Survey} />
         </div>
       </div>
       <HeroBackground />

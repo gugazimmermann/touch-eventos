@@ -45,7 +45,7 @@ const NewActivityFormMessage = ({
 
   const defaultRaffleAutomaticText = `${t(
     "new_activity_messages_raffle_automatic_text_one"
-  )} {NAME},\n\n${t("new_activity_messages_raffle_automatic_text_two")} ${
+  )} {NOME},\n\n${t("new_activity_messages_raffle_automatic_text_two")} ${
     values.name
   }`;
 
@@ -86,7 +86,7 @@ const NewActivityFormMessage = ({
       !confirmationText.includes("{######}") ||
       !notificationOnConfirmText.includes(surveyURL) ||
       !notificationOnEndText.includes(surveyURL) ||
-      !raffleAutomaticText.includes("{NAME}")
+      !raffleAutomaticText.includes("{NOME}")
     ) {
       return true;
     }
@@ -345,7 +345,7 @@ const NewActivityFormMessage = ({
                   raffleAutomaticText: e.target.value,
                 });
               }}
-              onBlur={(e) => verifyText(e.target.value, '{NAME}')}
+              onBlur={(e) => verifyText(e.target.value, '{NOME}')}
             />
           </div>
         </div>

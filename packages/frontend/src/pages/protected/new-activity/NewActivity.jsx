@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getTime, isAfter } from "date-fns";
+import { endOfDay, getTime, isAfter, startOfDay } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 import { useActivities } from "../../../context/ActivitiesContext";
 import { plans, verifications, auth, activity } from "../../../services";
@@ -143,12 +143,12 @@ const NewActivity = () => {
 
   const verifySubscriptionDate = useCallback(() => {
     if (state?.subscription?.endDate) {
-      const lastDay = new Date(
+      const lastDay = endOfDay(new Date(
         parseInt(activityDates[activityDates.length - 1].unix * 1000, 10)
-      );
-      const lastSubscriptionDay = new Date(
+      ));
+      const lastSubscriptionDay = endOfDay(new Date(
         parseInt(state.subscription.endDate, 10)
-      );
+      ));
       const verify = isAfter(lastDay, lastSubscriptionDay)
         ? t("new_activity_dates_last_day_subscription")
         : false;
@@ -184,6 +184,7 @@ const NewActivity = () => {
         userId,
         startDate: `${dateToTimestap(activityDates[0])}`,
         endDate: `${dateToTimestap(activityDates[activityDates.length - 1])}`,
+        raffleDay: `${startOfDay(new Date(values.raffleDay)).getTime()}`,
         city: values.addressCity,
         state: values.addressState,
         location: `${values.addressCity}+${values.addressState}`,

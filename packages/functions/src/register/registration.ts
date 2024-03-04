@@ -124,15 +124,15 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
     }
 
     // messages
-    let messageSubject = "Finalize seu registro em";
-    let messageBody = "Código de Confirmação:";
-    if (registerItem.language === "en") {
-      messageSubject = "Complete your registration at";
-      messageBody = "Confirmation Code:";
-    } else if (registerItem.language === "es") {
-      messageSubject = "Finaliza tu registro en";
-      messageBody = "Código de Confirmación:";
-    }
+    let emailSubject = `${activity.name} - Cadastro`;
+    let messageBody = activity.confirmationText.replace("{######}", registerItem.code);
+    // if (registerItem.language === "en") {
+    //   messageSubject = "Complete your registration at";
+    //   messageBody = "Confirmation Code:";
+    // } else if (registerItem.language === "es") {
+    //   messageSubject = "Finaliza tu registro en";
+    //   messageBody = "Código de Confirmación:";
+    // }
 
     let sendCodeResponse:
       | PublishCommandOutput
@@ -147,7 +147,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       );
       sendCodeResponse = await snsClient.send(
         new PublishCommand({
-          Message: `${messageSubject} ${activity.name}. ${messageBody} ${registerItem.code}`,
+          Message: messageBody,
           PhoneNumber: registerItem.phone,
         })
       );
@@ -158,13 +158,10 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
           Message: {
             Body: {
               Text: {
-                Data: `
-      ${messageSubject} ${activity.name}\n\n
-      ${messageBody} ${registerItem.code}
-                `,
+                Data: messageBody,
               },
             },
-            Subject: { Data: `${messageSubject} ${activity.name}` },
+            Subject: { Data: emailSubject },
           },
           Source: "no-reply@toucheventos.com.br",
         })

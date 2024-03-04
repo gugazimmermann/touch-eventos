@@ -9,6 +9,7 @@ import {
   compareAsc,
   compareDesc,
   isValid,
+  addHours,
 } from "date-fns";
 import ROUTES from "../../../constants/routes";
 import { activity } from "../../../services";
@@ -258,8 +259,7 @@ const ActivityDetailsDesk = () => {
   };
 
   const formatData = (rawData) => {
-    const formatDate = (d) =>
-      format(parseISO(d.replace(" ", "T")), "dd/MM/yy HH:mm");
+    const formatDate = (d) => format(addHours(parseISO(d.replace(" ", "T")), -3), "dd/MM/yy HH:mm");
     return rawData.map((d) => ({
       user: { value: d.user },
       gifts: { value: d.gifts },

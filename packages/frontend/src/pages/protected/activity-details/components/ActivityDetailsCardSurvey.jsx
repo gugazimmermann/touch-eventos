@@ -5,8 +5,7 @@ import ROUTES from "../../../../constants/routes";
 const ActivityDetailsCardSurvey = ({
   activityId,
   surveys,
-  surveysStarted,
-  surveysCompleted,
+  surveysVisitors,
 }) => {
   const { t } = useTranslation("activity_details");
   const navigate = useNavigate();
@@ -40,18 +39,18 @@ const ActivityDetailsCardSurvey = ({
             )
           }
         >
-          <h2 className="text-4xl font-bold">{surveys?.[0]?.question_count}</h2>
+          <h2 className="text-4xl font-bold">{surveys?.[0]?.question_count || 0}</h2>
           <h5 className="text-lg font-medium">{t("Perguntas")}</h5>
         </button>
         <button
           className="w-1/3 text-center"
           onClick={() =>
             navigate(
-              `/${ROUTES.ADMIN.ACTIVITY}/${activityId}/${ROUTES.ADMIN.SURVEYS}/pt-BR`
+              `/${ROUTES.ADMIN.ACTIVITY}/${activityId}/${ROUTES.ADMIN.ANSWERS}`
             )
           }
         >
-          <h2 className="text-4xl font-bold">{surveysStarted}</h2>
+          <h2 className="text-4xl font-bold">{surveysVisitors || 0}</h2>
           <h5 className="text-lg font-medium">
             {t("Respondidas")}
           </h5>

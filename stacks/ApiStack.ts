@@ -250,6 +250,20 @@ export function ApiStack({ stack }: StackContext) {
             bind: [database],
         },
       },
+      "GET /activities/{activityId}/default-survey-anwsers": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/default-survey-anwsers-by-activity-id.handler",
+            bind: [database],
+        },
+      },
+      "GET /activities/{activityId}/survey/{lang}/anwsers": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/survey-anwsers-by-activity-id.handler",
+            bind: [database],
+        },
+      },
     },
   });
 
