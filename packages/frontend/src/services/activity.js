@@ -145,6 +145,23 @@ export const verifySlug = async (slug) => {
   }
 };
 
+
+export const getRegisters = async (activityId) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/registers`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
 export const getDefaultSurvey = async (activityId) => {
   try {
     const { accessToken } = await handleFetchAuthSession();

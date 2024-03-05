@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
-import { Kysely } from "kysely";
+import { Kysely, sql } from "kysely";
 import { DataApiDialect } from "kysely-data-api";
 import { RDSData } from "@aws-sdk/client-rds-data";
 import { RDS } from "sst/node/rds";
@@ -42,7 +42,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       .groupBy('questionId')
       .groupBy('answerId')
       .execute();
-
+  
     return {
       statusCode: 200,
       body: JSON.stringify(results),

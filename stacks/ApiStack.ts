@@ -250,6 +250,13 @@ export function ApiStack({ stack }: StackContext) {
             bind: [database],
         },
       },
+      "GET /activities/{activityId}/survey/registers": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/registers-by-activity-id.handler",
+            bind: [database],
+        },
+      },
       "GET /activities/{activityId}/default-survey-anwsers": {
         function: {
           handler:
