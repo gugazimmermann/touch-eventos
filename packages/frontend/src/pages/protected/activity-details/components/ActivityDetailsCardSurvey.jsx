@@ -40,7 +40,7 @@ const ActivityDetailsCardSurvey = ({
           }
         >
           <h2 className="text-4xl font-bold">{surveys?.[0]?.question_count || 0}</h2>
-          <h5 className="text-lg font-medium">{t("Perguntas")}</h5>
+          <h5 className="text-lg font-medium">{t("Atividade")}</h5>
         </button>
         <button
           className="w-1/3 text-center"
@@ -52,7 +52,7 @@ const ActivityDetailsCardSurvey = ({
         >
           <h2 className="text-4xl font-bold">{surveysVisitors || 0}</h2>
           <h5 className="text-lg font-medium">
-            {t("Respondidas")}
+            {t("Respostas")}
           </h5>
         </button>
       </div>

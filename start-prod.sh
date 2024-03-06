@@ -150,17 +150,17 @@ aws dynamodb put-item \
         }
     }"
 
-aws dynamodb put-item \
-    --table-name "production-touch-eventos-Payments" \
-    --item "{
-          \"paymentId\": {\"S\": \"696dfbbd-3c8f-4dff-aaa0-6e855f34d7b9\"},
-          \"date\": {\"S\": \"1709295768000\"},
-          \"paymentIntentId\": {\"S\": \"pi_3OpUtsAXbGdhNjWK2FoloFUX\"},
-          \"plan\": {\"S\": \"Atividade Única / 3 dias\"},
-          \"status\": {\"S\": \"success\"},
-          \"userId\": {\"S\": \"$CREATE_USER_OUTPUT\"},
-          \"value\": {\"S\": \"100\"}
-    }"
+# aws dynamodb put-item \
+#     --table-name "production-touch-eventos-Payments" \
+#     --item "{
+#           \"paymentId\": {\"S\": \"696dfbbd-3c8f-4dff-aaa0-6e855f34d7b9\"},
+#           \"date\": {\"S\": \"1709295768000\"},
+#           \"paymentIntentId\": {\"S\": \"pi_3OpUtsAXbGdhNjWK2FoloFUX\"},
+#           \"plan\": {\"S\": \"Atividade Única / 3 dias\"},
+#           \"status\": {\"S\": \"success\"},
+#           \"userId\": {\"S\": \"$CREATE_USER_OUTPUT\"},
+#           \"value\": {\"S\": \"100\"}
+#     }"
 
 
 echo "Usuário gugazimmermann@gmail.com criado e dados carregados com sucesso."
