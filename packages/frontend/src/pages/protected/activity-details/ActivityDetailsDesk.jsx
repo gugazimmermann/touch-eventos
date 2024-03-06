@@ -79,6 +79,7 @@ const ActivityDetailsDesk = () => {
     );
 
     for (const row of dataToTable) {
+      row.active.value = row.active.value.split("#")[1];
       const values = properties.map((property) => {
         const escapedValue = ("" + (row[property].value || "")).replace(
           /"/g,
@@ -88,6 +89,7 @@ const ActivityDetailsDesk = () => {
       });
       csvRows.push(values.join(","));
     }
+
     const fileName = `balcao-${format(new Date(), "dd_MMM-HH_mm_ss")}.csv`;
     const csvString = csvRows.join("\n");
     const blob = new Blob([csvString], { type: "text/csv" });
@@ -216,9 +218,13 @@ const ActivityDetailsDesk = () => {
     setSearch("");
     let newData = [...originalData];
     if (status === "active") {
-      newData = originalData.filter((d) => d.active.value.split("#")[1] === "Ativo");
+      newData = originalData.filter(
+        (d) => d.active.value.split("#")[1] === "Ativo"
+      );
     } else if (status === "inactive") {
-      newData = originalData.filter((d) => d.active.value.split("#")[1] === "Inativo");
+      newData = originalData.filter(
+        (d) => d.active.value.split("#")[1] === "Inativo"
+      );
     }
     setDataToTable(newData);
     handlePagination(newData, 1);
@@ -259,12 +265,16 @@ const ActivityDetailsDesk = () => {
   };
 
   const formatData = (rawData) => {
-    const formatDate = (d) => format(addHours(parseISO(d.replace(" ", "T")), -3), "dd/MM/yy HH:mm");
+    const formatDate = (d) =>
+      format(addHours(parseISO(d.replace(" ", "T")), -3), "dd/MM/yy HH:mm");
     return rawData.map((d) => ({
       user: { value: d.user },
       gifts: { value: d.gifts },
       createdAt: { value: d.createdAt ? formatDate(d.createdAt) : "" },
-      active: { value: d.active ? `${d.deskId}#Ativo` : `${d.deskId}#Inativo`, type: "status" },
+      active: {
+        value: d.active ? `${d.deskId}#Ativo` : `${d.deskId}#Inativo`,
+        type: "status",
+      },
     }));
   };
 

@@ -22,7 +22,7 @@ const Header = ({ theme, lang }) => {
         </div>
         <div className="flex justify-end items-center w-1/2 gap-4">
           <ThemeSelect currentTheme={theme} />
-          <LangSelect currentLang={lang} />
+          {/* <LangSelect currentLang={lang} /> */}
           {state.token && (
             <button type="button" onClick={() => handleLogout()}>
               <Logout />

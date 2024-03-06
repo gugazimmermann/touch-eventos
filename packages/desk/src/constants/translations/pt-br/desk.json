@@ -27,7 +27,7 @@
   "unauthorized": "Falha de autenticação. Por favor, faça login novamente.",
   "invalid_phone": "Telefone inválido.",
   "invalid_email": "Email inválido.",
-  "register_not_found": "Registro não encontrado.",
+  "register_not_found": "Cadastro não encontrado.",
   "check_error": "Erro durante a conferência. Por favor, tente novamente.",
   "phone": "Telefone",
   "email": "Email",

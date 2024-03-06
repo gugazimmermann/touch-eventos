@@ -35,7 +35,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   if (!data?.token || !data?.registrationId)
     return error(400, "Bad Request: Missing Data");
 
-  var decodedToken = jwt.verify(data.token, JWT_SECRET) as { id: string };
+  const decodedToken = jwt.verify(data.token, JWT_SECRET) as { id: string };
 
   try {
     const deskResults = await db
@@ -53,19 +53,22 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       .where("activityId", "=", activityId)
       .execute();
 
-    if (!registerResults.length) return error(404, "Not Found: Register Not Found");
+    if (!registerResults.length)
+      return error(404, "Not Found: Register Not Found");
 
-    if (!registerResults[0].confirmed) return error(400, "Bad Request: Visistor Not Confirmed");
-    if (registerResults[0].gift) return error(400, "Bad Request: Gift Already Delivered");
+    if (!registerResults[0].confirmed)
+      return error(400, "Bad Request: Visistor Not Confirmed");
+    if (registerResults[0].gift)
+      return error(400, "Bad Request: Gift Already Delivered");
 
     await db
-    .updateTable("activities_register")
-    .set({
-      gift: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`,
-      deskId: deskResults[0].deskId,
-    })
-    .where("registrationId", "=", registerResults[0].registrationId)
-    .executeTakeFirst();
+      .updateTable("activities_register")
+      .set({
+        gift: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`,
+        deskId: deskResults[0].deskId,
+      })
+      .where("registrationId", "=", registerResults[0].registrationId)
+      .executeTakeFirst();
 
     return {
       statusCode: 200,

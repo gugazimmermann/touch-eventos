@@ -52,7 +52,7 @@ const usePhoneCode = () => {
         countryToPhoneCode(country, value, values, setValues)
       }
       customLabels={phoneCodeList}
-      className="mt-4 p-0"
+      className="phoneCodeSelect"
     />
   );
 

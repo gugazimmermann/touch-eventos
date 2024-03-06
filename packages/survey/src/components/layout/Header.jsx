@@ -1,8 +1,30 @@
 import { Link } from "react-router-dom";
+import { useSurvey } from "../../context/SurveyContext";
 import Logo from "./Logo";
-import LangSelect from "./LangSelect";
+import { Logout } from "../../icons";
 
-const Header = ({ currentLang = 'pt-BR' }) => {
+const Header = () => {
+  const { state, dispatch } = useSurvey();
+
+  const handleLogout = () => {
+    dispatch({
+      type: "TOKEN",
+      payload: { token: null },
+    });
+    dispatch({
+      type: "REGISTRATIONID",
+      payload: { registrationID: null },
+    });
+    dispatch({
+      type: "ACTIVITY",
+      payload: { activity: null },
+    });
+    dispatch({
+      type: "REGISTRATION",
+      payload: { registration: null },
+    });
+  };
+
   return (
     <header className=" p-2 bg-white fixed w-full shadow-md top-0 left-0 right-0 z-40">
       <div className="container mx-auto flex flex-wrap items-center">
@@ -12,7 +34,11 @@ const Header = ({ currentLang = 'pt-BR' }) => {
           </Link>
         </div>
         <div className="flex justify-end w-1/2">
-          <LangSelect currentLang={currentLang} />
+          {state.token && (
+            <button type="button" onClick={() => handleLogout()}>
+              <Logout />
+            </button>
+          )}
         </div>
       </div>
     </header>

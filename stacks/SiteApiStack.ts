@@ -171,6 +171,84 @@ export function SiteApiStack({ stack }: StackContext) {
           bind: [database],
         },
       },
+      "POST /survey/auth/{id}": {
+        function: {
+          handler: "packages/functions/src/survey/auth.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            VERIFICATIONS_TABLE_NAME: verificationsTable.tableName,
+          },
+          permissions: [
+            activitiesTable,
+            verificationsTable,
+            new PolicyStatement({
+              actions: ["ses:SendEmail", "SES:SendRawEmail"],
+              resources: ["*"],
+            }),
+            new PolicyStatement({
+              actions: ["sns:SetSMSAttributes", "sns:Publish"],
+              resources: ["*"],
+            }),
+          ],
+          bind: [database],
+        },
+      },
+      "POST /survey/confirm/{id}": {
+        function: {
+          handler: "packages/functions/src/survey/confirm.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            JWT_SECRET: String(process.env.JWT_SECRET),
+          },
+          permissions: [activitiesTable],
+          bind: [database],
+        },
+      },
+      "POST /survey/registration/{id}": {
+        function: {
+          handler: "packages/functions/src/survey/registration-by-id.handler",
+          environment: {
+            JWT_SECRET: String(process.env.JWT_SECRET),
+          },
+          bind: [database],
+        },
+      },
+      "POST /survey/survey/{slug}/default-survey": {
+        function: {
+          handler: "packages/functions/src/survey/default-survey.handler",
+          environment: {
+            JWT_SECRET: String(process.env.JWT_SECRET),
+          },
+          bind: [database],
+        },
+      },
+      "POST /survey/survey/{slug}/default-answers": {
+        function: {
+          handler: "packages/functions/src/survey/default-answers.handler",
+          environment: {
+            JWT_SECRET: String(process.env.JWT_SECRET),
+          },
+          bind: [database],
+        },
+      },
+      "POST /survey/survey/{slug}/activity-survey": {
+        function: {
+          handler: "packages/functions/src/survey/activity-survey.handler",
+          environment: {
+            JWT_SECRET: String(process.env.JWT_SECRET),
+          },
+          bind: [database],
+        },
+      },
+      "POST /survey/survey/{slug}/activity-answers": {
+        function: {
+          handler: "packages/functions/src/survey/activity-answers.handler",
+          environment: {
+            JWT_SECRET: String(process.env.JWT_SECRET),
+          },
+          bind: [database],
+        },
+      },
     },
   });
 

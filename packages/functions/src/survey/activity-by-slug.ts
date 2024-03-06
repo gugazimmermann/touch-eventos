@@ -49,28 +49,19 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       ExpressionAttributeNames: {
         "#activityId": "activityId",
         "#active": "active",
-        "#payment": "payment",
-        "#endDate": "endDate",
-        "#startDate": "startDate",
         "#name": "name",
         "#slug": "slug",
-        "#logo": "logo",
+        "#image": "image",
         "#verificationId": "verificationId",
-        "#visitorGift": "visitorGift",
-        "#visitorGiftTextPTBR": "visitorGiftTextPTBR",
-        "#visitorGiftTextEN": "visitorGiftTextEN",
-        "#visitorGiftTextES": "visitorGiftTextES",
         "#raffle": "raffle",
-        "#raffleType": "raffleType",
-        "#raffleTextPTBR": "raffleTextPTBR",
-        "#raffleTextEN": "raffleTextEN",
-        "#raffleTextES": "raffleTextES",
+        "#raffleDay": "raffleDay",
+        "#surveyLastDay": "surveyLastDay",
       },
       ExpressionAttributeValues: { ":slug": slug },
       IndexName: "SlugIndex",
       KeyConditionExpression: "#slug = :slug",
       ProjectionExpression:
-        "#activityId, #active, #payment, #endDate, #startDate, #name, #slug, #logo, #verificationId, #visitorGift, #visitorGiftTextPTBR, #visitorGiftTextEN, #visitorGiftTextES, #raffle, #raffleType, #raffleTextPTBR, #raffleTextEN, #raffleTextES",
+        "#activityId, #active, #name, #slug, #image, #verificationId, #raffle, #raffleDay, #surveyLastDay",
     };
     const activitiesResults: QueryCommandOutput = await dynamoDBClient.send(
       new QueryCommand(activitiesParams)
@@ -78,9 +69,6 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
     if (!activitiesResults?.Items?.length)
       return error(404, "Not Found: activity not found");
     const item = activitiesResults.Items[0];
-
-    if (item.active !== 1 && item.payment)
-      return error(400, "Bad Request: Activity Not Active");
 
     const verificationsResults: GetCommandOutput = await dynamoDBClient.send(
       new GetCommand({
@@ -102,36 +90,18 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       item.logo = url;
     }
 
-    const registrationsResults = await db
-      .selectFrom("activities_register")
-      .select(({ fn }) => [
-        fn.count<number>("registrationId").as("registration_count"),
-      ])
-      .where("activityId", "=", item.activityId)
-      .execute();
-
     return {
       statusCode: 200,
       body: JSON.stringify({
         activityId: item.activityId,
         active: item.active,
-        payment: item?.payment?.status,
-        endDate: item.endDate,
-        startDate: item.startDate,
         name: item.name,
         slug: item.slug,
         logo: item.logo,
         verification: item.verification.type,
-        visitorGift: item.visitorGift,
-        visitorGiftTextPTBR: item.visitorGiftTextPTBR,
-        visitorGiftTextEN: item.visitorGiftTextEN,
-        visitorGiftTextES: item.visitorGiftTextES,
         raffle: item.raffle,
-        raffleType: item.raffleType,
-        raffleTextPTBR: item.raffleTextPTBR,
-        raffleTextEN: item.raffleTextEN,
-        raffleTextES: item.raffleTextES,
-        registrations: registrationsResults?.[0]?.registration_count,
+        raffleDay: item.raffleDay,
+        surveyLastDay: item.surveyLastDay
       }),
     };
   } catch (err) {

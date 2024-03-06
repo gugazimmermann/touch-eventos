@@ -11,9 +11,9 @@ const Header = ({ currentLang = 'pt-BR' }) => {
             <Logo />
           </Link>
         </div>
-        <div className="flex justify-end w-1/2">
+        {/* <div className="flex justify-end w-1/2">
           <LangSelect currentLang={currentLang} />
-        </div>
+        </div> */}
       </div>
     </header>
   );

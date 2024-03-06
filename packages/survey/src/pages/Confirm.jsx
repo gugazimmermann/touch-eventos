@@ -4,68 +4,60 @@ import { useTranslation } from "react-i18next";
 import { endOfDay } from "date-fns";
 import { useSurvey } from "../context/SurveyContext";
 import * as survey from "../services/survey";
-import usePhoneCode from "../hooks/usePhoneCode";
-import maskPhone from "../helpers/mask-phone";
-import { validateEmail, validatePhone } from "../helpers/validate";
+import { validateCode } from "../helpers/validate";
 import { Alert, Loading } from "../components";
 import { FormButton, InputField } from "../components/form";
 
-const Auth = () => {
+const Confirm = () => {
   const { t, i18n } = useTranslation("activity_survey");
-  const { activitySlug } = useParams();
+  const { activitySlug, registrationId, language } = useParams();
   const navigate = useNavigate();
-  const { PhoneCodeSelect } = usePhoneCode();
   const { state, dispatch } = useSurvey();
   const [loading, setLoading] = useState(false);
   const [loadingPage, setLoadingPage] = useState(false);
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
   const [activity, setActivity] = useState();
-  const [registrationPhone, setRegistrationPhone] = useState({
-    phoneCode: "",
-    phone: "",
-  });
-  const [registrationEmail, setRegistrationEmail] = useState({
-    email: "",
+  const [confirmationCode, setConfirmationCode] = useState({
+    code: "",
   });
 
   const handleSubmit = async (e) => {
     setError("");
     e.preventDefault();
-    const payload = {
-      activityId: activity.activityId,
-      email: "",
-      phone: "",
-      language: i18n.language,
-    };
-    if (activity.verification === "SMS") {
-      const phone = registrationPhone.phone.replace(/\D+/g, "");
-      if (!validatePhone(phone)) {
-        setError(t("invalid_phone"));
-        return;
-      }
-      const phoneCode = registrationPhone.phoneCode || "+55";
-      payload.phone = `${phoneCode}${phone}`;
-    } else {
-      if (!validateEmail(registrationEmail.email)) {
-        setError(t("invalid_email"));
-        return;
-      }
-      payload.email = registrationEmail.email;
+    if (!validateCode(confirmationCode.code)) {
+      setError(t("invalid_code"));
+      return;
     }
     setLoading(true);
-    const response = await survey.auth(activity.activityId, payload);
-    if (response?.registrationId) {
-      navigate(
-        `/${activity.slug}/${response.registrationId}/${response.language}`
-      );
+    const payload = {
+      registrationId,
+      activityId: activity.activityId,
+      code: confirmationCode.code,
+      language: i18n.language,
+    };
+    const result = await survey.confirm(activity.activityId, payload);
+    if (result?.token) {
+      dispatch({
+        type: "REGISTRATION",
+        payload: { registration: result.registration },
+      });
+      dispatch({
+        type: "REGISTRATIONID",
+        payload: { registrationID: registrationId },
+      });
+      dispatch({
+        type: "TOKEN",
+        payload: { token: result.token },
+      });
     } else {
-      if (response.error === "Not Found") {
-        setError(t("Cadastro Não Encontrado"));
-      } else if (response.error === "Not Confirmed") {
-        setError(t("Cadastro Não Confirmado"));
+      if (
+        result?.error === "Not Found: Registration not found" ||
+        result?.error === "Bad Request: Wrong Code"
+      ) {
+        setWarning(t("invalid_code"));
       } else {
-        setError(t("enter_error"));
+        setError(result.error);
       }
     }
     setLoading(false);
@@ -111,7 +103,18 @@ const Auth = () => {
   );
 
   useEffect(() => {
+    if (state.token && state.registrationID)
+      navigate(`/${activitySlug}/${state.registrationID}/1/${language}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.token, state.registrationID]);
+
+  useEffect(() => {
+    if (language) i18n.changeLanguage(language);
+  }, [i18n, language]);
+
+  useEffect(() => {
     if (!activitySlug) window.location.href = process.env.REACT_APP_SITE_URL;
+    else if (!registrationId) navigate(`/${activitySlug}`);
     else if (state.token && state.registrationID)
       navigate(`/${activitySlug}/${state.registrationID}/1/${i18n.language}`);
     else getData(activitySlug);
@@ -131,19 +134,19 @@ const Auth = () => {
           </div>
         </section>
       ) : (
-        <section className="flex flex-col flex-grow w-full">
+        <section className="flex flex-grow w-full">
           {loading ? (
             <div className="flex flex-grow justify-center items-center">
               <Loading size="w-20 w-20" />
             </div>
           ) : (
-            <div className="container mx-auto flex-grow bg-background-50 p-4">
+            <div className="container mx-auto bg-background-50 p-4">
               {error && <Alert message={error} type="danger" center={true} />}
               {warning && (
                 <Alert message={warning} type="warning" center={true} />
               )}
               {activity && (
-                <div className="w-full max-w-sm mx-auto bg-white rounded-lg shadow-lg">
+                <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
                   {activity.logo && (
                     <img
                       className="object-cover object-center w-full h-64"
@@ -156,62 +159,35 @@ const Auth = () => {
                       {activity.name}
                     </h1>
                   </div>
+
                   <div className="mt-4 w-full text-center">
                     <h1 className="text-2xl font-bold">
                       {t("Responder Pesquisa")}
                     </h1>
                     <h2 className="text-xl font-semibold mt-4">
-                      {activity.verification === "SMS"
-                        ? t("your_phone")
-                        : t("your_email")}
+                      {t("Código de Confirmação")}
                     </h2>
-                    <form className="w-full p-4" onSubmit={handleSubmit}>
-                      {activity.verification === "SMS" ? (
-                        <div className="flex flex-row gap-2">
-                          <div className="w-1/3">
-                            <PhoneCodeSelect
-                              disabled={loading}
-                              value="phoneCode"
-                              values={registrationPhone}
-                              setValues={setRegistrationPhone}
-                            />
-                          </div>
-                          <div className="w-2/3">
-                            <InputField
-                              disabled={loading}
-                              required={
-                                activity.verification === "SMS" ? true : false
-                              }
-                              autocomplete="phone"
-                              placeholder={t("phone")}
-                              value="phone"
-                              values={registrationPhone}
-                              setValues={setRegistrationPhone}
-                              mask={maskPhone}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <InputField
-                          disabled={loading}
-                          required={
-                            activity.verification !== "SMS" ? true : false
-                          }
-                          autocomplete="email"
-                          type="email"
-                          placeholder={t("email")}
-                          value="email"
-                          values={registrationEmail}
-                          setValues={setRegistrationEmail}
-                        />
-                      )}
-                      <div className="w-full text-center py-4">
+
+                    <form
+                      className="w-3/4 mx-auto px-4 mb-8"
+                      onSubmit={handleSubmit}
+                    >
+                      <InputField
+                        disabled={loading}
+                        required={true}
+                        type="text"
+                        placeholder={t("code")}
+                        value="code"
+                        values={confirmationCode}
+                        setValues={setConfirmationCode}
+                      />
+                      <div className="w-full text-center mt-4">
                         <FormButton
-                          testid="submit-button"
-                          text={t("Entrar")}
+                          testid="confirm-send-button"
+                          text={t("Acessar Pesquisa")}
                           disabled={loading || warning || error}
                           type="submit"
-                          size="w-3/4"
+                          size="w-full"
                           textSize="text-base"
                         />
                       </div>
@@ -227,4 +203,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default Confirm;

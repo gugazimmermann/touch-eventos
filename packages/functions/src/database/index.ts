@@ -77,22 +77,22 @@ export interface IActivitiesVisitors {
 
 export interface IActivitiesVisitorsDefaultSurvey {
   visitorAnswerId?: number;
-  visitorId: bigint;
+  visitorId: number;
   activityId: string;
   registrationId: string;
-  questionId: bigint;
-  answerId: bigint;
-  custonAnswer: string;
+  questionId: number;
+  answerId: number | null;
+  custonAnswer: string | null;
   createdAt: string;
 }
 
 export interface IActivitiesVisitorsSurvey {
   visitorAnswerId?: number;
-  visitorId: bigint;
+  visitorId: number;
   activityId: string;
   registrationId: string;
-  questionId: bigint;
-  answerId: bigint;
+  questionId: number;
+  answerId: number;
   custonAnswer: string;
   createdAt: string;
 }

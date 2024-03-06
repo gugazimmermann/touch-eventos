@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { endOfDay, isAfter, isBefore, startOfDay } from "date-fns";
+import { addDays, endOfDay, isAfter, isBefore, startOfDay } from "date-fns";
 import { useDesk } from "../../context/DeskContext";
 import * as desk from "../../services/desk";
 import { Alert, Loading } from "../../components";
@@ -59,13 +59,15 @@ const Login = () => {
       try {
         const activityData = await desk.getActivityBySlug(slug);
         if (activityData?.activityId) {
+          // TODO: fix date
+          const today = startOfDay(new Date());
           const startDate = startOfDay(
             new Date(parseInt(activityData.startDate, 10))
           );
-          const endDate = endOfDay(
-            new Date(parseInt(activityData.endDate, 10))
-          );
-          const today = startOfDay(new Date());
+          // const endDate = endOfDay(
+          //   new Date(parseInt(activityData.endDate, 10))
+          // );
+          const endDate = addDays(today, 1);
           if (isBefore(today, startDate)) {
             setInfo(t("activity_not_started"));
           } else if (isAfter(today, endDate)) {
