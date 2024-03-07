@@ -30,11 +30,14 @@ export const saveActivityImage = async (activityId, data, onUploadProgress) => {
 export const saveActivity = async (data) => {
   try {
     const { accessToken } = await handleFetchAuthSession();
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/activities/create`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${accessToken}` },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/create`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify(data),
+      }
+    );
     return response.json();
   } catch (err) {
     return err;
@@ -45,7 +48,9 @@ export const getActivities = async (archived) => {
   try {
     const { accessToken } = await handleFetchAuthSession();
     const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/activities/list/${archived ? "archived" : ""}`,
+      `${process.env.REACT_APP_API_URL}/activities/list/${
+        archived ? "archived" : ""
+      }`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -92,11 +97,14 @@ export const getActivityRegistersById = async (activityId) => {
 export const saveDesk = async (activityId, data) => {
   try {
     const { accessToken } = await handleFetchAuthSession();
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/activities/${activityId}/desk`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${accessToken}` },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/desk`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify(data),
+      }
+    );
     return response.json();
   } catch (err) {
     return err;
@@ -122,10 +130,13 @@ export const getDesk = async (activityId) => {
 export const changeDesk = async (activityId, deskId) => {
   try {
     const { accessToken } = await handleFetchAuthSession();
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/activities/${activityId}/desk/${deskId}`, {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/desk/${deskId}`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
     return response.json();
   } catch (err) {
     return err;
@@ -135,16 +146,18 @@ export const changeDesk = async (activityId, deskId) => {
 export const verifySlug = async (slug) => {
   try {
     const { accessToken } = await handleFetchAuthSession();
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/activities/verify-slug/${slug}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/verify-slug/${slug}`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
     return response.json();
   } catch (err) {
     return err;
   }
 };
-
 
 export const getRegisters = async (activityId) => {
   try {
@@ -197,11 +210,14 @@ export const getSurvey = async (activityId, lang) => {
 export const saveSurvey = async (activityId, lang, survey) => {
   try {
     const { accessToken } = await handleFetchAuthSession();
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/activities/${activityId}/survey`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${accessToken}` },
-      body: JSON.stringify({ lang, survey }),
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({ lang, survey }),
+      }
+    );
     return response.json();
   } catch (err) {
     return err;
@@ -229,6 +245,102 @@ export const getSurveyAnwsers = async (activityId, lang) => {
     const { accessToken } = await handleFetchAuthSession();
     const response = await fetch(
       `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/${lang}/anwsers`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getSurveyRegistersDownloadCount = async (activityId) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/pt-BR/register-download-count`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getSurveyRegistersDownload = async (activityId, limit, offset) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/pt-BR/register-download/${limit}/${offset}`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getSurveyDefaultDownloadCount = async (activityId) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/pt-BR/default-download-count`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getSurveyDefaultDownload = async (activityId, limit, offset) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/pt-BR/default-download/${limit}/${offset}`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getSurveyActivityDownloadCount = async (activityId) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/pt-BR/activity-download-count`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getSurveActivityDownload = async (activityId, limit, offset) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/survey/pt-BR/activity-download/${limit}/${offset}`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${accessToken}` },

@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import ROUTES from "../../../constants/routes";
 import { activity } from "../../../services";
-import { ArrowBackCircle } from "../../../icons";
+import { ArrowBackCircle, Download } from "../../../icons";
 import { Alert, Loading } from "../../../components";
 import { AdminTopNav } from "../../../components/layout";
 import PieGraph from "../charts/PieGraph";
@@ -59,6 +59,200 @@ const ActivityDetailsSurveyAnswers = () => {
 
   const [selectedRegisterDay, setSelectedRegisterDay] = useState("");
 
+  const [gettingData, setGettingData] = useState(false);
+  const [progressTotal, setProgressTotal] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  const exportRegistersToCSV = (registersData) => {
+    const properties = [
+      "Cadastro",
+      "Nome",
+      "Email",
+      "Telefone",
+      "Cidade",
+      "Estado",
+      "Gênero",
+      "Gênero - Outros",
+      "Faixa Etária",
+    ];
+    const csvRows = [];
+    csvRows.push(properties.join(","));
+    registersData.forEach((row) => {
+      const values = properties.map((property) => {
+        let value = row[property];
+        if (value === null || value === undefined) value = "";
+        return `"${value.toString().replace(/"/g, '""')}"`;
+      });
+      csvRows.push(values.join(","));
+    });
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `cadastros-${new Date().toISOString()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadRegisters = async () => {
+    setGettingData(true);
+    const { count } = await activity.getSurveyRegistersDownloadCount(
+      activityId
+    );
+    setProgressTotal(count);
+    let surveyRegistersDownload = [];
+    let limit = 500;
+    let offset = 0;
+    let hasMoreData = true;
+
+    while (hasMoreData) {
+      const getSurveyRegistersDownload =
+        await activity.getSurveyRegistersDownload(activityId, limit, offset);
+      if (getSurveyRegistersDownload.length > 0) {
+        offset += getSurveyRegistersDownload.length;
+        surveyRegistersDownload = [
+          ...surveyRegistersDownload,
+          ...getSurveyRegistersDownload,
+        ];
+        setProgress(offset);
+      } else {
+        hasMoreData = false;
+      }
+    }
+    setProgressTotal(0);
+    setProgress(0);
+    exportRegistersToCSV(surveyRegistersDownload);
+    setGettingData(false);
+  };
+
+  const exportDefaultToCSV = (registersData) => {
+    const properties = [
+      "Cadastro",
+      "Nome",
+      "Email",
+      "Telefone",
+      "Pergunta",
+      "Resposta",
+      "Resposta Descritiva",
+    ];
+    const csvRows = [];
+    csvRows.push(properties.join(","));
+    registersData.forEach((row) => {
+      const values = properties.map((property) => {
+        let value = row[property];
+        if (value === null || value === undefined) value = "";
+        return `"${value.toString().replace(/"/g, '""')}"`;
+      });
+      csvRows.push(values.join(","));
+    });
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `pesquisa-padrao-${new Date().toISOString()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadDefault = async () => {
+    setGettingData(true);
+    const { count } = await activity.getSurveyDefaultDownloadCount(activityId);
+    setProgressTotal(count);
+    let surveyDefaultDownload = [];
+    let limit = 500;
+    let offset = 0;
+    let hasMoreData = true;
+
+    while (hasMoreData) {
+      const getSurveyDefaultDownload = await activity.getSurveyDefaultDownload(
+        activityId,
+        limit,
+        offset
+      );
+      if (getSurveyDefaultDownload.length > 0) {
+        offset += getSurveyDefaultDownload.length;
+        surveyDefaultDownload = [
+          ...surveyDefaultDownload,
+          ...getSurveyDefaultDownload,
+        ];
+        setProgress(offset);
+      } else {
+        hasMoreData = false;
+      }
+    }
+    setProgressTotal(0);
+    setProgress(0);
+    exportDefaultToCSV(surveyDefaultDownload);
+    setGettingData(false);
+  };
+
+  const exportActivityToCSV = (registersData) => {
+    const properties = [
+      "Cadastro",
+      "Nome",
+      "Email",
+      "Telefone",
+      "Pergunta",
+      "Resposta",
+      "Resposta Descritiva",
+    ];
+    const csvRows = [];
+    csvRows.push(properties.join(","));
+    registersData.forEach((row) => {
+      const values = properties.map((property) => {
+        let value = row[property];
+        if (value === null || value === undefined) value = "";
+        return `"${value.toString().replace(/"/g, '""')}"`;
+      });
+      csvRows.push(values.join(","));
+    });
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `pesquisa-atividade-${new Date().toISOString()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadActivity = async () => {
+    setGettingData(true);
+    const { count } = await activity.getSurveyActivityDownloadCount(activityId);
+    setProgressTotal(count);
+    let surveyDefaultDownload = [];
+    let limit = 500;
+    let offset = 0;
+    let hasMoreData = true;
+
+    while (hasMoreData) {
+      const getSurveyDefaultDownload = await activity.getSurveActivityDownload(
+        activityId,
+        limit,
+        offset
+      );
+      if (getSurveyDefaultDownload.length > 0) {
+        offset += getSurveyDefaultDownload.length;
+        surveyDefaultDownload = [
+          ...surveyDefaultDownload,
+          ...getSurveyDefaultDownload,
+        ];
+        setProgress(offset);
+      } else {
+        hasMoreData = false;
+      }
+    }
+    setProgressTotal(0);
+    setProgress(0);
+    exportActivityToCSV(surveyDefaultDownload);
+    setGettingData(false);
+  };
+
   const filterRegisterByDay = (day) => {
     setSelectedRegisterDay(day);
 
@@ -74,7 +268,7 @@ const ActivityDetailsSurveyAnswers = () => {
         )
       : registerTotalBase.gender;
 
-      const filteredAgeData = day
+    const filteredAgeData = day
       ? registerTotalBase.age.filter(
           (d) => format(new Date(d.date_time), "dd/MM/yy") === day
         )
@@ -108,20 +302,38 @@ const ActivityDetailsSurveyAnswers = () => {
           answers: [],
         };
       }
-      const questionTotal = anwsersData.reduce((a, c) => {
-        if (c.questionId === current.questionId) a += c.totalAnswerId;
+      const questionTotal = (anwsersData?.all || anwsersData).reduce((a, c) => {
+        if (c.questionId === current.questionId) {
+          a += c?.totalAnswerId || c?.totalCustonAnswer || 0;
+        }
         return a;
       }, 0);
 
       const quantity =
-        anwsersData.find((d) => d.answerId === current.answerId)
-          ?.totalAnswerId || 0;
+        (anwsersData?.all || anwsersData).find(
+          (d) => d.answerId === current.answerId
+        )?.totalAnswerId || 0;
+      if (current.answer) {
+        acc[current.questionId].answers.push({
+          answer: current.answer,
+          quantity: quantity,
+          percentage: (quantity * 100) / questionTotal,
+        });
+      }
 
-      acc[current.questionId].answers.push({
-        answer: current.answer,
-        quantity: quantity,
-        percentage: (quantity * 100) / questionTotal,
-      });
+      // descriptive
+      if (
+        anwsersData?.descriptive &&
+        Object.hasOwn(anwsersData.descriptive, current.questionId)
+      ) {
+        anwsersData.descriptive[current.questionId].forEach((a) => {
+          acc[current.questionId].answers.push({
+            answer: a.custonAnswer,
+            quantity: a.totalCustonAnswer,
+            percentage: (a.totalCustonAnswer * 100) / questionTotal,
+          });
+        });
+      }
       return acc;
     }, {});
     return Object.values(grouped);
@@ -143,28 +355,7 @@ const ActivityDetailsSurveyAnswers = () => {
         await activity.getSurvey(id, "pt-BR"),
         await activity.getSurveyAnwsers(id, "pt-BR"),
       ]);
-      // pagination-model
-      // let defaultSurveyAnwsersData = [];
-      // let limit = 2500;
-      // let offset = 0;
-      // let hasMoreData = true;
-      //
-      // while (hasMoreData) {
-      //   const getDefaultSurveyAnwsers = await activity.getDefaultSurveyAnwsers(
-      //     id,
-      //     limit,
-      //     offset
-      //   );
-      //   if (getDefaultSurveyAnwsers.length > 0) {
-      //     offset += getDefaultSurveyAnwsers.length;
-      //     defaultSurveyAnwsersData = [
-      //       ...defaultSurveyAnwsersData,
-      //       ...getDefaultSurveyAnwsers,
-      //     ];
-      //   } else {
-      //     hasMoreData = false;
-      //   }
-      // }
+
       if (
         getRegisters?.error ||
         defaultSurveyData?.error ||
@@ -277,6 +468,12 @@ const ActivityDetailsSurveyAnswers = () => {
                       </option>
                     ))}
                   </select>
+                  <button
+                    className="flex flex-row gap-2"
+                    onClick={() => downloadRegisters()}
+                  >
+                    <Download /> Dados
+                  </button>
                 </div>
                 <div className="flex-initial flex-grow px-2">
                   {/* GRÁFICO */}
@@ -337,6 +534,12 @@ const ActivityDetailsSurveyAnswers = () => {
                   >
                     Gráficos
                   </button>
+                  <button
+                    className="flex flex-row gap-2"
+                    onClick={() => downloadDefault()}
+                  >
+                    <Download /> Dados
+                  </button>
                 </div>
 
                 <div className="flex-initial flex-grow px-2">
@@ -368,37 +571,36 @@ const ActivityDetailsSurveyAnswers = () => {
                                   }
                                   )
                                 </span>
-                                {question.type !== "descriptive" &&
-                                  question.type !== "special" && (
-                                    <div className="flex items-center ml-auto gap-4">
-                                      <button
-                                        className={`h-5 w-5 transform ${
-                                          visibleItems[`d#${i}`]
-                                            ? "rotate-180"
-                                            : ""
-                                        }`}
-                                        type="button"
-                                        onClick={() =>
-                                          toggleItemVisibility(`d#${i}`)
-                                        }
+                                {question.answers.length > 0 && (
+                                  <div className="flex items-center ml-auto gap-4">
+                                    <button
+                                      className={`h-5 w-5 transform ${
+                                        visibleItems[`d#${i}`]
+                                          ? "rotate-180"
+                                          : ""
+                                      }`}
+                                      type="button"
+                                      onClick={() =>
+                                        toggleItemVisibility(`d#${i}`)
+                                      }
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth="1.5"
+                                        stroke="currentColor"
+                                        className="h-6 w-6"
                                       >
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          fill="none"
-                                          viewBox="0 0 24 24"
-                                          strokeWidth="1.5"
-                                          stroke="currentColor"
-                                          className="h-6 w-6"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                                          />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                        />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </h2>
                             {visibleItems[`d#${i}`] && (
@@ -479,6 +681,12 @@ const ActivityDetailsSurveyAnswers = () => {
                     onClick={() => setSurveyTab(2)}
                   >
                     Gráficos
+                  </button>
+                  <button
+                    className="flex flex-row gap-2"
+                    onClick={() => downloadActivity()}
+                  >
+                    <Download /> Dados
                   </button>
                 </div>
 
@@ -601,6 +809,24 @@ const ActivityDetailsSurveyAnswers = () => {
           </div>
         )}
       </div>
+      {gettingData && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <h2 className="text-lg font-bold mb-2">
+              {t("Carregando Dados...")}
+            </h2>
+            <p>Esta ação pode levar alguns minutos, aguarde.</p>
+            {progressTotal > 0 && (
+              <div className="w-full h-6 bg-slate-100 max-w-md rounded-md">
+                <div
+                  className="h-6 bg-primary-600 rounded-md"
+                  style={{ width: `${(100 * progress) / progressTotal}%` }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 };

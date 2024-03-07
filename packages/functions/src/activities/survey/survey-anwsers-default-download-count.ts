@@ -33,41 +33,13 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   try {
     const results = await db
       .selectFrom("activities_visitors_default_survey")
-      .select([
-        "questionId",
-        "answerId",
-        db.fn.count("answerId").as("totalAnswerId"),
-        db.fn.count("custonAnswer").as("totalCustonAnswer"),
-      ])
+      .select(sql`count(*)`.as("count"))
       .where("activityId", "=", activityId)
-      .groupBy("questionId")
-      .groupBy("answerId")
-      .execute();
-
-    const descriptive: Record<number, any> = {};
-
-    for (const question of [4, 5, 7, 11]) {
-      descriptive[question] = await db
-        .selectFrom("activities_visitors_default_survey")
-        .select(({ fn }) => [
-          "questionId",
-          "answerId",
-          "custonAnswer",
-          fn.count("custonAnswer").as("totalCustonAnswer"),
-        ])
-        .where("questionId", "=", question)
-        .groupBy(sql.raw("LOWER(custonAnswer)"))
-        .orderBy("totalCustonAnswer", "desc")
-        .limit(5)
-        .execute();
-    }
+      .executeTakeFirst();
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        all: results,
-        descriptive,
-      }),
+      body: JSON.stringify(results),
     };
   } catch (err) {
     console.error("Error:", err);

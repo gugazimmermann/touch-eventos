@@ -3,11 +3,19 @@ import { Kysely, sql } from "kysely";
 import { DataApiDialect } from "kysely-data-api";
 import { RDSData } from "@aws-sdk/client-rds-data";
 import { RDS } from "sst/node/rds";
-import { IActivitiesVisitorsDefaultSurvey } from "../../database";
+import {
+  IActivitiesRegister,
+  IActivitiesVisitors,
+  IActivitiesVisitorsDefaultSurvey,
+  IActivitiesDefaultAnswer,
+} from "../../database";
 import { error } from "../../error";
 
 export interface Database {
+  activities_register: IActivitiesRegister;
+  activities_visitors: IActivitiesVisitors;
   activities_visitors_default_survey: IActivitiesVisitorsDefaultSurvey;
+  activities_survey_default_answer: IActivitiesDefaultAnswer;
 }
 
 const db = new Kysely<Database>({
@@ -32,42 +40,31 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
 
   try {
     const results = await db
-      .selectFrom("activities_visitors_default_survey")
-      .select([
-        "questionId",
-        "answerId",
-        db.fn.count("answerId").as("totalAnswerId"),
-        db.fn.count("custonAnswer").as("totalCustonAnswer"),
-      ])
-      .where("activityId", "=", activityId)
-      .groupBy("questionId")
-      .groupBy("answerId")
-      .execute();
-
-    const descriptive: Record<number, any> = {};
-
-    for (const question of [4, 5, 7, 11]) {
-      descriptive[question] = await db
-        .selectFrom("activities_visitors_default_survey")
-        .select(({ fn }) => [
-          "questionId",
-          "answerId",
-          "custonAnswer",
-          fn.count("custonAnswer").as("totalCustonAnswer"),
-        ])
-        .where("questionId", "=", question)
-        .groupBy(sql.raw("LOWER(custonAnswer)"))
-        .orderBy("totalCustonAnswer", "desc")
-        .limit(5)
-        .execute();
-    }
+      .selectFrom("activities_register as ar")
+      .leftJoin("activities_visitors as av", "av.phone", "ar.phone")
+      .innerJoin("activities_visitors_default_survey as ds", (join) =>
+        join
+          .onRef("ds.visitorId", "=", "av.visitorId")
+          .on("ds.questionId", "=", 6)
+      )
+      .innerJoin("activities_visitors_default_survey as ds2", (join) =>
+        join
+          .onRef("ds2.visitorId", "=", "av.visitorId")
+          .on("ds2.questionId", "=", 7)
+      )
+      .innerJoin("activities_visitors_default_survey as ds3", (join) =>
+        join
+          .onRef("ds3.visitorId", "=", "av.visitorId")
+          .on("ds3.questionId", "=", 8)
+      )
+      .select(sql`count(*)`.as("count"))
+      .where("av.name", "is not", null)
+      .where("ar.activityId", "=", activityId)
+      .executeTakeFirst();
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        all: results,
-        descriptive,
-      }),
+      body: JSON.stringify(results),
     };
   } catch (err) {
     console.error("Error:", err);

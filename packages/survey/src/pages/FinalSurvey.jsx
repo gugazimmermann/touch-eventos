@@ -27,7 +27,6 @@ const FinalSurvey = () => {
         if (activityData?.error || !activityData?.activityId) {
           setWarning(t("activity_not_found"));
         } else {
-          console.log(activityData);
           if (!state.activity) {
             dispatch({
               type: "ACTIVITY",

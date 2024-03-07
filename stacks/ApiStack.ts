@@ -271,6 +271,49 @@ export function ApiStack({ stack }: StackContext) {
             bind: [database],
         },
       },
+      "GET /activities/{activityId}/survey/{lang}/register-download-count": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/survey-anwsers-registers-download-count.handler",
+            bind: [database],
+        },
+      },
+      "GET /activities/{activityId}/survey/{lang}/register-download/{limit}/{offset}": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/survey-anwsers-registers-download.handler",
+            bind: [database],
+        },
+      },
+      "GET /activities/{activityId}/survey/{lang}/default-download-count": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/survey-anwsers-default-download-count.handler",
+            bind: [database],
+        },
+      },
+      "GET /activities/{activityId}/survey/{lang}/default-download/{limit}/{offset}": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/survey-anwsers-default-download.handler",
+            bind: [database],
+        },
+      },
+
+      "GET /activities/{activityId}/survey/{lang}/activity-download-count": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/survey-anwsers-activity-download-count.handler",
+            bind: [database],
+        },
+      },
+      "GET /activities/{activityId}/survey/{lang}/activity-download/{limit}/{offset}": {
+        function: {
+          handler:
+            "packages/functions/src/activities/survey/survey-anwsers-activity-download.handler",
+            bind: [database],
+        },
+      },
     },
   });
 
