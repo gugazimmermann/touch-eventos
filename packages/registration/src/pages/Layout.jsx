@@ -59,15 +59,15 @@ const Layout = ({
                         {error && (
                           <Alert message={error} type="danger" center={true} />
                         )}
-                        {info && (
-                          <Alert message={info} type="info" center={true} />
-                        )}
                         {warning && (
                           <Alert
                             message={warning}
                             type="warning"
                             center={true}
                           />
+                        )}
+                        {info && (
+                          <Alert message={info} type="info" center={true} />
                         )}
                       </div>
                     )}

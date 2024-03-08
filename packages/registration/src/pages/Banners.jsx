@@ -8,7 +8,7 @@ const Banners = ({activity, final}) => {
           <div className="flex items-center justify-center bg-success-500 p-4 rounded-l-md ">
             <Gift className="w-8 h-8 text-white" />
           </div>
-          <div className="flex items-center justify-start pl-2">
+          <div className="flex items-center justify-start p-2">
             {activity.visitorGiftText}
           </div>
         </div>
@@ -19,7 +19,7 @@ const Banners = ({activity, final}) => {
           <div className="flex items-center justify-center bg-success-500 p-4 rounded-l-md ">
             <Survey className="w-8 h-8 text-white" />
           </div>
-          <div className="flex items-center justify-start pl-2">
+          <div className="flex items-center justify-start p-2">
             {activity.raffleText}
           </div>
         </div>
@@ -28,7 +28,7 @@ const Banners = ({activity, final}) => {
           <div className="flex items-center justify-center bg-success-500 p-4 rounded-l-md ">
             <Survey className="w-8 h-8 text-white" />
           </div>
-          <div className="flex items-center justify-start pl-2">
+          <div className="flex items-center justify-start p-2">
             {activity.surveyText}
           </div>
         </div>

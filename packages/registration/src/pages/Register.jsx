@@ -93,11 +93,13 @@ const Register = () => {
           const startDate = startOfDay(
             new Date(parseInt(activityData.startDate, 10))
           );
-          // TODO: fix date
-          // const endDate = endOfDay(
-          //   new Date(parseInt(activityData.endDate, 10))
-          // );
-          const endDate = addDays(today, 1);
+          let endDate = endOfDay(
+            new Date(parseInt(activityData.endDate, 10))
+          );
+          // TODO: somente para testes e demonstração
+          if (process.env.REACT_APP_TEST_ACTIVITY === activityData.activityId) {
+            endDate = addDays(today, 1);
+          }
           if (isBefore(today, startDate)) {
             setInfo(t("activity_not_started"));
             setAllowRegister(false);
@@ -105,7 +107,7 @@ const Register = () => {
             setWarning(t("activity_ended"));
             setAllowRegister(false);
           }
-          if (activityData.payment !== "success") {
+          if (!activityData?.payment) {
             if (activityData.registrations < 10) {
               setInfo(
                 `${t("activity_trial_remain")} ${
@@ -116,6 +118,10 @@ const Register = () => {
               setWarning(t("activity_trial_over"));
               setAllowRegister(false);
             }
+          } else if (activityData.payment !== "success" || activityData.active !== 1) {
+            setError(t("Cadastro não disponível"));
+            setWarning(t("Entre em contato com o evento"));
+            setAllowRegister(false)
           }
           setActivity(activityData);
         }

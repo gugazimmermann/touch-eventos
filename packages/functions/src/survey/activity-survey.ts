@@ -1,4 +1,9 @@
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
+import {
+  QueryCommand,
+  type QueryCommandInput,
+  type QueryCommandOutput,
+} from "@aws-sdk/lib-dynamodb";
 import { Kysely } from "kysely";
 import { DataApiDialect } from "kysely-data-api";
 import { RDSData } from "@aws-sdk/client-rds-data";
@@ -10,6 +15,7 @@ import {
   IActivitiesQuestion,
   IActivitiesAnswer,
 } from "../database";
+import { dynamoDBClient } from "../aws-clients";
 import { error } from "../error";
 
 export interface Database {
@@ -34,8 +40,10 @@ const db = new Kysely<Database>({
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
 ) => {
+  const activitiesTable = process.env.ACTIVITIES_TABLE_NAME;
   const JWT_SECRET = process.env.JWT_SECRET;
-  if (!JWT_SECRET) return error(500, "Internal Server Error");
+  if (!activitiesTable || !JWT_SECRET)
+    return error(500, "Internal Server Error");
 
   const slug = event?.pathParameters?.slug;
   if (!slug) return error(400, "Bad Request: Missing Activity Slug");
@@ -51,15 +59,30 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       .selectFrom("activities_register")
       .select(["registrationId"])
       .where("registrationId", "=", decodedToken.id)
-      .execute();
-    if (!registrationsResults.length) return error(401, "Unauthorized");
+      .executeTakeFirst();
+    if (!registrationsResults) return error(401, "Unauthorized");
 
     const visitorResults = await db
       .selectFrom("activities_visitors")
       .select(["visitorId"])
       .where("visitorId", "=", data.visitorID)
-      .execute();
-    if (!visitorResults.length) return error(401, "Unauthorized");
+      .executeTakeFirst();
+    if (!visitorResults) return error(401, "Unauthorized");
+
+    const activitiesParams: QueryCommandInput = {
+      TableName: activitiesTable,
+      ExpressionAttributeNames: { "#activityId": "activityId", "#slug": "slug" },
+      ExpressionAttributeValues: { ":slug": slug },
+      IndexName: "SlugIndex",
+      KeyConditionExpression: "#slug = :slug",
+      ProjectionExpression: "#activityId",
+    };
+    const activitiesResults: QueryCommandOutput = await dynamoDBClient.send(
+      new QueryCommand(activitiesParams)
+    );
+    if (!activitiesResults?.Items?.length)
+      return error(404, "Not Found: activity not found");
+    const item = activitiesResults.Items[0];
 
     const results = await db
       .selectFrom("activities_survey_question")
@@ -92,6 +115,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         "activities_survey_question.type",
         "activities_survey_question.order",
       ])
+      .where("activities_survey_question.activityId", "=", item.activityId)
       .where("activities_survey_question.language", "=", "pt-BR")
       .where("activities_survey_question.active", "=", true)
       .orderBy("activities_survey_question.order", "asc")

@@ -25,6 +25,7 @@ const ActivityDetailsDesk = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
   const [originalData, setOriginalData] = useState();
   const [dataToTable, setDataToTable] = useState();
   const [dataToPage, setDataToPage] = useState();
@@ -244,6 +245,16 @@ const ActivityDetailsDesk = () => {
     }
   };
 
+  const verifyRepeat = (newUser) => {
+    setWarning();
+    const verifyUser = originalData.find(
+      (o) => o.user.value.toLocaleLowerCase() === newUser.toLocaleLowerCase()
+    );
+    if (verifyUser) {
+      setWarning(t("Usuário Já Cadastrado"));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!values.user || !values.accessCode) {
@@ -316,6 +327,7 @@ const ActivityDetailsDesk = () => {
   return (
     <section className="w-full px-4 mb-8">
       {error && <Alert message={error} type="danger" />}
+      {warning && <Alert message={warning} type="warning" />}
       <AdminTopNav title={t("activity_details_title")} />
       <div className="flex flex-col justify-start items-start gap-4">
         <button
@@ -374,6 +386,7 @@ const ActivityDetailsDesk = () => {
                       setValues &&
                       setValues({ ...values, user: e.target.value })
                     }
+                    onBlur={(e) => verifyRepeat(e.target.value)}
                     className="block px-1.5 py-1 bg-white border border-slate-200 rounded-lg"
                   />
                   <input
@@ -389,6 +402,7 @@ const ActivityDetailsDesk = () => {
                     className="block px-1.5 py-1 bg-white border border-slate-200 rounded-lg"
                   />
                   <button
+                    disabled={loading || warning}
                     type="submit"
                     className="w-1/5 p-2 leading-5 text-white bg-secondary-500 rounded-lg"
                   >

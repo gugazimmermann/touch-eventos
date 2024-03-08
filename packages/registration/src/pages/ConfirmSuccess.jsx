@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import * as register from "../services/register";
-import { Survey } from "../icons";
 import Layout from "./Layout";
 
 const ConfirmSuccess = () => {

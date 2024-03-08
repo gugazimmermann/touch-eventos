@@ -44,11 +44,11 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
 
   try {
     const registrationsResults = await db
-    .selectFrom("activities_register")
-    .select(["registrationId"])
-    .where("registrationId", "=", decodedToken.id)
-    .execute();
-  if (!registrationsResults.length) return error(401, "Unauthorized");
+      .selectFrom("activities_register")
+      .select(["registrationId"])
+      .where("registrationId", "=", decodedToken.id)
+      .executeTakeFirst();
+    if (!registrationsResults) return error(401, "Unauthorized");
 
     const results = await db
       .selectFrom("activities_survey_default_question")

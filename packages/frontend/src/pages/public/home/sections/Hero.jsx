@@ -46,8 +46,8 @@ export default function Hero() {
   const { t } = useTranslation("home");
 
   return (
-    <section className="w-full bg-success-500 pt-8">
-      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-center items-center">
+    <section className="w-full bg-success-500 pt-10 md:pt-8">
+      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-center items-center  px-4 md:px-0">
         <div className="flex flex-col md:w-1/2 justify-center items-center text-center text-strong md:text-left pt-8">
           <p className="uppercase text-3xl text-center">{t("hero_title")}</p>
           <h1 className="my-4 text-2xl font-bold text-center">

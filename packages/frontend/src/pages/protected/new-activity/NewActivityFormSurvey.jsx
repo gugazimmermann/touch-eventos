@@ -17,7 +17,7 @@ const NewActivityFormSurvey = ({
   activePlans,
 }) => {
   const { t } = useTranslation("new_activity");
-  const { datePickerSurveyConfig, dateToTimestap } = useDatePicker({
+  const { datePickerSurveyConfig } = useDatePicker({
     locale: "pt-BR",
   });
   const [minLastDay, setMinLastDay] = useState();

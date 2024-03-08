@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { endOfDay } from "date-fns";
+import { addDays, endOfDay, startOfDay } from "date-fns";
 import { useSurvey } from "../context/SurveyContext";
 import * as survey from "../services/survey";
 import usePhoneCode from "../hooks/usePhoneCode";
@@ -31,6 +31,7 @@ const Auth = () => {
 
   const handleSubmit = async (e) => {
     setError("");
+    setWarning("")
     e.preventDefault();
     const payload = {
       activityId: activity.activityId,
@@ -71,17 +72,17 @@ const Auth = () => {
     setLoading(false);
   };
 
-  // TODO: surveyLastDay
   const getData = useCallback(
     async (slug) => {
       setLoadingPage(true);
-      setError();
-      setWarning();
+      setError("");
+      setWarning("");
       try {
         const activityData =
           state?.activity && state.activity?.slug === slug
             ? state.activity
             : await survey.getActivityBySlug(slug);
+
         if (
           activityData?.error &&
           activityData.error === "Not Found: activity not found"
@@ -89,14 +90,28 @@ const Auth = () => {
           setError(t("Atividade Não Encontrada"));
         } else if (activityData?.error) {
           setError(t("Ocorreu um erro."));
-        } else if (activityData.active !== 1) {
-          setWarning(t("Atividade não pode ser acessada."));
         }
-        // } else if (
-        //   new Date(parseInt(activityData.surveyLastDay, 10)) < endOfDay(new Date())
-        // ) {
-        //   setWarning(t("Pesquisa Encerrada"));
-        // }
+
+        if (
+          (activityData?.payment && activityData.payment !== "success") ||
+          (activityData.payment === "success" && activityData.active !== 1)
+        ) {
+          setError(t("Pesquisa não disponível"));
+          setWarning(t("Entre em contato com o evento"));
+        }
+
+        let surveyLastDay = endOfDay(
+          new Date(parseInt(activityData.surveyLastDay, 10))
+        );
+        // TODO: somente para testes e demonstração
+        if (process.env.REACT_APP_TEST_ACTIVITY === activityData.activityId) {
+          surveyLastDay = addDays(startOfDay(new Date()), 1);
+        }
+        if (surveyLastDay < startOfDay(new Date())) {
+          setWarning(t("Pesquisa Encerrada"));
+        }
+         
+
         setActivity(activityData);
         dispatch({
           type: "ACTIVITY",
@@ -162,8 +177,8 @@ const Auth = () => {
                     </h1>
                     <h2 className="text-xl font-semibold mt-4">
                       {activity.verification === "SMS"
-                        ? t("your_phone")
-                        : t("your_email")}
+                        ? t("Telefone Cadastrado")
+                        : t("Email Cadastrado")}
                     </h2>
                     <form className="w-full p-4" onSubmit={handleSubmit}>
                       {activity.verification === "SMS" ? (
@@ -178,7 +193,7 @@ const Auth = () => {
                           </div>
                           <div className="w-2/3">
                             <InputField
-                              disabled={loading}
+                                disabled={loading}
                               required={
                                 activity.verification === "SMS" ? true : false
                               }
@@ -193,7 +208,7 @@ const Auth = () => {
                         </div>
                       ) : (
                         <InputField
-                          disabled={loading}
+                        disabled={loading}
                           required={
                             activity.verification !== "SMS" ? true : false
                           }
@@ -209,7 +224,7 @@ const Auth = () => {
                         <FormButton
                           testid="submit-button"
                           text={t("Entrar")}
-                          disabled={loading || warning || error}
+                          disabled={loading}
                           type="submit"
                           size="w-3/4"
                           textSize="text-base"

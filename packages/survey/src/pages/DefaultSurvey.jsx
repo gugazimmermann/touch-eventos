@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
+import { addDays, endOfDay, startOfDay, format } from "date-fns";
 import { useSurvey } from "../context/SurveyContext";
 import * as survey from "../services/survey";
 import STATESBR from "../constants/states-br";
@@ -180,7 +180,7 @@ const DefaultSurvey = () => {
           defaultSurveyData?.error ||
           !activityData?.activityId
         ) {
-          setWarning(t("activity_not_found"));
+          setError(t("Ocorreu um erro, tente novamente."));
         } else {
           if (!state.activity) {
             dispatch({
@@ -200,6 +200,27 @@ const DefaultSurvey = () => {
               payload: { default: defaultSurveyData },
             });
           }
+
+          if (
+            (activityData?.payment && activityData.payment !== "success") ||
+            (activityData.payment === "success" && activityData.active !== 1)
+          ) {
+            setError(t("Pesquisa não disponível"));
+            setWarning(t("Entre em contato com o evento"));
+          }
+  
+          let surveyLastDay = endOfDay(
+            new Date(parseInt(activityData.surveyLastDay, 10))
+          );
+          // TODO: somente para testes e demonstração
+          if (process.env.REACT_APP_TEST_ACTIVITY === activityData.activityId) {
+            surveyLastDay = addDays(startOfDay(new Date()), 1);
+          }
+          if (surveyLastDay < startOfDay(new Date())) {
+            setWarning(t("Pesquisa Encerrada"));
+          }
+            
+
           setActivity(activityData);
           formatSurveyData(
             defaultSurveyData,
@@ -281,7 +302,7 @@ const DefaultSurvey = () => {
                     </div>
                   )}
                   {requiredQuestions.length > 0 && (
-                    <div className="w-full mt-2">
+                    <div className="w-full mt-4">
                       <Alert
                         title="Obrigatórias"
                         message={requiredQuestions.join(" / ")}

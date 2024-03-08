@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
-import LangSelect from "./LangSelect";
+// import LangSelect from "./LangSelect";
 
 const Header = ({ currentLang = 'pt-BR' }) => {
   return (

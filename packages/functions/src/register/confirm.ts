@@ -41,6 +41,8 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   const data = JSON.parse(event?.body || "");
   if (!data.registrationId)
     return error(400, "Bad Request: Missing Registration Id");
+  if (!data?.code || !data.code.trim() || data.code.length < 6)
+    return error(400, "Bad Request: Missing Code");
 
   try {
     // get activity
@@ -95,10 +97,11 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
 
       // messages
 
-
-
       let emailSubject = `${activity.name} - Lembrete da pesquisa!`;
-      let messageBody = activity.notificationOnConfirmText.replace(`{${SURVEY_URL}/${activity.slug}}`, `${SURVEY_URL}/${activity.slug}`);
+      let messageBody = activity.notificationOnConfirmText.replace(
+        `{${SURVEY_URL}/${activity.slug}}`,
+        `${SURVEY_URL}/${activity.slug}`
+      );
       // if (data.language === "en") {
       //   messageSubject = `${activity.name} - Survey Reminder!`;
       //   messageBody = `Hello! Don't forget to participate in our survey${

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { addDays, endOfDay, startOfDay } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { useSurvey } from "../context/SurveyContext";
 import * as survey from "../services/survey";
@@ -14,6 +15,7 @@ const ActivitySurvey = () => {
   const { state, dispatch } = useSurvey();
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
+  const [info, setInfo] = useState("");
   const [activity, setActivity] = useState();
   const [activitySurvey, setActivitySurvey] = useState([]);
   const [formValues, setFormValues] = useState({});
@@ -117,6 +119,7 @@ const ActivitySurvey = () => {
     const defaultAnswers = transformAnwsers();
     localStorage.setItem("surveyFormValues", JSON.stringify(formValues));
     const required = verifyRequired(defaultAnswers);
+    console.log(required)
     if (!required) {
       const payload = {
         token: state.token,
@@ -166,8 +169,33 @@ const ActivitySurvey = () => {
               payload: { survey: activitySurveyData },
             });
           }
+
+          if (
+            (activityData?.payment && activityData.payment !== "success") ||
+            (activityData.payment === "success" && activityData.active !== 1)
+          ) {
+            setError(t("Pesquisa não disponível"));
+            setWarning(t("Entre em contato com o evento"));
+          }
+  
+          let surveyLastDay = endOfDay(
+            new Date(parseInt(activityData.surveyLastDay, 10))
+          );
+          // TODO: somente para testes e demonstração
+          if (process.env.REACT_APP_TEST_ACTIVITY === activityData.activityId) {
+            surveyLastDay = addDays(startOfDay(new Date()), 1);
+          }
+          if (surveyLastDay < startOfDay(new Date())) {
+            setWarning(t("Pesquisa Encerrada"));
+          }
+
           setActivity(activityData);
-          formatSurveyData(activitySurveyData);
+           if (activitySurveyData.length) {
+            formatSurveyData(activitySurveyData);
+          } else {
+            setInfo("Nenhuma pesquisa cadastrada pela atividade.")
+          }
+          
         }
       } catch (error) {
         setError(error.message);
@@ -209,13 +237,16 @@ const ActivitySurvey = () => {
           {activity && (
             <>
               <TopBar step={2} activity={activity} />
-              {(error || warning) && (
-                <div className="mt-2">
+              {(error || warning || info) && (
+                <div className="mt-4">
                   {error && (
                     <Alert message={error} type="danger" center={true} />
                   )}
                   {warning && (
                     <Alert message={warning} type="warning" center={true} />
+                  )}
+                  {info && (
+                    <Alert message={info} type="info" center={true} />
                   )}
                 </div>
               )}

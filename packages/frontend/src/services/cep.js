@@ -4,6 +4,9 @@ const fetchDataByCEP = async (cep, data) => {
   const response = await fetch(
     `https://brasilapi.com.br/api/cep/v2/${cleanValue}`
   );
+  // const response = await fetch(
+  //   `https://viacep.com.br/ws/${cleanValue}/json/`
+  // );
   const res = await response.json();
   if (!res.type) {
     data.addressState = res?.state;

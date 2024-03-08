@@ -59,26 +59,25 @@ const Login = () => {
       try {
         const activityData = await desk.getActivityBySlug(slug);
         if (activityData?.activityId) {
-          // TODO: fix date
           const today = startOfDay(new Date());
           const startDate = startOfDay(
             new Date(parseInt(activityData.startDate, 10))
           );
-          // const endDate = endOfDay(
-          //   new Date(parseInt(activityData.endDate, 10))
-          // );
-          const endDate = addDays(today, 1);
+          let endDate = endOfDay(new Date(parseInt(activityData.endDate, 10)));
+          // TODO: somente para testes e demonstração
+          if (process.env.REACT_APP_TEST_ACTIVITY === activityData.activityId) {
+            endDate = addDays(today, 1);
+          }
           if (isBefore(today, startDate)) {
             setInfo(t("activity_not_started"));
           } else if (isAfter(today, endDate)) {
             setWarning(t("activity_ended"));
-          } else {
-            setActivity(activityData);
-            dispatch({
-              type: "ACTIVITY",
-              payload: { activity: activityData },
-            });
           }
+          setActivity(activityData);
+          dispatch({
+            type: "ACTIVITY",
+            payload: { activity: activityData },
+          });
         } else if (
           activityData?.error ===
           "Bad Request: Activity Does Not Have Visitors Gift"
@@ -86,8 +85,6 @@ const Login = () => {
           setError(t("activity_does_not_have_visitors_gift"));
         } else if (activityData.error === "Bad Request: Activity Not Active") {
           setError(t("activity_not_active"));
-        } else if (activityData.error === "Bad Request: Payment Problem") {
-          setError(t("payment_problem"));
         } else {
           setWarning(t("activity_not_found"));
         }

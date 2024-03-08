@@ -32,6 +32,15 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   const data = JSON.parse(event?.body || "");
 
   try {
+    const veriryUser = await db
+      .selectFrom("activities_desk")
+      .select(["deskId"])
+      .where("user", "=", data.user)
+      .where("activityId", "=", activityId)
+      .executeTakeFirst();
+
+    if (veriryUser) return error(400, "User already exists");
+
     await db
       .insertInto("activities_desk")
       .values({

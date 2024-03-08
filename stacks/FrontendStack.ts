@@ -43,6 +43,7 @@ export function FrontendStack({ stack, app }: StackContext) {
       REACT_APP_USER_POOL_CLIENT_ID: cognito.userPoolClientId,
       REACT_APP_STRIPE_KEY: String(process.env.STRIKE_KEY),
       REACT_APP_STRIPE_CALLBACK_URL: String(process.env.STRIPE_CALLBACK_URL),
+      REACT_APP_TEST_ACTIVITY: String(process.env.TEST_ACTIVITY),
     },
     cdk: {
       bucket: {
@@ -76,6 +77,7 @@ export function FrontendStack({ stack, app }: StackContext) {
       REACT_APP_SITE_TITLE: "Touch Eventos - Cadastro",
       REACT_APP_SITE_URL: String(process.env.SITE_URL),
       REACT_APP_SITE_API_URL: siteApi.customDomainUrl || siteApi.url,
+      REACT_APP_TEST_ACTIVITY: String(process.env.TEST_ACTIVITY),
     },
     cdk: {
       bucket: {
@@ -108,6 +110,7 @@ export function FrontendStack({ stack, app }: StackContext) {
     environment: {
       REACT_APP_SITE_TITLE: "Touch Eventos - Brindes",
       REACT_APP_SITE_API_URL: siteApi.customDomainUrl || siteApi.url,
+      REACT_APP_TEST_ACTIVITY: String(process.env.TEST_ACTIVITY),
     },
     cdk: {
       bucket: {
@@ -141,6 +144,7 @@ export function FrontendStack({ stack, app }: StackContext) {
       REACT_APP_SITE_TITLE: "Touch Eventos - Pesquisa",
       REACT_APP_SITE_URL: String(process.env.SITE_URL),
       REACT_APP_SITE_API_URL: siteApi.customDomainUrl || siteApi.url,
+      REACT_APP_TEST_ACTIVITY: String(process.env.TEST_ACTIVITY),
     },
     cdk: {
       bucket: {

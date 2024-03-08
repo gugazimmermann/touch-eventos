@@ -1,7 +1,7 @@
 import { useDesk } from "../../context/DeskContext";
 import Logo from "./Logo";
 import ThemeSelect from "./ThemeSelect";
-import LangSelect from "./LangSelect";
+// import LangSelect from "./LangSelect";
 import { Logout } from "../../icons";
 
 const Header = ({ theme, lang }) => {

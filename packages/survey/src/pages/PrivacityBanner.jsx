@@ -4,7 +4,7 @@ const PrivacityBanner = ({
   userAcceptPrivacity,
 }) => {
   return (
-    <div className="fixed inset-0 z-30 flex justify-center items-center">
+    <div className="fixed inset-0 z-30 bg-gray-500 bg-opacity-75 flex justify-center items-center">
       <div className="max-w-2xl p-4 bg-white border border-gray-200 gap-x-4 flex items-center rounded-2xl shadow-lg">
         <div className="flex items-center gap-x-4">
           <span className="inline-flex p-2 text-primary-500 rounded-lg shrink-0 bg-primary-100/80">
@@ -22,9 +22,9 @@ const PrivacityBanner = ({
           </span>
           <p className="text-sm">
             Seus dados estão seguros conosco! Ao participar desta pesquisa, você
-            concorda que a <span className="italic">Touch Eventos</span> e a
-            organização da Atividade{" "}
-            <span className="italic">{activity?.name}</span> terão acesso aos
+            concorda que a <span className="italic font-semibold">Touch Eventos</span> e a
+            organização da atividade{" "}
+            <span className="italic font-semibold">{activity?.name}</span> terão acesso aos
             seus dados para análise estatística e melhorias futuras. Privacidade
             garantida.{" "}
             <button

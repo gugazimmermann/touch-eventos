@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { endOfDay } from "date-fns";
+import { addDays, endOfDay, startOfDay } from "date-fns";
 import { useSurvey } from "../context/SurveyContext";
 import * as survey from "../services/survey";
 import { validateCode } from "../helpers/validate";
@@ -24,6 +24,7 @@ const Confirm = () => {
 
   const handleSubmit = async (e) => {
     setError("");
+    setWarning("")
     e.preventDefault();
     if (!validateCode(confirmationCode.code)) {
       setError(t("invalid_code"));
@@ -63,12 +64,11 @@ const Confirm = () => {
     setLoading(false);
   };
 
-  // TODO: surveyLastDay
   const getData = useCallback(
     async (slug) => {
       setLoadingPage(true);
-      setError();
-      setWarning();
+      setError("");
+      setWarning("");
       try {
         const activityData =
           state?.activity && state.activity?.slug === slug
@@ -81,14 +81,26 @@ const Confirm = () => {
           setError(t("Atividade Não Encontrada"));
         } else if (activityData?.error) {
           setError(t("Ocorreu um erro."));
-        } else if (activityData.active !== 1) {
-          setWarning(t("Atividade não pode ser acessada."));
+        } 
+
+        if (
+          (activityData?.payment && activityData.payment !== "success") ||
+          (activityData.payment === "success" && activityData.active !== 1)
+        ) {
+          setError(t("Pesquisa não disponível"));
+          setWarning(t("Entre em contato com o evento"));
         }
-        // } else if (
-        //   new Date(parseInt(activityData.surveyLastDay, 10)) < endOfDay(new Date())
-        // ) {
-        //   setWarning(t("Pesquisa Encerrada"));
-        // }
+
+        let surveyLastDay = endOfDay(
+          new Date(parseInt(activityData.surveyLastDay, 10))
+        );
+        // TODO: somente para testes e demonstração
+        if (process.env.REACT_APP_TEST_ACTIVITY === activityData.activityId) {
+          surveyLastDay = addDays(startOfDay(new Date()), 1);
+        }
+        if (surveyLastDay < startOfDay(new Date()))
+          setWarning(t("Pesquisa Encerrada"));
+
         setActivity(activityData);
         dispatch({
           type: "ACTIVITY",
@@ -173,7 +185,7 @@ const Confirm = () => {
                       onSubmit={handleSubmit}
                     >
                       <InputField
-                        disabled={loading}
+                          disabled={loading}
                         required={true}
                         type="text"
                         placeholder={t("code")}
@@ -185,7 +197,7 @@ const Confirm = () => {
                         <FormButton
                           testid="confirm-send-button"
                           text={t("Acessar Pesquisa")}
-                          disabled={loading || warning || error}
+                          disabled={loading}
                           type="submit"
                           size="w-full"
                           textSize="text-base"

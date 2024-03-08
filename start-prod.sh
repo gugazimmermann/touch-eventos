@@ -87,7 +87,7 @@ aws dynamodb put-item \
         \"name\": {\"S\": \"Guga Zimmermann\"},
         \"phone\": {\"S\": \"(48) 9887-04247\"},
         \"phoneCode\": {\"S\": \"+55\"},
-        \"stripeCustomerId\": {\"S\": \"cus_PeoQjqRMafRyDI\"}
+        \"stripeCustomerId\": {\"S\": \"cus_PhQPulYFjSLPdB\"}
     }"
 
 aws dynamodb batch-write-item --request-items file://"$DYNAMO_DATA_PATH"

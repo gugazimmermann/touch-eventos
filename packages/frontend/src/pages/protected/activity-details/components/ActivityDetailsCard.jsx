@@ -3,7 +3,7 @@ import { isAfter, isBefore } from "date-fns";
 import { maskCep } from "../../../../helpers/mask";
 import { formatDate, formatValue } from "../../../../helpers/format";
 import { Clipboard } from "../../../../icons";
-import { Br, Es, Us } from "react-flags-select";
+// import { Br, Es, Us } from "react-flags-select";
 
 const ActivityRow = ({ title, content }) => {
   return (

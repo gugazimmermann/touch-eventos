@@ -235,8 +235,10 @@ export function SiteApiStack({ stack }: StackContext) {
         function: {
           handler: "packages/functions/src/survey/activity-survey.handler",
           environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
             JWT_SECRET: String(process.env.JWT_SECRET),
           },
+          permissions: [activitiesTable],
           bind: [database],
         },
       },
