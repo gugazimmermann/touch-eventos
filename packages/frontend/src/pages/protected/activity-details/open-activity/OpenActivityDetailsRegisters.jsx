@@ -117,11 +117,11 @@ const OpenActivityDetailsRegisters = () => {
     link.click();
   };
 
-  const handlePagination = useCallback(
-    (currentData, pageNum) => {
+  const handlePagination = useCallback((currentData, pageNum) => {
       const indexOfLastItem = pageNum * itemsPerPage;
       const indexOfFirstItem = indexOfLastItem - itemsPerPage;
       const currentItems = currentData.slice(indexOfFirstItem, indexOfLastItem);
+      console.log(currentItems)
       setDataToPage(currentItems);
     },
     [itemsPerPage]
@@ -258,9 +258,13 @@ const OpenActivityDetailsRegisters = () => {
         await activity.getActivityById(id),
         await activity.getActivityRegistersById(id),
       ]);
-      if (activityData?.error || registersData?.error)
-        setError(activityData?.error || registersData?.error);
-      else {
+      if (activityData?.error || registersData?.error) {
+        if (registersData.error === "Payment Required") {
+          setShowData(false);
+        } else {
+          setError(activityData?.error || registersData?.error);
+        }
+      } else {
         setCurrentActivity(activityData);
         const viewDataEndDate = addDays(
           new Date(parseInt(activityData.endDate, 10)),
@@ -341,7 +345,8 @@ const OpenActivityDetailsRegisters = () => {
                         {t("activity_details_register_title")}
                       </h2>
                       <span className="px-2 py-0.5 text-sm text-secondary-800 bg-secondary-100 rounded-full">
-                        {originalData?.length || 0} {t("activity_detail_total")}
+                        {originalData?.length || 0}{" "}
+                        {t("activity_details_total")}
                       </span>
                       {showing !== "all" && (
                         <span className="px-2 py-0.5 text-sm text-primary-800 bg-primary-100 rounded-full">
@@ -380,16 +385,18 @@ const OpenActivityDetailsRegisters = () => {
                             }`}
                             onClick={() => handleShowState("all")}
                           >
-                            {t("activity_detail_all")}
+                            {t("activity_details_all")}
                           </button>
-                          <button
-                            className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                              showing === "gift" && "bg-gray-100"
-                            }`}
-                            onClick={() => handleShowState("gift")}
-                          >
-                            {t("activity_details_register_button_gift")}
-                          </button>
+                          {currentActivity.visitorGift === "YES" && (
+                            <button
+                              className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                                showing === "gift" && "bg-gray-100"
+                              }`}
+                              onClick={() => handleShowState("gift")}
+                            >
+                              {t("activity_details_register_button_gift")}
+                            </button>
+                          )}
                         </div>
                         <div className="flex flex-row gap-x-4">
                           <form onSubmit={handleSearch}>
@@ -397,7 +404,7 @@ const OpenActivityDetailsRegisters = () => {
                               <SearchTable />
                               <input
                                 type="text"
-                                placeholder={t("activity_detail_search")}
+                                placeholder={t("activity_details_search")}
                                 className="block w-full py-1.5 pr-4 bg-white border border-slate-200 rounded-lg md:w-80 placeholder-text-400 pl-10 focus:border-secondary-400 focus:ring-secondary-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -424,8 +431,14 @@ const OpenActivityDetailsRegisters = () => {
                       </div>
                       {/* table */}
                       <TableData
-                        headers={headerData}
-                        data={dataToPage}
+                        headers={currentActivity.visitorGift === "YES" ? headerData : headerData.filter(header => header.sortType !== "gift")}
+                        data={dataToPage?.map(item => {
+                          if (currentActivity.visitorGift !== "YES") {
+                            const { gift, ...itemWithoutGift } = item;
+                            return itemWithoutGift;
+                          }
+                          return item;
+                        })}
                         handleOrder={handleOrder}
                       />
                       {/* Footer */}

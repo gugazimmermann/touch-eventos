@@ -1,15 +1,10 @@
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
-import { addMonths, getTime, isAfter } from "date-fns";
-import { v4 as uuidv4 } from "uuid";
 import {
   PutCommand,
   GetCommand,
-  QueryCommand,
   UpdateCommand,
   type PutCommandInput,
-  type GetCommandInput,
   type GetCommandOutput,
-  type QueryCommandInput,
   type UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 import { dynamoDBClient } from "../aws-clients";

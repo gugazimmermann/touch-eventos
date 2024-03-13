@@ -39,7 +39,7 @@ const showArchiveButton = (end, archived) => {
   return false;
 };
 
-const OpenActivityDetailsCard = ({ data, handleArchive, handleTogglePaymentView }) => {
+const OpenActivityDetailsCard = ({ data, handleArchive, handleTogglePaymentView, validSubscription }) => {
   const { t } = useTranslation("activity_details");
   const [activityDate, setActivityDates] = useState([]);
   const showGiftText = (visitorGift) => {
@@ -180,7 +180,7 @@ const OpenActivityDetailsCard = ({ data, handleArchive, handleTogglePaymentView 
       </div>
       <div className="flex flex-row justify-between px-4 py-2">
         <div className="flex justify-end gap-4">
-          {!data.payment && (
+          {!validSubscription && !data.payment && (
             <button
               type="button"
               className="px-4 py-1.5 text-sm tracking-wide text-white bg-success-500 capitalize rounded-lg"

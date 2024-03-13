@@ -345,11 +345,11 @@ const OpenActivityDetailsSurveyAnswers = () => {
       try {
         const [
           activityData,
-          getRegisters,
+          getRegistersData,
           defaultSurveyData,
-          getDefaultSurveyAnwsers,
+          getDefaultSurveyAnwsersData,
           surveyData,
-          getSurveyAnwsers,
+          getSurveyAnwsersData,
         ] = await Promise.all([
           await activity.getActivityById(id),
           await activity.getRegisters(id),
@@ -358,24 +358,20 @@ const OpenActivityDetailsSurveyAnswers = () => {
           await activity.getSurvey(id, "pt-BR"),
           await activity.getSurveyAnwsers(id, "pt-BR"),
         ]);
-
-        if (
+        const error =
           activityData?.error ||
-          getRegisters?.error ||
+          getRegistersData?.error ||
           defaultSurveyData?.error ||
-          getDefaultSurveyAnwsers?.error ||
+          getDefaultSurveyAnwsersData?.error ||
           surveyData?.error ||
-          getSurveyAnwsers?.error
-        )
-          setError(
-            activityData?.error ||
-              getRegisters?.error ||
-              defaultSurveyData?.error ||
-              getDefaultSurveyAnwsers?.error ||
-              surveyData?.error ||
-              getSurveyAnwsers?.error
-          );
-        else {
+          getSurveyAnwsersData?.error;
+        if (error) {
+          if (error === "Payment Required") {
+            setShowData(false);
+          } else {
+            setError(error);
+          }
+        } else {
           setCurrentActivity(activityData);
           const viewDataEndDate = addDays(
             new Date(parseInt(activityData.endDate, 10)),
@@ -393,17 +389,18 @@ const OpenActivityDetailsSurveyAnswers = () => {
           } else if (isBefore(viewDataEndDate, new Date())) {
             setShowData(false);
           }
-
-          if (!getDefaultSurveyAnwsers.all.length) {
+          if (!getDefaultSurveyAnwsersData.all.length) {
             setNoData(true);
           } else {
-            handleDays(getRegisters.total);
-            setRegisterTotalBase(getRegisters);
-            setRegisterTotal(getRegisters);
+            handleDays(getRegistersData.total);
+            setRegisterTotalBase(getRegistersData);
+            setRegisterTotal(getRegistersData);
             setDefaultQuestions(
-              formatData(defaultSurveyData, getDefaultSurveyAnwsers)
+              formatData(defaultSurveyData, getDefaultSurveyAnwsersData)
             );
-            setSurveyQuestions(formatData(surveyData.data, getSurveyAnwsers));
+            setSurveyQuestions(
+              formatData(surveyData.data, getSurveyAnwsersData)
+            );
           }
         }
       } catch (error) {
@@ -457,10 +454,7 @@ const OpenActivityDetailsSurveyAnswers = () => {
                 </div>
               ) : noData ? (
                 <div className="w-full p-8">
-                  <Alert
-                    message="Sem dados para mostrar."
-                    type="info"
-                  />
+                  <Alert message="Sem dados para mostrar." type="info" />
                 </div>
               ) : (
                 <>

@@ -217,6 +217,11 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             "packages/functions/src/activities/register/registers-by-activity-id.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
+          },
+          permissions: [activitiesTable, usersSubscriptionTable],
           bind: [database],
         },
       },
@@ -274,6 +279,11 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             "packages/functions/src/activities/survey/registers-by-activity-id.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
+          },
+          permissions: [activitiesTable, usersSubscriptionTable],
           bind: [database],
         },
       },
@@ -281,6 +291,11 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             "packages/functions/src/activities/survey/default-survey-anwsers-by-activity-id.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
+          },
+          permissions: [activitiesTable, usersSubscriptionTable],
           bind: [database],
         },
       },
@@ -288,6 +303,11 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             "packages/functions/src/activities/survey/survey-anwsers-by-activity-id.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
+          },
+          permissions: [activitiesTable, usersSubscriptionTable],
           bind: [database],
         },
       },

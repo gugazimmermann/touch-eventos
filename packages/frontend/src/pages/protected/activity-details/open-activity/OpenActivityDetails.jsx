@@ -14,7 +14,7 @@ import {
   OpenActivityDetailsCardDesk,
   OpenActivityDetailsCardPayment,
 } from "./components";
-import { addDays, isBefore } from "date-fns";
+import { addDays, isAfter, isBefore } from "date-fns";
 
 const initValues = {
   activityId: "",
@@ -64,7 +64,7 @@ const OpenActivityDetails = () => {
   const [isToastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showData, setShowData] = useState(true);
-
+  const [validSubscription, setValidSubscription] = useState(false);
   const [showDetails, setShowDetails] = useState(true);
   const [detailsOpacity, setDetailsOpacity] = useState("opacity-100");
   const [paymentOpacity, setPaymentOpacity] = useState("opacity-0");
@@ -120,7 +120,11 @@ const OpenActivityDetails = () => {
         surveysVisitors: data.surveysVisitors,
         desk: data.desk,
       });
-      if (!data.active && !data?.payment) {
+      const isValidSubscription =
+        state?.subscription?.endDate &&
+        isAfter(new Date(parseInt(state.subscription.endDate, 10)), new Date());
+      setValidSubscription(isValidSubscription);
+      if (!isValidSubscription && !data.active && !data?.payment) {
         setWarning({
           title: "Pagamento em Aberto",
           message: "Utilizando Período de Teste, máximo dez cadastros.",
@@ -132,26 +136,15 @@ const OpenActivityDetails = () => {
           message: "A atividade está inativa, entre em contato conosco.",
         });
       }
-      if (data.active && data?.payment !== "success") {
+      if (!isValidSubscription && data.active && data?.payment !== "success") {
         setWarning({
           title: "Falha no Pagamento",
           message: "Ocorreu uma falha no pagamento, entre em contato conosco.",
         });
       }
       const viewDataEndDate = addDays(new Date(parseInt(data.endDate, 10)), 30);
-      if (
-        state?.subscription?.endDate &&
-        isBefore(
-          new Date(parseInt(state.subscription.endDate, 10)),
-          new Date()
-        ) &&
-        isBefore(viewDataEndDate, new Date())
-      ) {
+      if (!isValidSubscription && isBefore(viewDataEndDate, new Date()))
         setShowData(false);
-      } else if (isBefore(viewDataEndDate, new Date())) {
-        setShowData(false);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [state.subscription.endDate]
@@ -282,7 +275,6 @@ const OpenActivityDetails = () => {
               endDate={values.endDate}
             />
           </div>
-
           <div
             className={`${detailsOpacity} ${
               showDetails ? "visible" : "hidden"
@@ -292,20 +284,21 @@ const OpenActivityDetails = () => {
               data={values}
               handleArchive={handleArchive}
               handleTogglePaymentView={handleTogglePaymentView}
+              validSubscription={validSubscription}
             />
           </div>
-
-          <div
-            className={`${paymentOpacity} ${
-              !showDetails ? "visible" : "hidden"
-            } transition-opacity duration-500`}
-          >
-            <OpenActivityDetailsCardPayment
-              data={values}
-              handleTogglePaymentView={handleTogglePaymentView}
-            />
-          </div>
-
+          {!loading && !validSubscription && !values.payment && (
+            <div
+              className={`${paymentOpacity} ${
+                !showDetails ? "visible" : "hidden"
+              } transition-opacity duration-500`}
+            >
+              <OpenActivityDetailsCardPayment
+                data={values}
+                handleTogglePaymentView={handleTogglePaymentView}
+              />
+            </div>
+          )}
           {values.visitorGift === "YES" && (
             <OpenActivityDetailsCardDesk
               activityId={activityId}

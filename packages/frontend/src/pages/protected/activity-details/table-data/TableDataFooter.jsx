@@ -26,7 +26,7 @@ const TableDataFooter = ({ pages, currentPage, handlePageChange }) => {
             d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
           />
         </svg>
-        <span>{t("activity_detail_pagination_back")}</span>
+        <span>{t("activity_details_pagination_back")}</span>
       </button>
       <div className="items-center flex gap-x-3">
         {pages.length <= 10 ? (
@@ -46,7 +46,7 @@ const TableDataFooter = ({ pages, currentPage, handlePageChange }) => {
         ) : (
           <>
             <label className="text-sm" htmlFor="selectPages">
-              {t("activity_detail_pagination_page")}:{" "}
+              {t("activity_details_pagination_page")}:{" "}
             </label>
             <select
               name="selectPages"
@@ -76,7 +76,7 @@ const TableDataFooter = ({ pages, currentPage, handlePageChange }) => {
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage >= pages[pages.length - 1]}
       >
-        <span>{t("activity_detail_pagination_foward")}</span>
+        <span>{t("activity_details_pagination_foward")}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

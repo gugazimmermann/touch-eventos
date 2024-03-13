@@ -4,6 +4,9 @@ import { DataApiDialect } from "kysely-data-api";
 import { RDSData } from "@aws-sdk/client-rds-data";
 import { RDS } from "sst/node/rds";
 import { IActivitiesDesk, IActivitiesRegister } from "../../database";
+import { GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { addDays, isBefore } from "date-fns";
+import { dynamoDBClient } from "../../aws-clients";
 import { error } from "../../error";
 
 export interface Database {
@@ -23,15 +26,68 @@ const db = new Kysely<Database>({
   }),
 });
 
+async function getActivityDetails(activitiesTable: string, activityId: string) {
+  const activityResults = await dynamoDBClient.send(
+    new GetCommand({
+      TableName: activitiesTable,
+      Key: { activityId },
+    })
+  );
+  return activityResults.Item;
+}
+
+async function getSubscriptionEndDate(
+  usersSubscriptionTable: string,
+  userId: string
+) {
+  const params = {
+    TableName: usersSubscriptionTable,
+    ExpressionAttributeNames: { "#userId": "userId", "#endDate": "endDate" },
+    ExpressionAttributeValues: { ":userId": userId },
+    IndexName: "UserIndex",
+    KeyConditionExpression: "#userId = :userId",
+    ProjectionExpression: "#endDate",
+    ScanIndexForward: false,
+  };
+  const results = await dynamoDBClient.send(new QueryCommand(params));
+  return results?.Items?.[0]?.endDate;
+}
+
+function shouldShowData(activityEndDate: string, subscriptionEndDate: string) {
+  const viewDataEndDate = addDays(new Date(parseInt(activityEndDate, 10)), 30);
+  if (
+    subscriptionEndDate &&
+    isBefore(new Date(parseInt(subscriptionEndDate, 10)), new Date()) &&
+    isBefore(viewDataEndDate, new Date())
+  ) {
+    return false;
+  }
+  return !isBefore(viewDataEndDate, new Date());
+}
+
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
   event
 ) => {
+  const activitiesTable = process.env.ACTIVITIES_TABLE_NAME;
+  const usersSubscriptionTable = process.env.USERS_SUBSCRIPTION_TABLE_NAME;
+  if (!activitiesTable || !usersSubscriptionTable)
+    return error(500, "Internal Server Error");
   const userId = event.requestContext.authorizer.jwt.claims.sub;
   if (!userId) return error(400, "Bad Request: Missing User Id");
   const activityId = event?.pathParameters?.activityId;
   if (!activityId) return error(400, "Bad Request: Missing Activity Id");
 
   try {
+    const activity = await getActivityDetails(activitiesTable, activityId);
+    if (!activity) return error(404, "Not Found: Activity not found");
+
+    const subscriptionEndDate = await getSubscriptionEndDate(
+      usersSubscriptionTable,
+      String(userId)
+    );
+    const showData = shouldShowData(activity.endDate, subscriptionEndDate);
+    if (!showData) return error(402, "Payment Required");
+
     const registers = await db
       .selectFrom("activities_register")
       .leftJoin(
@@ -52,10 +108,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       .groupBy("activities_register.registrationId")
       .execute();
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(registers),
-    };
+    return { statusCode: 200, body: JSON.stringify(registers) };
   } catch (err) {
     console.error("DynamoDB Error:", err);
     return error(500, "Internal Server Error: DynamoDB operation failed");
