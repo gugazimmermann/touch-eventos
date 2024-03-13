@@ -36,26 +36,31 @@ const NewPassword = lazyLoad(import("../pages/public/auth/NewPassword"));
 
 const Admin = lazyLoad(import("../pages/protected/Admin"));
 const Account = lazyLoad(import("../pages/protected/account/Account"));
-const NewActivity = lazyLoad(
-  import("../pages/protected/new-activity/NewActivity")
+
+const ChooseType = lazyLoad(
+  import("../pages/protected/new-activity/ChooseType")
 );
-const ActivityDetails = lazyLoad(
-  import("../pages/protected/activity-details/ActivityDetails")
+const NewOpenActivity = lazyLoad(
+  import("../pages/protected/new-activity/open-activity/NewOpenActivity")
 );
-const ActivityDetailsRegisters = lazyLoad(
-  import("../pages/protected/activity-details/ActivityDetailsRegisters")
+
+const OpenActivityDetails = lazyLoad(
+  import("../pages/protected/activity-details/open-activity/OpenActivityDetails")
 );
-const ActivityDetailsDesk = lazyLoad(
-  import("../pages/protected/activity-details/ActivityDetailsDesk")
+const OpenActivityDetailsRegisters = lazyLoad(
+  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsRegisters")
 );
-const ActivityDetailsSurvey = lazyLoad(
-  import("../pages/protected/activity-details/ActivityDetailsSurvey")
+const OpenActivityDetailsDesk = lazyLoad(
+  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsDesk")
 );
-const ActivityDetailsDefaultSurvey = lazyLoad(
-  import("../pages/protected/activity-details/ActivityDetailsDefaultSurvey")
+const OpenActivityDetailsSurvey = lazyLoad(
+  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsSurvey")
 );
-const ActivityDetailsSurveyAnswers = lazyLoad(
-  import("../pages/protected/activity-details/ActivityDetailsSurveyAnswers")
+const OpenActivityDetailsDefaultSurvey = lazyLoad(
+  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsDefaultSurvey")
+);
+const OpenActivityDetailsSurveyAnswers = lazyLoad(
+  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsSurveyAnswers")
 );
 
 export const router = createBrowserRouter(
@@ -111,32 +116,36 @@ export const router = createBrowserRouter(
           element={<Account initialTab="payments" />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.NEWACTIVITY}`}
-          element={<NewActivity />}
+          path={`/${ROUTES.ADMIN.CHOOSETYPE}`}
+          element={<ChooseType />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId`}
-          element={<ActivityDetails />}
+          path={`/${ROUTES.ADMIN.NEWOPENACTIVITY}`}
+          element={<NewOpenActivity />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.REGISTERS}`}
-          element={<ActivityDetailsRegisters />}
+          path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/:payment?`}
+          element={<OpenActivityDetails />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.DESK}`}
-          element={<ActivityDetailsDesk />}
+          path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/${ROUTES.ADMIN.REGISTERS}`}
+          element={<OpenActivityDetailsRegisters />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.SURVEYS}/:lang?`}
-          element={<ActivityDetailsSurvey />}
+          path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/${ROUTES.ADMIN.DESK}`}
+          element={<OpenActivityDetailsDesk />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.DEFAULT_SURVEYS}`}
-          element={<ActivityDetailsDefaultSurvey />}
+          path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/${ROUTES.ADMIN.SURVEYS}/:lang?`}
+          element={<OpenActivityDetailsSurvey />}
         />
         <Route
-          path={`/${ROUTES.ADMIN.ACTIVITY}/:activityId/${ROUTES.ADMIN.ANSWERS}`}
-          element={<ActivityDetailsSurveyAnswers />}
+          path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/${ROUTES.ADMIN.DEFAULT_SURVEYS}`}
+          element={<OpenActivityDetailsDefaultSurvey />}
+        />
+        <Route
+          path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/${ROUTES.ADMIN.ANSWERS}`}
+          element={<OpenActivityDetailsSurveyAnswers />}
         />
       </Route>
     </>

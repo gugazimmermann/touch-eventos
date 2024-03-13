@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { v4 as uuidv4 } from "uuid";
 import {
   parseISO,
   format,
@@ -9,21 +10,24 @@ import {
   compareDesc,
   isValid,
   addHours,
+  isAfter,
 } from "date-fns";
-import ROUTES from "../../../constants/routes";
-import { activity } from "../../../services";
-import { ArrowBackCircle, SearchTable, Spreadsheet } from "../../../icons";
-import { Alert, Loading } from "../../../components";
-import { AdminTopNav } from "../../../components/layout";
-import TableData from "./table-data/TableData";
-import TableDataFooter from "./table-data/TableDataFooter";
+import ROUTES from "../../../../constants/routes";
+import { activity } from "../../../../services";
+import { ArrowBackCircle, SearchTable, Spreadsheet } from "../../../../icons";
+import { Alert, Loading } from "../../../../components";
+import { AdminTopNav } from "../../../../components/layout";
+import TableData from "../table-data/TableData";
+import TableDataFooter from "../table-data/TableDataFooter";
 
-const ActivityDetailsRegisters = () => {
+const OpenActivityDetailsDesk = () => {
   const { t } = useTranslation("activity_details");
   const { activityId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
+  const [currentActivity, setCurrentActivity] = useState();
   const [originalData, setOriginalData] = useState();
   const [dataToTable, setDataToTable] = useState();
   const [dataToPage, setDataToPage] = useState();
@@ -33,6 +37,10 @@ const ActivityDetailsRegisters = () => {
   const [showing, setShowing] = useState("all");
   const [search, setSearch] = useState("");
   const [order, setOrder] = useState("desc");
+  const [values, setValues] = useState({
+    user: "",
+    accessCode: "",
+  });
 
   const headerData = [
     {
@@ -41,64 +49,51 @@ const ActivityDetailsRegisters = () => {
       sortType: "",
     },
     {
-      text: t("activity_details_register_created_at"),
+      text: t("activity_details_desk_table_user"),
+      sort: true,
+      sortType: "user",
+    },
+    {
+      text: t("activity_details_desk_table_gift_delivered"),
+      sort: true,
+      sortType: "gifts",
+    },
+    {
+      text: t("activity_details_desk_table_gift_created_at"),
       sort: true,
       sortType: "createdAt",
     },
     {
-      text: t("activity_details_register_confirmed"),
+      text: t("activity_details_desk_table_gift_status"),
       sort: true,
-      sortType: "confirmed",
-    },
-    {
-      text: t("activity_details_register_gift"),
-      sort: true,
-      sortType: "gift",
-    },
-    {
-      text: t("activity_details_register_desk"),
-      sort: true,
-      sortType: "deskUser",
-    },
-    {
-      text: t("activity_details_register_email"),
-      sort: false,
-      sortType: "",
-    },
-    {
-      text: t("activity_details_register_phone"),
-      sort: false,
-      sortType: "",
+      sortType: "active",
     },
   ];
 
   const handleExportToCSV = () => {
-    const properties = [
-      "createdAt",
-      "confirmed",
-      "gift",
-      "deskUser",
-      "email",
-      "phone",
-    ];
+    const properties = ["user", "gifts", "createdAt", "active"];
     const csvRows = [];
     csvRows.push(
-      `${t("activity_details_register_created_at")}, ${t(
-        "activity_details_register_confirmed"
-      )}, ${t("activity_details_register_gift")}, ${t(
-        "activity_details_register_desk"
-      )}, ${t("activity_details_register_email")}, ${t(
-        "activity_details_register_phone"
+      `${t("activity_details_desk_table_user")}, ${t(
+        "activity_details_desk_table_gift_delivered"
+      )}, ${t("activity_details_desk_table_gift_created_at")}, ${t(
+        "activity_details_desk_table_gift_status"
       )}`
     );
+
     for (const row of dataToTable) {
+      row.active.value = row.active.value.split("#")[1];
       const values = properties.map((property) => {
-        const escapedValue = ("" + (row[property]?.value || "")).replace(/"/g, '\\"');
+        const escapedValue = ("" + (row[property].value || "")).replace(
+          /"/g,
+          '\\"'
+        );
         return `"${escapedValue}"`;
       });
       csvRows.push(values.join(","));
     }
-    const fileName = `cadastros-${format(new Date(), "dd_MMM-HH_mm_ss")}.csv`;
+
+    const fileName = `balcao-${format(new Date(), "dd_MMM-HH_mm_ss")}.csv`;
     const csvString = csvRows.join("\n");
     const blob = new Blob([csvString], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -160,14 +155,42 @@ const ActivityDetailsRegisters = () => {
 
   const orderText = (data, field) => {
     return order === "asc"
-      ? data.sort((a, b) => (a[field].value || "").localeCompare(b[field].value || ""))
-      : data.sort((a, b) => (b[field].value || "").localeCompare(a[field].value || ""));
+      ? data.sort((a, b) =>
+          (a[field].value || "").localeCompare(b[field].value || "")
+        )
+      : data.sort((a, b) =>
+          (b[field].value || "").localeCompare(a[field].value || "")
+        );
+  };
+
+  const orderActive = (data, field) => {
+    return order === "asc"
+      ? data.sort((a, b) =>
+          (a[field].value.split("#")[1] || "").localeCompare(
+            b[field].value.split("#")[1] || ""
+          )
+        )
+      : data.sort((a, b) =>
+          (b[field].value.split("#")[1] || "").localeCompare(
+            a[field].value.split("#")[1] || ""
+          )
+        );
+  };
+
+  const orderNumber = (data, field) => {
+    return order === "asc"
+      ? data.sort((a, b) => a[field].value - b[field].value)
+      : data.sort((a, b) => b[field].value - a[field].value);
   };
 
   const handleOrder = (type) => {
     let orderedData = [...dataToTable];
-    if (type === "deskUser") {
+    if (type === "user") {
       orderedData = orderText(dataToTable, type);
+    } else if (type === "active") {
+      orderedData = orderActive(dataToTable, type);
+    } else if (type === "gifts") {
+      orderedData = orderNumber(dataToTable, type);
     } else {
       orderedData = orderDate(dataToTable, type);
     }
@@ -195,13 +218,13 @@ const ActivityDetailsRegisters = () => {
       const newData = originalData.filter(
         (d) =>
           d?.createdAt?.value?.includes(search) ||
-          d?.confirmed?.value?.includes(search) ||
-          d?.gift?.value?.includes(search) ||
-          normalizeString(d?.deskUser?.value?.toLowerCase()).includes(
+          d?.gifts?.value.toString() === search ||
+          normalizeString(d?.user?.value?.toLowerCase()).includes(
             normalizeString(search.toLowerCase())
           ) ||
-          d?.email?.value?.toLowerCase().includes(search.toLowerCase()) ||
-          d?.phone?.value?.includes(search)
+          d?.active?.value
+            ?.toLowerCase()
+            .includes(normalizeString(search.toLowerCase()))
       );
       setDataToTable(newData);
       handlePagination(newData, 1);
@@ -213,10 +236,14 @@ const ActivityDetailsRegisters = () => {
   const handleShowState = (status) => {
     setSearch("");
     let newData = [...originalData];
-    if (status === "confirmed") {
-      newData = originalData.filter((d) => d.confirmed.value);
-    } else if (status === "gift") {
-      newData = originalData.filter((d) => d.gift.value);
+    if (status === "active") {
+      newData = originalData.filter(
+        (d) => d.active.value.split("#")[1] === "Ativo"
+      );
+    } else if (status === "inactive") {
+      newData = originalData.filter(
+        (d) => d.active.value.split("#")[1] === "Inativo"
+      );
     }
     setDataToTable(newData);
     handlePagination(newData, 1);
@@ -225,26 +252,79 @@ const ActivityDetailsRegisters = () => {
     setShowing(status);
   };
 
+  const handleChangeStatus = async (deskId) => {
+    setLoading(true);
+    try {
+      await activity.changeDesk(activityId, deskId);
+      await getData(activityId);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  const verifyRepeat = (newUser) => {
+    setWarning();
+    const verifyUser = originalData.find(
+      (o) => o.user.value.toLocaleLowerCase() === newUser.toLocaleLowerCase()
+    );
+    if (verifyUser) {
+      setWarning(t("Usuário Já Cadastrado"));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!values.user || !values.accessCode) {
+      return;
+    }
+    setLoading(true);
+    const payload = {
+      deskId: uuidv4(),
+      user: values.user,
+      accessCode: values.accessCode,
+      createdAt: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`,
+    };
+    await activity.saveDesk(activityId, payload);
+    setValues({
+      user: "",
+      accessCode: "",
+    });
+    await getData(activityId);
+  };
+
+  const showRegisterButton = () => {
+    if (isAfter(new Date(), new Date(parseInt(currentActivity?.endDate, 10))))
+      return false;
+    return true;
+  };
+
   const formatData = (rawData) => {
     const formatDate = (d) =>
       format(addHours(parseISO(d.replace(" ", "T")), -3), "dd/MM/yy HH:mm");
     return rawData.map((d) => ({
-      createdAt: { value: formatDate(d.createdAt)},
-      confirmed: { value: d.confirmed ? formatDate(d.confirmed) : ""},
-      gift: { value: d.gift ? formatDate(d.gift) : ""},
-      deskUser: { value: d.deskUser},
-      email: { value: d.email},
-      phone: { value: d.phone},
+      user: { value: d.user },
+      gifts: { value: d.gifts },
+      createdAt: { value: d.createdAt ? formatDate(d.createdAt) : "" },
+      active: {
+        value: d.active ? `${d.deskId}#Ativo` : `${d.deskId}#Inativo`,
+        type: "status",
+      },
     }));
   };
 
   const getData = useCallback(async (id) => {
     setLoading(true);
     try {
-      const activityData = await activity.getActivityRegistersById(id);
-      if (activityData?.error) setError(activityData?.error);
+      const [activityData, deskData] = await Promise.all([
+        await activity.getActivityById(id),
+        await activity.getDesk(id),
+      ]);
+      if (activityData?.error || deskData?.error)
+        setError(activityData?.error || deskData?.error);
       else {
-        const formatedData = formatData(activityData);
+        setCurrentActivity(activityData);
+        const formatedData = formatData(deskData);
         setOriginalData(formatedData);
         setDataToTable(formatedData);
         handlePageNumbers(formatedData.length);
@@ -276,15 +356,20 @@ const ActivityDetailsRegisters = () => {
   return (
     <section className="w-full px-4 mb-8">
       {error && <Alert message={error} type="danger" />}
-      <AdminTopNav title={t("activity_details_title")} />
+      {warning && <Alert message={warning} type="warning" />}
+      <AdminTopNav
+        title={`${t("activity_details_title")} - ${currentActivity?.name}`}
+      />
       <div className="flex flex-col justify-start items-start gap-4">
         <button
           className="flex flow-row justify-center items-center"
-          onClick={() => navigate(`/${ROUTES.ADMIN.ACTIVITY}/${activityId}`)}
+          onClick={() =>
+            navigate(`/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}`)
+          }
         >
           <ArrowBackCircle />
           <h2 className="text-2xl text-strong ml-2">
-            {t("activity_details_register_title")}
+            {t("activity_details_desk_title")}
           </h2>
         </button>
         {loading ? (
@@ -306,9 +391,9 @@ const ActivityDetailsRegisters = () => {
                       {dataToTable?.length || 0}{" "}
                       {showing === "search" && search
                         ? search
-                        : showing === "confirmed"
-                        ? t("activity_details_register_button_confirmed")
-                        : t("activity_details_register_button_gift")}
+                        : showing === "active"
+                        ? t("activity_details_status_active")
+                        : t("activity_details_status_inactive")}
                     </span>
                   )}
                 </div>
@@ -319,6 +404,47 @@ const ActivityDetailsRegisters = () => {
                   <Spreadsheet />
                 </button>
               </div>
+              {showRegisterButton() && (
+                <form className="flex flex-col mb-4" onSubmit={handleSubmit}>
+                  <div className="w-full flex flex-row justify-center items-center gap-4">
+                    <h2 className="font-semibold capitalize">
+                      {t("activity_details_desk_add_access")}
+                    </h2>
+                    <input
+                      id="user"
+                      name="user"
+                      type="text"
+                      placeholder={t("activity_details_desk_add_access_user")}
+                      value={values.user}
+                      onChange={(e) =>
+                        setValues &&
+                        setValues({ ...values, user: e.target.value })
+                      }
+                      onBlur={(e) => verifyRepeat(e.target.value)}
+                      className="block px-1.5 py-1 bg-white border border-slate-200 rounded-lg"
+                    />
+                    <input
+                      id="accessCode"
+                      name="accessCode"
+                      type="text"
+                      placeholder={t("activity_details_desk_add_access_code")}
+                      value={values.accessCode}
+                      onChange={(e) =>
+                        setValues &&
+                        setValues({ ...values, accessCode: e.target.value })
+                      }
+                      className="block px-1.5 py-1 bg-white border border-slate-200 rounded-lg"
+                    />
+                    <button
+                      disabled={loading || warning}
+                      type="submit"
+                      className="w-1/5 p-2 leading-5 text-white bg-secondary-500 rounded-lg"
+                    >
+                      {t("activity_details_desk_add_access_save")}
+                    </button>
+                  </div>
+                </form>
+              )}
               {dataToTable && (
                 <>
                   {/* Buttons and Search */}
@@ -326,11 +452,11 @@ const ActivityDetailsRegisters = () => {
                     <div className="inline-flex overflow-hidden bg-white border divide-x rounded-lg">
                       <button
                         className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                          showing === "confirmed" && "bg-gray-100"
+                          showing === "active" && "bg-gray-100"
                         }`}
-                        onClick={() => handleShowState("confirmed")}
+                        onClick={() => handleShowState("active")}
                       >
-                        {t("activity_details_register_button_confirmed")}
+                        {t("activity_details_status_active")}
                       </button>
                       <button
                         className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
@@ -342,11 +468,11 @@ const ActivityDetailsRegisters = () => {
                       </button>
                       <button
                         className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                          showing === "gift" && "bg-gray-100"
+                          showing === "inactive" && "bg-gray-100"
                         }`}
-                        onClick={() => handleShowState("gift")}
+                        onClick={() => handleShowState("inactive")}
                       >
-                        {t("activity_details_register_button_gift")}
+                        {t("activity_details_status_inactive")}
                       </button>
                     </div>
                     <div className="flex flex-row gap-x-4">
@@ -385,6 +511,7 @@ const ActivityDetailsRegisters = () => {
                     headers={headerData}
                     data={dataToPage}
                     handleOrder={handleOrder}
+                    handleChangeStatus={handleChangeStatus}
                   />
                   {/* Footer */}
                   <TableDataFooter
@@ -402,4 +529,4 @@ const ActivityDetailsRegisters = () => {
   );
 };
 
-export default ActivityDetailsRegisters;
+export default OpenActivityDetailsDesk;

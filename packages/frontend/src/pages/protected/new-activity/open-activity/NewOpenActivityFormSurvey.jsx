@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import DatePicker, { DateObject } from "react-multi-date-picker";
-import useDatePicker from "../../../hooks/useDatePicker";
-import { formatValue } from "../../../helpers/format";
-import { FormButton, SelectField } from "../../../components/form";
+import useDatePicker from "../../../../hooks/useDatePicker";
+import { formatValue } from "../../../../helpers/format";
+import { FormButton, SelectField } from "../../../../components/form";
 import { useEffect, useState } from "react";
 
-const NewActivityFormSurvey = ({
+const NewOpenActivityFormSurvey = ({
   activeVerifications,
   loading,
   values,
@@ -66,7 +66,7 @@ const NewActivityFormSurvey = ({
   }, [activePlans, activityDates, setValues, values]);
 
   useEffect(() => {
-    if (values.raffleDay.unix <= values.surveyLastDay) {
+    if (values.raffleDay <= values.surveyLastDay) {
       setValues({ ...values, raffleDay: new DateObject(values.surveyLastDay).add(1, "days").unix * 1000 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -328,4 +328,4 @@ const NewActivityFormSurvey = ({
   );
 };
 
-export default NewActivityFormSurvey;
+export default NewOpenActivityFormSurvey;

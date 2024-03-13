@@ -72,6 +72,7 @@ export interface IActivitiesVisitors {
   phone: string;
   state: string;
   city: string;
+  document?: string;
   createdAt: string;
 }
 
@@ -94,5 +95,45 @@ export interface IActivitiesVisitorsSurvey {
   questionId: number;
   answerId: number;
   custonAnswer: string;
+  createdAt: string;
+}
+
+export interface IActivitiesLobby {
+  lobbyId?: number;
+  activityId: string;
+  user: string;
+  accessCode: string;
+  createdAt: string;
+  active: boolean;
+}
+
+export interface IActivitiesTicketsType {
+  ticketTypeId?: number;
+  activityId: string;
+  name: string;
+  value: number;
+  quantity?: number | null;
+  description?: string | null;
+  lobbyInstructions?: string | null;
+  validAt: string;
+  createdAt: string;
+  active: boolean;
+}
+
+export interface IActivitiesTicketsVisitors {
+  ticketId?: number;
+  activityId: string;
+  visitorId: number;
+  ticketTypeId: number;
+  validAt: string;
+  createdAt: string;
+  active: boolean;
+}
+
+export interface IActivitiesTicketsVisitorsUsed {
+  ticketUsedId?: number;
+  activityId: string;
+  ticketId: number;
+  lobbyId: number;
   createdAt: string;
 }

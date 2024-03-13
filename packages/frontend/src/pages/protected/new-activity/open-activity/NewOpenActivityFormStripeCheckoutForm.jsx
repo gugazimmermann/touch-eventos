@@ -6,9 +6,9 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { Loading } from "../../../components";
+import { Loading } from "../../../../components";
 
-const NewActivityFormStripeCheckoutForm = ({
+const NewOpenActivityFormStripeCheckoutForm = ({
   setSuccess,
   setInfo,
   setWarning,
@@ -121,4 +121,4 @@ const NewActivityFormStripeCheckoutForm = ({
   );
 };
 
-export default NewActivityFormStripeCheckoutForm;
+export default NewOpenActivityFormStripeCheckoutForm;

@@ -152,6 +152,23 @@ export function ApiStack({ stack }: StackContext) {
           bind: [database],
         },
       },
+      "POST /activities/create": {
+        function: {
+          handler: "packages/functions/src/activities/activity-create.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            PAYMENTS_TABLE_NAME: paymentsTable.tableName,
+            PLANS_TABLE_NAME: plansTable.tableName,
+            USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
+          },
+          permissions: [
+            activitiesTable,
+            paymentsTable,
+            plansTable,
+            usersSubscriptionTable,
+          ],
+        },
+      },
       "GET /activities/{activityId}": {
         function: {
           handler: "packages/functions/src/activities/activity-by-id.handler",
@@ -170,6 +187,25 @@ export function ApiStack({ stack }: StackContext) {
           bind: [database],
         },
       },
+      "PUT /activities/{activityId}/archive": {
+        function: {
+          handler: "packages/functions/src/activities/activity-archive.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+          },
+          permissions: [activitiesTable],
+        },
+      },
+      "PUT /activities/{activityId}/payment": {
+        function: {
+          handler: "packages/functions/src/activities/activity-payment.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+            PAYMENTS_TABLE_NAME: paymentsTable.tableName,
+          },
+          permissions: [activitiesTable, paymentsTable],
+        },
+      },
       "GET /activities/verify-slug/{slug}": {
         function: {
           handler: "packages/functions/src/activities/activity-by-slug.handler",
@@ -181,31 +217,14 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             "packages/functions/src/activities/register/registers-by-activity-id.handler",
-            bind: [database],
+          bind: [database],
         },
       },
       "GET /activities/{activityId}/desk": {
         function: {
           handler:
             "packages/functions/src/activities/desk/desks-by-activity-id.handler",
-            bind: [database],
-        },
-      },
-      "POST /activities/create": {
-        function: {
-          handler: "packages/functions/src/activities/activity-create.handler",
-          environment: {
-            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
-            PAYMENTS_TABLE_NAME: paymentsTable.tableName,
-            PLANS_TABLE_NAME: plansTable.tableName,
-            USERS_SUBSCRIPTION_TABLE_NAME: usersSubscriptionTable.tableName,
-          },
-          permissions: [
-            activitiesTable,
-            paymentsTable,
-            plansTable,
-            usersSubscriptionTable,
-          ],
+          bind: [database],
         },
       },
       "POST /activities/{activityId}/image": {
@@ -232,7 +251,8 @@ export function ApiStack({ stack }: StackContext) {
       },
       "POST /activities/{activityId}/survey": {
         function: {
-          handler: "packages/functions/src/activities/survey/survey-create.handler",
+          handler:
+            "packages/functions/src/activities/survey/survey-create.handler",
           bind: [database],
         },
       },
@@ -240,80 +260,82 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             "packages/functions/src/activities/survey/survey-by-activity-id.handler",
-            bind: [database],
+          bind: [database],
         },
       },
       "GET /activities/{activityId}/default-survey": {
         function: {
           handler:
             "packages/functions/src/activities/survey/default-survey.handler",
-            bind: [database],
+          bind: [database],
         },
       },
       "GET /activities/{activityId}/survey/registers": {
         function: {
           handler:
             "packages/functions/src/activities/survey/registers-by-activity-id.handler",
-            bind: [database],
+          bind: [database],
         },
       },
       "GET /activities/{activityId}/default-survey-anwsers": {
         function: {
           handler:
             "packages/functions/src/activities/survey/default-survey-anwsers-by-activity-id.handler",
-            bind: [database],
+          bind: [database],
         },
       },
       "GET /activities/{activityId}/survey/{lang}/anwsers": {
         function: {
           handler:
             "packages/functions/src/activities/survey/survey-anwsers-by-activity-id.handler",
-            bind: [database],
+          bind: [database],
         },
       },
       "GET /activities/{activityId}/survey/{lang}/register-download-count": {
         function: {
           handler:
             "packages/functions/src/activities/survey/survey-anwsers-registers-download-count.handler",
-            bind: [database],
+          bind: [database],
         },
       },
-      "GET /activities/{activityId}/survey/{lang}/register-download/{limit}/{offset}": {
-        function: {
-          handler:
-            "packages/functions/src/activities/survey/survey-anwsers-registers-download.handler",
+      "GET /activities/{activityId}/survey/{lang}/register-download/{limit}/{offset}":
+        {
+          function: {
+            handler:
+              "packages/functions/src/activities/survey/survey-anwsers-registers-download.handler",
             bind: [database],
+          },
         },
-      },
       "GET /activities/{activityId}/survey/{lang}/default-download-count": {
         function: {
           handler:
             "packages/functions/src/activities/survey/survey-anwsers-default-download-count.handler",
-            bind: [database],
+          bind: [database],
         },
       },
-      "GET /activities/{activityId}/survey/{lang}/default-download/{limit}/{offset}": {
-        function: {
-          handler:
-            "packages/functions/src/activities/survey/survey-anwsers-default-download.handler",
+      "GET /activities/{activityId}/survey/{lang}/default-download/{limit}/{offset}":
+        {
+          function: {
+            handler:
+              "packages/functions/src/activities/survey/survey-anwsers-default-download.handler",
             bind: [database],
+          },
         },
-      },
-
       "GET /activities/{activityId}/survey/{lang}/activity-download-count": {
         function: {
           handler:
             "packages/functions/src/activities/survey/survey-anwsers-activity-download-count.handler",
-            bind: [database],
+          bind: [database],
         },
       },
-      "GET /activities/{activityId}/survey/{lang}/activity-download/{limit}/{offset}": {
-        function: {
-          handler:
-            "packages/functions/src/activities/survey/survey-anwsers-activity-download.handler",
+      "GET /activities/{activityId}/survey/{lang}/activity-download/{limit}/{offset}":
+        {
+          function: {
+            handler:
+              "packages/functions/src/activities/survey/survey-anwsers-activity-download.handler",
             bind: [database],
+          },
         },
-      },
     },
   });
 

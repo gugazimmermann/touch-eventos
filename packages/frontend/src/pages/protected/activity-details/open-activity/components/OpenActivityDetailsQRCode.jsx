@@ -1,8 +1,9 @@
 import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { QRCodeSVG } from "qrcode.react";
+import { isAfter } from "date-fns";
 
-const ActivityDetailsQRCode = ({ slug }) => {
+const OpenActivityDetailsQRCode = ({ slug, endDate }) => {
   const { t } = useTranslation("activity_details");
   const qrCodeRef = useRef(null);
 
@@ -25,6 +26,11 @@ const ActivityDetailsQRCode = ({ slug }) => {
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   }, [slug]);
 
+  const showDownloadButton = () => {
+    if (isAfter(new Date(), new Date(parseInt(endDate, 10)))) return false;
+    return true;
+  };
+
   return (
     <div className="w-1/3 flex flex-col justify-between items-center bg-white rounded-lg shadow-lg">
       <h2 className="w-full py-2 text-xl text-strong text-center">
@@ -37,22 +43,29 @@ const ActivityDetailsQRCode = ({ slug }) => {
         <QRCodeSVG
           value={`${process.env.REACT_APP_SITE_REGISTRATION_URL}/${slug}`}
           size={4096}
+          bgColor={"#ffffff"}
+          fgColor={"#000000"}
+          level={"H"}
+          includeMargin={false}
           className="w-52 h-52"
         />
       </div>
+
       <div className="w-full flex flex-row justify-between px-4 py-2">
         <div className="w-full flex justify-end gap-4">
-          <button
-            type="button"
-            className="px-4 py-1.5 text-sm tracking-wide text-white bg-secondary-500 capitalize rounded-lg"
-            onClick={downloadQRCode}
-          >
-            Download
-          </button>
+          {showDownloadButton() && (
+            <button
+              type="button"
+              className="px-4 py-1.5 text-sm tracking-wide text-white bg-secondary-500 capitalize rounded-lg"
+              onClick={downloadQRCode}
+            >
+              Download
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default ActivityDetailsQRCode;
+export default OpenActivityDetailsQRCode;

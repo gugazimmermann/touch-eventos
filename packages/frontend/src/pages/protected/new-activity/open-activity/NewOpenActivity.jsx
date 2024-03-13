@@ -1,27 +1,30 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { endOfDay, getTime, isAfter, startOfDay } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
-import { useActivities } from "../../../context/ActivitiesContext";
-import { plans, verifications, auth, activity } from "../../../services";
-import useDatePicker from "../../../hooks/useDatePicker";
-import { newActivityValidate } from "../../../helpers/form-validation";
-import ROUTES from "../../../constants/routes";
-import { Alert, Loading, Toast } from "../../../components";
-import { AdminTopNav } from "../../../components/layout";
-import StepHeader from "./NewActivityStepHeader";
-import NewActivityFormActivity from "./NewActivityFormActivity";
-import NewActivityFormSurvey from "./NewActivityFormSurvey";
-import NewActivityFormMessage from "./NewActivityFormMessage";
-import NewActivityFormStripe from "./NewActivityFormStripe";
+import { useActivities } from "../../../../context/ActivitiesContext";
+import { plans, verifications, auth, activity } from "../../../../services";
+import useDatePicker from "../../../../hooks/useDatePicker";
+import { newActivityValidate } from "../../../../helpers/form-validation";
+import ROUTES from "../../../../constants/routes";
+import { ArrowBackCircle } from "../../../../icons";
+import { Alert, Loading, Toast } from "../../../../components";
+import { AdminTopNav } from "../../../../components/layout";
+import NewOpenActivityStepHeader from "./NewOpenActivityStepHeader";
+import NewOpenActivityFormActivity from "./NewOpenActivityFormActivity";
+import NewOpenActivityFormSurvey from "./NewOpenActivityFormSurvey";
+import NewOpenActivityFormMessage from "./NewOpenActivityFormMessage";
+import NewOpenActivityFormStripe from "./NewOpenActivityFormStripe";
 
 const initialValues = {
+  type: "open-activity",
   planId: "",
+  dates: "",
   name: "",
   slug: "",
-  dates: "",
+  activityType: "",
+  description: "",
   addressCountry: "BR",
   addressZipCode: "",
   addressState: "",
@@ -50,7 +53,7 @@ const initialValues = {
   raffleAutomaticText: "",
 };
 
-const NewActivity = () => {
+const NewOpenActivity = () => {
   const { t } = useTranslation("new_activity");
   const navigate = useNavigate();
   const { state, dispatch } = useActivities();
@@ -143,19 +146,21 @@ const NewActivity = () => {
 
   const verifySubscriptionDate = useCallback(() => {
     if (state?.subscription?.endDate) {
-      const lastDay = endOfDay(new Date(
-        parseInt(activityDates[activityDates.length - 1].unix * 1000, 10)
-      ));
-      const lastSubscriptionDay = endOfDay(new Date(
-        parseInt(state.subscription.endDate, 10)
-      ));
+      const lastDay = endOfDay(
+        new Date(
+          parseInt(activityDates[activityDates.length - 1].unix * 1000, 10)
+        )
+      );
+      const lastSubscriptionDay = endOfDay(
+        new Date(parseInt(state.subscription.endDate, 10))
+      );
       const verify = isAfter(lastDay, lastSubscriptionDay)
         ? t("new_activity_dates_last_day_subscription")
         : false;
       setInfo(verify);
       return verify;
     }
-  }, [activityDates, state?.subscription?.endDate]);
+  }, [activityDates, state?.subscription?.endDate, t]);
 
   const handleSubmit = async (paymentIntent) => {
     setError("");
@@ -205,7 +210,7 @@ const NewActivity = () => {
           payload: { activitiesList: null },
         });
         handleResetForm();
-        navigate(`/${ROUTES.ADMIN.ACTIVITY}/${activityId}`);
+        navigate(`/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}`);
       }
     } catch (error) {
       setError(error.message);
@@ -300,7 +305,7 @@ const NewActivity = () => {
       setActiveVerifications(state.verifications);
     }
     setLoading(false);
-  }, [dispatch, state.plans, state.verifications]);
+  }, [dispatch, state.plans, state.verifications, t]);
 
   useEffect(() => {
     getData();
@@ -317,13 +322,20 @@ const NewActivity = () => {
         setStep(2);
       }
     }
-  }, []);
+  }, [getData, state.activityRegister, stringToDateObject]);
 
   return (
     <section className="w-full mb-8">
       <AdminTopNav title={t("new_activity_title")} />
-      <div className="flex flex-col justify-center mx-auto bg-white p-4 rounded-lg">
-        <StepHeader
+      <button
+        className="flex flow-row justify-center items-center"
+        onClick={() => navigate(`/${ROUTES.ADMIN.CHOOSETYPE}`)}
+      >
+        <ArrowBackCircle />
+        <h2 className="text-2xl text-strong ml-2">{t("Atividade Aberta")}</h2>
+      </button>
+      <div className="flex flex-col justify-center mx-auto bg-white p-4 mt-2 rounded-lg">
+        <NewOpenActivityStepHeader
           step={step}
           setStep={setStep}
           paymentSuccess={paymentSuccess}
@@ -334,7 +346,7 @@ const NewActivity = () => {
         {info && <Alert message={info} type="info" />}
         {warning && <Alert message={warning} type="warning" />}
         {step === 1 && (
-          <NewActivityFormActivity
+          <NewOpenActivityFormActivity
             activePlans={activePlans}
             loading={loading}
             setLoading={setLoading}
@@ -352,7 +364,7 @@ const NewActivity = () => {
           />
         )}
         {step === 2 && (
-          <NewActivityFormSurvey
+          <NewOpenActivityFormSurvey
             activeVerifications={activeVerifications}
             loading={loading}
             values={values}
@@ -365,7 +377,7 @@ const NewActivity = () => {
           />
         )}
         {step === 3 && (
-          <NewActivityFormMessage
+          <NewOpenActivityFormMessage
             activeVerifications={activeVerifications}
             loading={loading}
             values={values}
@@ -376,7 +388,7 @@ const NewActivity = () => {
           />
         )}
         {step === 4 && (
-          <NewActivityFormStripe
+          <NewOpenActivityFormStripe
             activePlans={activePlans}
             planId={values.planId}
             activeVerifications={activeVerifications}
@@ -405,4 +417,4 @@ const NewActivity = () => {
   );
 };
 
-export default NewActivity;
+export default NewOpenActivity;

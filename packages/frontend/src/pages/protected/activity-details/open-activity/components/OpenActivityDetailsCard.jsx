@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { isAfter, isBefore } from "date-fns";
-import { maskCep } from "../../../../helpers/mask";
-import { formatDate, formatValue } from "../../../../helpers/format";
-import { Clipboard } from "../../../../icons";
+import { format, isAfter, isBefore } from "date-fns";
+import { maskCep } from "../../../../../helpers/mask";
+import { formatDate, formatValue } from "../../../../../helpers/format";
+import { Clipboard } from "../../../../../icons";
+import { useEffect, useState } from "react";
 // import { Br, Es, Us } from "react-flags-select";
 
 const ActivityRow = ({ title, content }) => {
@@ -28,22 +29,19 @@ const formatAddress = (data) => {
 };
 
 const showEditButton = (start) => {
-  const startDate = new Date(parseInt(start, 10));
-  const today = new Date();
-  if (isAfter(startDate, today)) return true;
+  if (isAfter(new Date(parseInt(start, 10)), new Date())) return true;
   return false;
 };
 
-const showArchiveButton = (end) => {
-  const endDate = new Date(parseInt(end, 10));
-  const today = new Date();
-  if (isBefore(endDate, today)) return true;
+const showArchiveButton = (end, archived) => {
+  if (isBefore(new Date(parseInt(end, 10)), new Date()) && !archived)
+    return true;
   return false;
 };
 
-const ActivityDetailsCard = ({ data }) => {
+const OpenActivityDetailsCard = ({ data, handleArchive, handleTogglePaymentView }) => {
   const { t } = useTranslation("activity_details");
-
+  const [activityDate, setActivityDates] = useState([]);
   const showGiftText = (visitorGift) => {
     return visitorGift === "YES"
       ? t("activity_details_yes")
@@ -60,6 +58,19 @@ const ActivityDetailsCard = ({ data }) => {
       : t("activity_details_no");
   };
 
+  const normalizeDates = (dates) => {
+    const month = dates[0].split("/")[1];
+    if (parseInt(month, 10) > 12) {
+      setActivityDates(dates.map((d) => format(new Date(d), "dd/MM/yy")));
+    } else {
+      setActivityDates(dates);
+    }
+  };
+
+  useEffect(() => {
+    if (data.dates) normalizeDates(data.dates);
+  }, [data.dates]);
+
   return (
     <div className="w-full bg-white rounded-lg shadow-lg py-2">
       <div className="inline-block min-w-full overflow-x-auto">
@@ -68,7 +79,7 @@ const ActivityDetailsCard = ({ data }) => {
             <tbody>
               <ActivityRow
                 title={t("activity_details_card_details_dates")}
-                content={data.dates && data.dates.join(", ")}
+                content={activityDate.length && activityDate.join(", ")}
               />
               <ActivityRow
                 title={t("activity_details_card_details_address")}
@@ -173,6 +184,7 @@ const ActivityDetailsCard = ({ data }) => {
             <button
               type="button"
               className="px-4 py-1.5 text-sm tracking-wide text-white bg-success-500 capitalize rounded-lg"
+              onClick={handleTogglePaymentView}
             >
               {t("activity_details_card_details_button_payment")}
             </button>
@@ -187,12 +199,22 @@ const ActivityDetailsCard = ({ data }) => {
               {t("activity_details_card_details_button_edit")}
             </button>
           )}
-          {showArchiveButton(data.endDate) && (
+          {showArchiveButton(data.endDate, data.archived) && (
             <button
               type="button"
               className="px-4 py-1 text-sm tracking-wide text-white bg-secondary-500 capitalize rounded-lg"
+              onClick={() => handleArchive(data.activityId)}
             >
               {t("activity_details_card_details_button_archive")}
+            </button>
+          )}
+          {data.archived === 1 && (
+            <button
+              type="button"
+              className="px-4 py-1 text-sm tracking-wide text-white bg-success-500 capitalize rounded-lg"
+              onClick={() => handleArchive(data.activityId)}
+            >
+              {t("Reativar")}
             </button>
           )}
         </div>
@@ -201,4 +223,4 @@ const ActivityDetailsCard = ({ data }) => {
   );
 };
 
-export default ActivityDetailsCard;
+export default OpenActivityDetailsCard;

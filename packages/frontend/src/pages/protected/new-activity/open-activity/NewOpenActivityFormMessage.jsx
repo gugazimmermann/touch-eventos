@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useTranslation } from "react-i18next";
-import { FormButton } from "../../../components/form";
+import { FormButton } from "../../../../components/form";
 import { useEffect, useState } from "react";
-import { formatDate } from "../../../helpers/format";
-import { Alert } from "../../../components";
+import { formatDate } from "../../../../helpers/format";
+import { Alert } from "../../../../components";
 
-const NewActivityFormMessage = ({
+const NewOpenActivityFormMessage = ({
   activeVerifications,
   loading,
   values,
@@ -378,4 +378,4 @@ const NewActivityFormMessage = ({
   );
 };
 
-export default NewActivityFormMessage;
+export default NewOpenActivityFormMessage;

@@ -5,6 +5,7 @@ import { DatabaseStack } from "./stacks/DatabaseStack";
 import { CognitoStack } from "./stacks/CognitoStack";
 import { ApiStack } from "./stacks/ApiStack";
 import { SiteApiStack } from "./stacks/SiteApiStack";
+import { AppApiStack } from "./stacks/AppApiStack";
 import { FrontendStack } from "./stacks/FrontendStack";
 
 export default {
@@ -22,6 +23,7 @@ export default {
       .stack(CognitoStack)
       .stack(ApiStack)
       .stack(SiteApiStack)
+      .stack(AppApiStack)
       .stack(FrontendStack);
   },
 } satisfies SSTConfig;

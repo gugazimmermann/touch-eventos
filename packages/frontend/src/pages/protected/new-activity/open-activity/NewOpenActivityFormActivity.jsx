@@ -6,22 +6,22 @@ import DatePicker from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import * as slugfy from "slugify";
 import ReactFlagsSelect from "react-flags-select";
-import { useActivities } from "../../../context/ActivitiesContext";
+import { useActivities } from "../../../../context/ActivitiesContext";
 // import { fetchCitiesByState, fetchDataByCEP } from "../../../services";
-import { fetchDataByCEP } from "../../../services";
-import useDatePicker from "../../../hooks/useDatePicker";
-import { STATESBR } from "../../../constants/states";
-import { formatValue } from "../../../helpers/format";
-import { maskCep } from "../../../helpers/mask";
+import { fetchDataByCEP } from "../../../../services";
+import useDatePicker from "../../../../hooks/useDatePicker";
+import { STATESBR } from "../../../../constants/states";
+import { formatValue } from "../../../../helpers/format";
+import { maskCep } from "../../../../helpers/mask";
 import {
   FormButton,
   InputField,
   // InputFieldAutoComplete,
   SelectField,
-} from "../../../components/form";
-import { CircleCheckFilled, Search, XCircle } from "../../../icons";
+} from "../../../../components/form";
+import { CircleCheckFilled, Search, XCircle } from "../../../../icons";
 
-const NewActivityFormActivity = ({
+const NewOpenActivityFormActivity = ({
   activePlans,
   loading,
   setLoading,
@@ -121,7 +121,7 @@ const NewActivityFormActivity = ({
             className="pl-4 text-left w-full tracking-wide"
             htmlFor="planId"
           >
-           {t("new_activity_plans")}
+            {t("new_activity_plans")}
           </label>
           <SelectField
             className="mt-0"
@@ -142,7 +142,7 @@ const NewActivityFormActivity = ({
             className="pl-4 text-left w-full tracking-wide"
             htmlFor="activityDates"
           >
-           {t("new_activity_dates")}
+            {t("new_activity_dates")}
           </label>
           <DatePicker
             {...datePickerConfig}
@@ -158,10 +158,7 @@ const NewActivityFormActivity = ({
 
       <div className="grid grid-cols-2 gap-4 mt-4">
         <div className="flex flex-col justify-start">
-          <label
-            className="pl-4 text-left w-full tracking-wide"
-            htmlFor="name"
-          >
+          <label className="pl-4 text-left w-full tracking-wide" htmlFor="name">
             {t("new_activity_name")}
           </label>
           <InputField
@@ -174,11 +171,8 @@ const NewActivityFormActivity = ({
           />
         </div>
         <div className="flex flex-wrap items-stretch">
-          <label
-            className="pl-4 text-left w-full tracking-wide"
-            htmlFor="slug"
-          >
-             {t("new_activity_friendly_url")}
+          <label className="pl-4 text-left w-full tracking-wide" htmlFor="slug">
+            {t("new_activity_friendly_url")}
           </label>
           <input
             className="block flex-auto px-4 py-2 text-text-700 placeholder-text-500 bg-white border-y border-l rounded-l-lg"
@@ -224,6 +218,107 @@ const NewActivityFormActivity = ({
         <div className="flex flex-col justify-start">
           <label
             className="pl-4 text-left w-full tracking-wide"
+            htmlFor="activityType"
+          >
+            {t("Escolha o Tipo")}
+          </label>
+          <SelectField
+            disabled={loading}
+            required={true}
+            value="activityType"
+            values={values}
+            setValues={setValues}
+            options={[
+              {
+                value: "Feira ou Exposição",
+                text: "Feira ou Exposição",
+              },
+              {
+                value: "Festival ou Show",
+                text: "Festival ou Show",
+              },
+              {
+                value: "Conferência ou Palestra",
+                text: "Conferência ou Palestra",
+              },
+              {
+                value: "Networking ou Encontro de Negócios",
+                text: "Networking ou Encontro de Negócios",
+              },
+              {
+                value: "Atividade Recreativa",
+                text: "Atividade Recreativa",
+              },
+              {
+                value: "Atividade Esportiva",
+                text: "Atividade Esportiva",
+              },
+              {
+                value: "Atividade Gastronômica",
+                text: "Atividade Gastronômica",
+              },
+              {
+                value: "Atividade Cultural",
+                text: "Atividade Cultural",
+              },
+              {
+                value: "Atividade Religiosa",
+                text: "Atividade Religiosa",
+              },
+              {
+                value: "Atividade Beneficente",
+                text: "Atividade Beneficente",
+              },
+              {
+                value: "Atividade Educacional",
+                text: "Atividade Educacional",
+              },
+              {
+                value: "Atividade Tecnológica",
+                text: "Atividade Tecnológica",
+              },
+              {
+                value: "Atividade Literária",
+                text: "Atividade Literária",
+              },
+              {
+                value: "Atividade de Moda",
+                text: "Atividade de Moda",
+              },
+              {
+                value: "Atividade de Arte ou Design",
+                text: "Atividade de Arte e Design",
+              },
+              {
+                value: "Outra Atividade",
+                text: "Outra Atividade",
+              },
+            ]}
+            className="mt-0"
+          />
+        </div>
+        <div className="flex flex-col justify-start col-span-3">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
+            htmlFor="description"
+          >
+            {t("Breve Descrição")}
+          </label>
+          <InputField
+            disabled={loading}
+            required={true}
+            value="description"
+            values={values}
+            setValues={setValues}
+            className="mt-0"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-4 gap-4 mt-4">
+        <div className="flex flex-col justify-start">
+          <label
+            className="pl-4 text-left w-full tracking-wide"
             htmlFor="addressCountry"
           >
             {t("new_activity_address_country")}
@@ -261,7 +356,7 @@ const NewActivityFormActivity = ({
             className="pl-4 text-left w-full tracking-wide"
             htmlFor="addressState"
           >
-           {t("new_activity_address_state")}
+            {t("new_activity_address_state")}
           </label>
           <SelectField
             disabled={loading}
@@ -368,7 +463,7 @@ const NewActivityFormActivity = ({
           />
         </div>
       </div>
-      
+
       <div className="w-full flex flex-row mt-8">
         <div className="w-1/3 flex justify-center">
           <FormButton
@@ -396,4 +491,4 @@ const NewActivityFormActivity = ({
   );
 };
 
-export default NewActivityFormActivity;
+export default NewOpenActivityFormActivity;

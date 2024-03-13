@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import ROUTES from "../../../../constants/routes";
+import ROUTES from "../../../../../constants/routes";
 import { Br, Es, Us } from "react-flags-select";
 
-const ActivityDetailsCardNewSurvey = ({ activityId, surveys = [] }) => {
+const OpenActivityDetailsCardNewSurvey = ({ activityId, surveys = [] }) => {
   const { t } = useTranslation("activity_details");
   const navigate = useNavigate();
 
@@ -21,7 +21,7 @@ const ActivityDetailsCardNewSurvey = ({ activityId, surveys = [] }) => {
           type="button"
           onClick={() =>
             navigate(
-              `/${ROUTES.ADMIN.ACTIVITY}/${activityId}/${ROUTES.ADMIN.SURVEYS}/${lang}`
+              `/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}/${ROUTES.ADMIN.SURVEYS}/${lang}`
             )
           }
         >
@@ -51,4 +51,4 @@ const ActivityDetailsCardNewSurvey = ({ activityId, surveys = [] }) => {
   );
 };
 
-export default ActivityDetailsCardNewSurvey;
+export default OpenActivityDetailsCardNewSurvey;

@@ -33,6 +33,7 @@ export function FrontendStack({ stack, app }: StackContext) {
     },
     environment: {
       REACT_APP_SITE_TITLE: "Touch Eventos",
+      REACT_APP_SITE_URL: String(process.env.SITE_URL),
       REACT_APP_SITE_REGISTRATION_URL: String(process.env.REGISTRATION_URL),
       REACT_APP_SITE_DESK_URL: String(process.env.DESK_URL),
       REACT_APP_SITE_SURVEY_URL: String(process.env.SURVEY_URL),

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { Activity, CheckList, CreditCard, Message } from "../../../icons";
+import { Activity, CheckList, CreditCard, Message } from "../../../../icons";
 
-const NewActivityStepHeader = ({ step, setStep, paymentSuccess }) => {
+const NewOpenActivityStepHeader = ({ step, setStep, paymentSuccess }) => {
   const { t } = useTranslation("new_activity");
 
   const stepIconColor = ({ current, done }) => {
@@ -62,4 +62,4 @@ const NewActivityStepHeader = ({ step, setStep, paymentSuccess }) => {
   );
 };
 
-export default NewActivityStepHeader;
+export default NewOpenActivityStepHeader;

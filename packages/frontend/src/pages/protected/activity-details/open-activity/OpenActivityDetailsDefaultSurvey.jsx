@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import ROUTES from "../../../constants/routes";
-import { activity } from "../../../services";
-import { ArrowBackCircle } from "../../../icons";
-import { Alert, Loading } from "../../../components";
-import { AdminTopNav } from "../../../components/layout";
+import ROUTES from "../../../../constants/routes";
+import { activity } from "../../../../services";
+import { ArrowBackCircle } from "../../../../icons";
+import { Alert, Loading } from "../../../../components";
+import { AdminTopNav } from "../../../../components/layout";
 
 const answersType = [
   {
@@ -30,7 +30,7 @@ const answersType = [
   },
 ];
 
-const ActivityDetailsDefaultSurvey = () => {
+const OpenActivityDetailsDefaultSurvey = () => {
   const { t } = useTranslation("activity_details");
   const { activityId } = useParams();
   const navigate = useNavigate();
@@ -90,7 +90,7 @@ const ActivityDetailsDefaultSurvey = () => {
       <div className="flex flex-col justify-start items-start gap-4">
         <button
           className="flex flow-row justify-center items-center"
-          onClick={() => navigate(`/${ROUTES.ADMIN.ACTIVITY}/${activityId}`)}
+          onClick={() => navigate(`/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}`)}
         >
           <ArrowBackCircle />
           <h2 className="text-2xl text-strong ml-2">{t("Pesquisa Padrão")}</h2>
@@ -168,4 +168,4 @@ const ActivityDetailsDefaultSurvey = () => {
   );
 };
 
-export default ActivityDetailsDefaultSurvey;
+export default OpenActivityDetailsDefaultSurvey;

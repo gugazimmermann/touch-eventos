@@ -2,15 +2,15 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import { stripe } from "../../../services";
-import { FormButton } from "../../../components/form";
-import NewActivityFormStripeCheckoutForm from "./NewActivityFormStripeCheckoutForm";
-import { Loading } from "../../../components";
-import { formatValue } from "../../../helpers/format";
+import { stripe } from "../../../../services";
+import { FormButton } from "../../../../components/form";
+import { Loading } from "../../../../components";
+import { formatValue } from "../../../../helpers/format";
+import NewOpenActivityFormStripeCheckoutForm from "./NewOpenActivityFormStripeCheckoutForm";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_KEY);
 
-const NewActivityFormStripe = ({
+const NewOpenActivityFormStripe = ({
   activePlans,
   planId,
   activeVerifications,
@@ -99,7 +99,7 @@ const NewActivityFormStripe = ({
             <div className="w-full md:w-1/2 stripe">
               {clientSecret && (
                 <Elements options={options} stripe={stripePromise}>
-                  <NewActivityFormStripeCheckoutForm
+                  <NewOpenActivityFormStripeCheckoutForm
                     setSuccess={setSuccess}
                     setInfo={setInfo}
                     setWarning={setWarning}
@@ -145,4 +145,4 @@ const NewActivityFormStripe = ({
   );
 };
 
-export default NewActivityFormStripe;
+export default NewOpenActivityFormStripe;

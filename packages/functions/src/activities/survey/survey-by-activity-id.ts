@@ -3,12 +3,17 @@ import { Kysely } from "kysely";
 import { DataApiDialect } from "kysely-data-api";
 import { RDSData } from "@aws-sdk/client-rds-data";
 import { RDS } from "sst/node/rds";
-import { IActivitiesQuestion, IActivitiesAnswer } from "../../database";
+import {
+  IActivitiesQuestion,
+  IActivitiesAnswer,
+  IActivitiesVisitorsSurvey,
+} from "../../database";
 import { error } from "../../error";
 
 export interface Database {
   activities_survey_question: IActivitiesQuestion;
   activities_survey_answer: IActivitiesAnswer;
+  activities_visitors_survey: IActivitiesVisitorsSurvey;
 }
 
 const db = new Kysely<Database>({
@@ -40,10 +45,15 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
         (eb) =>
           eb
             .selectFrom("activities_survey_answer")
-            .select(["questionId", "answerId", "answer", "order as answerOrder"])
+            .select([
+              "questionId",
+              "answerId",
+              "answer",
+              "order as answerOrder",
+            ])
             .where("activities_survey_answer.active", "=", true)
             .where("activities_survey_answer.language", "=", lang)
-            .orderBy('activities_survey_answer.order', 'asc')
+            .orderBy("activities_survey_answer.order", "asc")
             .as("answers"),
         (join) =>
           join.onRef(
@@ -63,12 +73,23 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       .where("activities_survey_question.activityId", "=", activityId)
       .where("activities_survey_question.language", "=", lang)
       .where("activities_survey_question.active", "=", true)
-      .orderBy('activities_survey_question.order', 'asc')
+      .orderBy("activities_survey_question.order", "asc")
       .execute();
+
+    const visitorsCount = await db
+      .selectFrom("activities_visitors_survey")
+      .select(({ fn }) => [
+        fn.count<number>("visitorAnswerId").as("visitors_answers_count"),
+      ])
+      .where("activityId", "=", activityId)
+      .executeTakeFirst();
 
     return {
       statusCode: 200,
-      body: JSON.stringify(results),
+      body: JSON.stringify({
+        data: results,
+        count: visitorsCount?.visitors_answers_count || 0,
+      }),
     };
   } catch (err) {
     console.error("DynamoDB Error:", err);

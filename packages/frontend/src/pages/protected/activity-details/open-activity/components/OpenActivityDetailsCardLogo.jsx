@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { CloudUpload } from "../../../../icons";
+import { CloudUpload } from "../../../../../icons";
 
-const ActivityDetailsCardLogo = ({
+const OpenActivityDetailsCardLogo = ({
   name,
   logo,
   onLogoChange,
@@ -68,4 +68,4 @@ const ActivityDetailsCardLogo = ({
   );
 };
 
-export default ActivityDetailsCardLogo;
+export default OpenActivityDetailsCardLogo;

@@ -78,6 +78,39 @@ export const getActivityById = async (activityId) => {
   }
 };
 
+export const archiveActivity = async (activityId) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/archive`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
+export const payActivity = async (data) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${data.activityId}/payment`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify(data),
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
 export const getActivityRegistersById = async (activityId) => {
   try {
     const { accessToken } = await handleFetchAuthSession();

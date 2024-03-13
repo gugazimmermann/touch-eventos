@@ -2,11 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import ROUTES from "../../../constants/routes";
-import { activity } from "../../../services";
-import { ArrowBackCircle, XCircle } from "../../../icons";
-import { Alert, Loading } from "../../../components";
-import { AdminTopNav } from "../../../components/layout";
+import ROUTES from "../../../../constants/routes";
+import { activity } from "../../../../services";
+import { ArrowBackCircle, XCircle } from "../../../../icons";
+import { Alert, Loading } from "../../../../components";
+import { AdminTopNav } from "../../../../components/layout";
 
 const questionRequired = [
   {
@@ -47,20 +47,23 @@ const initialValues = {
   answers: [],
 };
 
-const ActivityDetailsSurvey = () => {
+const OpenActivityDetailsSurvey = () => {
   const { t } = useTranslation("activity_details");
   const { activityId, lang } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [currentActivity, setCurrentActivity] = useState();
   const [currentAnswer, setCurrentAnswer] = useState("");
   const [values, setValues] = useState(initialValues);
   const [survey, setSurvey] = useState([]);
   const [visibleItems, setVisibleItems] = useState({});
+  const [canEdit, setCanEdit] = useState(true);
 
   const formatSurveyData = (data) => {
     const sortedData = data.sort((a, b) => {
-      if (a.order === b.order) return (a.answerOrder || 0) - (b.answerOrder || 0);
+      if (a.order === b.order)
+        return (a.answerOrder || 0) - (b.answerOrder || 0);
       return a.order - b.order;
     });
     const grouped = sortedData.reduce((acc, current) => {
@@ -80,9 +83,21 @@ const ActivityDetailsSurvey = () => {
   const getData = useCallback(async (id, language) => {
     setLoading(true);
     try {
-      const surveyData = await activity.getSurvey(id, language);
-      if (surveyData?.error) setError(surveyData?.error);
-      else formatSurveyData(surveyData);
+      const [activityData, surveyData] = await Promise.all([
+        await activity.getActivityById(id),
+        await activity.getSurvey(id, language),
+      ]);
+      if (activityData?.error || surveyData?.error || !surveyData?.data)
+        setError(
+          activityData?.error ||
+            surveyData?.error ||
+            "Erro ao carregar os dados."
+        );
+      else {
+        if (surveyData.count > 0) setCanEdit(false);
+        formatSurveyData(surveyData.data);
+        setCurrentActivity(activityData)
+      }
     } catch (error) {
       setError(error.message);
     }
@@ -183,191 +198,191 @@ const ActivityDetailsSurvey = () => {
       <div className="flex flex-col justify-start items-start gap-4">
         <button
           className="flex flow-row justify-center items-center"
-          onClick={() => navigate(`/${ROUTES.ADMIN.ACTIVITY}/${activityId}`)}
+          onClick={() =>
+            navigate(`/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}`)
+          }
         >
           <ArrowBackCircle />
           <h2 className="text-2xl text-strong ml-2">
-            {/* {t("Pesquisa")} -{" "}
-            {lang === "en"
-              ? "Inglês"
-              : lang === "es"
-              ? "Espanhol"
-              : "Português"} */}
-            {t("Pesquisa - Perguntas")}
+            {t("Pesquisa da Atividade")} - {currentActivity?.name}
           </h2>
         </button>
         {loading ? (
           <Loading />
         ) : (
           <>
-            <div className="w-full bg-white rounded-lg shadow-lg">
-              <div className="container px-4 mx-auto my-4">
-                <form onSubmit={handleAddAnswer}>
-                  <div className="flex flex-row gap-4">
-                    <div className="w-2/3">
-                      <input
-                        className="block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg"
-                        disabled={loading}
-                        required={true}
-                        name="pergunta"
-                        id="pergunta"
-                        type="text"
-                        placeholder="Pergunta"
-                        value={values.question}
-                        onChange={(e) =>
-                          setValues({ ...values, question: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="w-1/3 flex flex-row gap-2">
-                      <select
-                        className="block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg"
-                        disabled={loading}
-                        required={true}
-                        name="tipo"
-                        id="tipo"
-                        placeholder="Tipo de Resposta"
-                        value={values.type}
-                        onChange={(e) => {
-                          setValues({
-                            ...values,
-                            type: e.target.value,
-                            answers:
-                              e.target.value === "objective"
-                                ? answerObjective
-                                : [],
-                          });
-                          setCurrentAnswer("");
-                        }}
-                      >
-                        <option value="">Tipo de Resposta</option>
-                        {answersType.map((d) => (
-                          <option key={d.value} value={d.value}>
-                            {d.text}
-                          </option>
-                        ))}
-                      </select>
-                      <select
-                        className="block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg"
-                        disabled={loading}
-                        required={true}
-                        name="tipo"
-                        id="tipo"
-                        placeholder="Obrigatória"
-                        value={values.required ? "YES" : "NO"}
-                        onChange={(e) => {
-                          setValues({
-                            ...values,
-                            required: e.target.value === "YES" ? true : false,
-                          });
-                          setCurrentAnswer("");
-                        }}
-                      >
-                        {questionRequired.map((d) => (
-                          <option key={d.value} value={d.value}>
-                            {d.text}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  {(values.type === "single" || values.type === "multiple") && (
-                    <div className="flex flex-row items-center gap-4">
+            {canEdit && (
+              <div className="w-full bg-white rounded-lg shadow-lg">
+                <div className="container px-4 mx-auto my-4">
+                  <form onSubmit={handleAddAnswer}>
+                    <div className="flex flex-row gap-4">
                       <div className="w-2/3">
                         <input
                           className="block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg"
                           disabled={loading}
-                          name="currentAnswer"
-                          id="currentAnswer"
+                          required={true}
+                          name="pergunta"
+                          id="pergunta"
                           type="text"
-                          placeholder="Resposta"
-                          value={currentAnswer}
-                          onChange={(e) => setCurrentAnswer(e.target.value)}
+                          placeholder="Pergunta"
+                          value={values.question}
+                          onChange={(e) =>
+                            setValues({ ...values, question: e.target.value })
+                          }
                         />
                       </div>
-                      <button
-                        data-testid="add-survey-submit"
-                        disabled={loading || !currentAnswer}
-                        type="submit"
-                        className={`w-1/3 mt-4 px-6 py-2 text-sm font-medium tracking-wide capitalize rounded-lg text-white ${
-                          !currentAnswer
-                            ? "bg-secondary-500/50"
-                            : "bg-secondary-500"
-                        }`}
-                      >
-                        Adicionar
-                      </button>
+                      <div className="w-1/3 flex flex-row gap-2">
+                        <select
+                          className="block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg"
+                          disabled={loading}
+                          required={true}
+                          name="tipo"
+                          id="tipo"
+                          placeholder="Tipo de Resposta"
+                          value={values.type}
+                          onChange={(e) => {
+                            setValues({
+                              ...values,
+                              type: e.target.value,
+                              answers:
+                                e.target.value === "objective"
+                                  ? answerObjective
+                                  : [],
+                            });
+                            setCurrentAnswer("");
+                          }}
+                        >
+                          <option value="">Tipo de Resposta</option>
+                          {answersType.map((d) => (
+                            <option key={d.value} value={d.value}>
+                              {d.text}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          className="block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg"
+                          disabled={loading}
+                          required={true}
+                          name="tipo"
+                          id="tipo"
+                          placeholder="Obrigatória"
+                          value={values.required ? "YES" : "NO"}
+                          onChange={(e) => {
+                            setValues({
+                              ...values,
+                              required: e.target.value === "YES" ? true : false,
+                            });
+                            setCurrentAnswer("");
+                          }}
+                        >
+                          {questionRequired.map((d) => (
+                            <option key={d.value} value={d.value}>
+                              {d.text}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                  )}
-                  {values?.answers?.length > 0 &&
-                    values.type !== "descriptive" && (
-                      <DragDropContext onDragEnd={onAnswerDragEnd}>
-                        <Droppable droppableId="droppable-answer">
-                          {(provided, snapshot) => (
-                            <div
-                              {...provided.droppableProps}
-                              ref={provided.innerRef}
-                              className="w-full mt-4 px-4"
-                            >
-                              {values.answers.map((answer, index) => (
-                                <Draggable
-                                  key={`${answer}#${index}`}
-                                  draggableId={answer}
-                                  index={index}
-                                >
-                                  {(provided, snapshot) => (
-                                    <li
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      className="w-full border-b border-slate-200 py-2"
-                                    >
-                                      {answer}
-                                    </li>
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
-                            </div>
-                          )}
-                        </Droppable>
-                      </DragDropContext>
+                    {(values.type === "single" ||
+                      values.type === "multiple") && (
+                      <div className="flex flex-row items-center gap-4">
+                        <div className="w-2/3">
+                          <input
+                            className="block w-full px-4 py-2 mt-4 text-text-700 placeholder-text-500 bg-white border rounded-lg"
+                            disabled={loading}
+                            name="currentAnswer"
+                            id="currentAnswer"
+                            type="text"
+                            placeholder="Resposta"
+                            value={currentAnswer}
+                            onChange={(e) => setCurrentAnswer(e.target.value)}
+                          />
+                        </div>
+                        <button
+                          data-testid="add-survey-submit"
+                          disabled={loading || !currentAnswer}
+                          type="submit"
+                          className={`w-1/3 mt-4 px-6 py-2 text-sm font-medium tracking-wide capitalize rounded-lg text-white ${
+                            !currentAnswer
+                              ? "bg-secondary-500/50"
+                              : "bg-secondary-500"
+                          }`}
+                        >
+                          Adicionar
+                        </button>
+                      </div>
                     )}
-                  <div className="flex flex-row justify-end">
-                    <div className="w-1/3 px-2 mt-4">
-                      <button
-                        data-testid="add-survey-submit"
-                        disabled={!canSaveAnswer()}
-                        type="button"
-                        className={`w-full px-6 py-2 text-sm font-medium tracking-wide capitalize rounded-lg text-white ${
-                          !canSaveAnswer()
-                            ? "bg-success-500/50"
-                            : "bg-success-500"
-                        }`}
-                        onClick={() => handleSaveAnswerSubmit()}
-                      >
-                        Adicionar
-                      </button>
+                    {values?.answers?.length > 0 &&
+                      values.type !== "descriptive" && (
+                        <DragDropContext onDragEnd={onAnswerDragEnd}>
+                          <Droppable droppableId="droppable-answer">
+                            {(provided, snapshot) => (
+                              <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                className="w-full mt-4 px-4"
+                              >
+                                {values.answers.map((answer, index) => (
+                                  <Draggable
+                                    key={`${answer}#${index}`}
+                                    draggableId={answer}
+                                    index={index}
+                                  >
+                                    {(provided, snapshot) => (
+                                      <li
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        className="w-full border-b border-slate-200 py-2"
+                                      >
+                                        {answer}
+                                      </li>
+                                    )}
+                                  </Draggable>
+                                ))}
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
+                      )}
+                    <div className="flex flex-row justify-end">
+                      <div className="w-1/3 px-2 mt-4">
+                        <button
+                          data-testid="add-survey-submit"
+                          disabled={!canSaveAnswer()}
+                          type="button"
+                          className={`w-full px-6 py-2 text-sm font-medium tracking-wide capitalize rounded-lg text-white ${
+                            !canSaveAnswer()
+                              ? "bg-success-500/50"
+                              : "bg-success-500"
+                          }`}
+                          onClick={() => handleSaveAnswerSubmit()}
+                        >
+                          Adicionar
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </form>
+                  </form>
+                </div>
               </div>
-            </div>
-
-              <DragDropContext onDragEnd={onQuestionDragEnd}>
-                <Droppable droppableId="droppable-survey">
-                  {(provided) => (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className="w-full bg-white rounded-lg shadow-lg"
-                    >
-                      <div className="container px-4 mx-auto my-4">
-                        {survey.length > 0 && survey.map((s, i) => (
+            )}
+            <DragDropContext onDragEnd={onQuestionDragEnd}>
+              <Droppable droppableId="droppable-survey">
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="w-full bg-white rounded-lg shadow-lg"
+                  >
+                    <div className="container px-4 mx-auto my-4">
+                      {survey.length > 0 &&
+                        survey.map((s, i) => (
                           <Draggable
                             key={`${s.question}#${i}`}
                             draggableId={s.question}
                             index={i}
+                            isDragDisabled={!canEdit}
                           >
                             {(provided) => (
                               <div
@@ -417,13 +432,15 @@ const ActivityDetailsSurvey = () => {
                                             />
                                           </svg>
                                         </button>
-                                        <button
-                                          className="h-4 w-4 mt-1 text-danger-500"
-                                          type="button"
-                                          onClick={() => removeQuestion(i)}
-                                        >
-                                          <XCircle className="h-4 w-4" />
-                                        </button>
+                                        {canEdit && (
+                                          <button
+                                            className="h-4 w-4 mt-1 text-danger-500"
+                                            type="button"
+                                            onClick={() => removeQuestion(i)}
+                                          >
+                                            <XCircle className="h-4 w-4" />
+                                          </button>
+                                        )}
                                       </div>
                                     )}
                                   </div>
@@ -440,7 +457,8 @@ const ActivityDetailsSurvey = () => {
                                             {j + 1} - {a}
                                             {s.answers.length > 1 &&
                                               s.type !== "descriptive" &&
-                                              s.type !== "objective" && (
+                                              s.type !== "objective" &&
+                                              canEdit && (
                                                 <button
                                                   className="h-4 w-4 ml-auto text-danger-500"
                                                   type="button"
@@ -461,7 +479,8 @@ const ActivityDetailsSurvey = () => {
                             )}
                           </Draggable>
                         ))}
-                        {provided.placeholder}
+                      {provided.placeholder}
+                      {canEdit && (
                         <div className="flex flex-row justify-center">
                           <div className="w-1/3 px-2 mt-2">
                             <button
@@ -479,12 +498,12 @@ const ActivityDetailsSurvey = () => {
                             </button>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </>
         )}
       </div>
@@ -492,4 +511,4 @@ const ActivityDetailsSurvey = () => {
   );
 };
 
-export default ActivityDetailsSurvey;
+export default OpenActivityDetailsSurvey;

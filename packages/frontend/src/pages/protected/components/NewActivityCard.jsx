@@ -7,7 +7,7 @@ const NewActivityCard = ({ canCreate }) => {
 
   return (
     <div className={`w-full max-w-sm overflow-hidden rounded-lg shadow-lg ${canCreate ? 'bg-white' : 'bg-slate-100'}`}>
-      <Link to={canCreate ? `/${ROUTES.ADMIN.NEWACTIVITY}` : ""} className={`${!canCreate && 'cursor-default'}`}>
+      <Link to={canCreate ? `/${ROUTES.ADMIN.CHOOSETYPE}` : ""} className={`${!canCreate && 'cursor-default'}`}>
         <img
           className="object-contain w-full h-36 p-8"
           src="/images/icon.png"

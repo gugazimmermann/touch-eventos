@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import ROUTES from "../../../../constants/routes";
+import ROUTES from "../../../../../constants/routes";
 
-const ActivityDetailsCardSurvey = ({
+const OpenActivityDetailsCardSurvey = ({
+  showData,
   activityId,
   surveys,
   surveysVisitors,
@@ -11,7 +12,7 @@ const ActivityDetailsCardSurvey = ({
   const navigate = useNavigate();
 
   return (
-    <div className="w-full flex flex-col justify-between items-center bg-success-50 rounded-lg shadow-lg cursor-pointer">
+    <div className="w-full flex flex-col justify-between items-center bg-success-50 rounded-lg shadow-lg">
       <div className="w-full py-4 text-center">
         <h2 className="text-xl text-strong">
           {t("activity_details_card_survey_survey")}
@@ -22,7 +23,7 @@ const ActivityDetailsCardSurvey = ({
           className="w-1/3 text-center"
           onClick={() =>
             navigate(
-              `/${ROUTES.ADMIN.ACTIVITY}/${activityId}/${ROUTES.ADMIN.DEFAULT_SURVEYS}`
+              `/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}/${ROUTES.ADMIN.DEFAULT_SURVEYS}`
             )
           }
         >
@@ -35,7 +36,7 @@ const ActivityDetailsCardSurvey = ({
           className="w-1/3 text-center"
           onClick={() =>
             navigate(
-              `/${ROUTES.ADMIN.ACTIVITY}/${activityId}/${ROUTES.ADMIN.SURVEYS}/pt-BR`
+              `/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}/${ROUTES.ADMIN.SURVEYS}/pt-BR`
             )
           }
         >
@@ -44,9 +45,10 @@ const ActivityDetailsCardSurvey = ({
         </button>
         <button
           className="w-1/3 text-center"
+          disabled={!showData}
           onClick={() =>
             navigate(
-              `/${ROUTES.ADMIN.ACTIVITY}/${activityId}/${ROUTES.ADMIN.ANSWERS}`
+              `/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}/${ROUTES.ADMIN.ANSWERS}`
             )
           }
         >
@@ -60,4 +62,4 @@ const ActivityDetailsCardSurvey = ({
   );
 };
 
-export default ActivityDetailsCardSurvey;
+export default OpenActivityDetailsCardSurvey;

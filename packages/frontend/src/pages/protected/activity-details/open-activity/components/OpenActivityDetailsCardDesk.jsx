@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import ROUTES from "../../../../constants/routes";
-import { Clipboard } from "../../../../icons";
+import ROUTES from "../../../../../constants/routes";
+import { Clipboard } from "../../../../../icons";
 
-const ActivityDetailsCardDesk = ({ activityId, slug, desk }) => {
+const OpenActivityDetailsCardDesk = ({ activityId, slug, desk }) => {
   const { t } = useTranslation("activity_details");
   const navigate = useNavigate();
 
@@ -48,7 +48,7 @@ const ActivityDetailsCardDesk = ({ activityId, slug, desk }) => {
             type="button"
             className="px-4 py-1 text-sm tracking-wide text-white bg-primary-500 capitalize rounded-lg"
             onClick={() =>
-              navigate(`/${ROUTES.ADMIN.ACTIVITY}/${activityId}/${ROUTES.ADMIN.DESK}`)
+              navigate(`/${ROUTES.ADMIN.OPENACTIVITY}/${activityId}/${ROUTES.ADMIN.DESK}`)
             }
           >
            {t("activity_details_card_details_manage_desk")}
@@ -59,4 +59,4 @@ const ActivityDetailsCardDesk = ({ activityId, slug, desk }) => {
   );
 };
 
-export default ActivityDetailsCardDesk;
+export default OpenActivityDetailsCardDesk;

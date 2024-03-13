@@ -12,18 +12,19 @@ import {
 
 const ActivityCard = ({ data }) => {
   const statusColor = (data) => {
-    if (data.active === 0 || data?.payment !== "success") return "bg-purple-500";
-    if (data.status === "OPEN") return "bg-success-500";
-    if (data.status === "AWAITING") return "bg-primary-500";
-    if (data.status === "FINISHED") return "bg-background-500";
-    return "bg-background-500";
+    if (data.active === 0 && data?.payment) return "bg-red-500";
+    else if (data.active === 0 && !data?.payment) return "bg-purple-500";
+    else if (data.status === "OPEN") return "bg-success-500";
+    else if (data.status === "AWAITING") return "bg-primary-500";
+    else if (data.status === "FINISHED") return "bg-background-500";
+    else return "bg-background-500";
   };
 
   return (
     <div className="w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-lg">
-      <Link to={`/${ROUTES.ADMIN.ACTIVITY}/${data.activityId}`}>
+      <Link to={`/${ROUTES.ADMIN.OPENACTIVITY}/${data.activityId}`}>
         <img
-          className="object-center w-full h-36 bg-background-200"
+          className="object-center w-full h-36 bg-gray-200/75"
           src={data.logo}
           alt="avatar"
         />

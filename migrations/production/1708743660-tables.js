@@ -86,6 +86,7 @@ async function up(db) {
     .addColumn("phone", "varchar(255)", (col) => col.notNull())
     .addColumn("state", "varchar(255)", (col) => col.notNull())
     .addColumn("city", "varchar(255)", (col) => col.notNull())
+    .addColumn("document", "varchar(255)")
     .addColumn("createdAt", "datetime", (col) => col.notNull())
     .execute();
 

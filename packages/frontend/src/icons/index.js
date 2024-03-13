@@ -41,3 +41,4 @@ export { default as ArrowsSort } from './ArrowsSort';
 export { default as Spreadsheet } from './Spreadsheet';
 export { default as Message } from './Message';
 export { default as Download } from './Download';
+export { default as NoImage } from './NoImage';
