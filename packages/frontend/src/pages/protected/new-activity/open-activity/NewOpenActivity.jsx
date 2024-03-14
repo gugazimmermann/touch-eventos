@@ -11,10 +11,10 @@ import ROUTES from "../../../../constants/routes";
 import { ArrowBackCircle } from "../../../../icons";
 import { Alert, Loading, Toast } from "../../../../components";
 import { AdminTopNav } from "../../../../components/layout";
+import OpenActivityFormActivity from "../../components/open-activity/OpenActivityFormActivity";
+import OpenActivityFormSurvey from "../../components/open-activity/OpenActivityFormSurvey";
+import OpenActivityFormMessage from "../../components/open-activity/OpenActivityFormMessage";
 import NewOpenActivityStepHeader from "./NewOpenActivityStepHeader";
-import NewOpenActivityFormActivity from "./NewOpenActivityFormActivity";
-import NewOpenActivityFormSurvey from "./NewOpenActivityFormSurvey";
-import NewOpenActivityFormMessage from "./NewOpenActivityFormMessage";
 import NewOpenActivityFormStripe from "./NewOpenActivityFormStripe";
 
 const initialValues = {
@@ -127,11 +127,8 @@ const NewOpenActivity = () => {
 
   const verifyDates = useCallback(() => {
     if (activityDates.length && activePlans.length) {
-      const selectedPlan =
-        values.planId || activePlans[activePlans.length - 1].planId;
-      const { maxDays, maxDiff } = activePlans.find(
-        (p) => p.planId === selectedPlan
-      );
+      const selectedPlan = values.planId || activePlans[activePlans.length - 1].planId;
+      const { maxDays, maxDiff } = activePlans.find((p) => p.planId === selectedPlan);
       const verify = validateActivityDates(maxDays, maxDiff, activityDates);
       setInfo(verify);
       return verify;
@@ -190,6 +187,7 @@ const NewOpenActivity = () => {
         startDate: `${dateToTimestap(activityDates[0])}`,
         endDate: `${dateToTimestap(activityDates[activityDates.length - 1])}`,
         raffleDay: `${startOfDay(new Date(values.raffleDay)).getTime()}`,
+        raffleAutomatic: values.raffle && values.raffle === 'YES' && values.raffleAutomatic,
         city: values.addressCity,
         state: values.addressState,
         location: `${values.addressCity}+${values.addressState}`,
@@ -223,14 +221,7 @@ const NewOpenActivity = () => {
     resetMessages();
     if (step === 1) {
       if (!slugAvailable) if (!(await handleVerifySlug(values.slug))) return;
-      if (
-        !newActivityValidate.stepOne(
-          { ...values, dates: activityDates },
-          verifyDates,
-          setError,
-          t
-        )
-      ) {
+      if (!newActivityValidate.stepOne({ ...values, dates: activityDates }, verifyDates, setError, t )) {
         return;
       }
       if (verifySubscriptionDate()) return;
@@ -246,33 +237,26 @@ const NewOpenActivity = () => {
       ) {
         dispatch({
           type: "ACTIVITY_REGISTER",
-          payload: { activityRegister: { ...values, dates: activityDates } },
+          payload: { activityRegister: { ...values, dates: datesToString(activityDates) } },
         });
         setStep(2);
       }
     } else if (step === 2) {
-      if (
-        !newActivityValidate.stepTwo(
-          { ...values, dates: activityDates },
-          setError,
-          t
-        )
-      ) {
+      if (!newActivityValidate.stepTwo({ ...values, dates: activityDates }, setError, t)) {
         return;
       }
       if (values.verificationId && values.visitorGift && values.raffle) {
         dispatch({
           type: "ACTIVITY_REGISTER",
-          payload: { activityRegister: { ...values, dates: activityDates } },
+          payload: { activityRegister: values },
         });
         setStep(3);
       }
     } else if (step === 3) {
       dispatch({
         type: "ACTIVITY_REGISTER",
-        payload: { activityRegister: { ...values, dates: activityDates } },
+        payload: { activityRegister: values },
       });
-      setStep(4);
       if (!state.subscription?.planId) setStep(4);
       else handleSubmit();
     }
@@ -311,9 +295,7 @@ const NewOpenActivity = () => {
     getData();
     if (state.activityRegister) {
       setValues(state.activityRegister);
-      setActivityDates(
-        state.activityRegister.dates.map((d) => stringToDateObject(d))
-      );
+      setActivityDates((JSON.parse(state.activityRegister.dates)).map((d) => stringToDateObject(d, 'pt-BR')));
       if (state.activityRegister.confirmationText) {
         setStep(4);
       } else if (state.activityRegister.verificationId) {
@@ -346,7 +328,7 @@ const NewOpenActivity = () => {
         {info && <Alert message={info} type="info" />}
         {warning && <Alert message={warning} type="warning" />}
         {step === 1 && (
-          <NewOpenActivityFormActivity
+          <OpenActivityFormActivity
             activePlans={activePlans}
             loading={loading}
             setLoading={setLoading}
@@ -364,7 +346,7 @@ const NewOpenActivity = () => {
           />
         )}
         {step === 2 && (
-          <NewOpenActivityFormSurvey
+          <OpenActivityFormSurvey
             activeVerifications={activeVerifications}
             loading={loading}
             values={values}
@@ -377,7 +359,7 @@ const NewOpenActivity = () => {
           />
         )}
         {step === 3 && (
-          <NewOpenActivityFormMessage
+          <OpenActivityFormMessage
             activeVerifications={activeVerifications}
             loading={loading}
             values={values}

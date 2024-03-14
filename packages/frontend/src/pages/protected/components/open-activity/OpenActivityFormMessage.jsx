@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { formatDate } from "../../../../helpers/format";
 import { Alert } from "../../../../components";
 
-const NewOpenActivityFormMessage = ({
+const OpenActivityFormMessage = ({
   activeVerifications,
   loading,
   values,
@@ -378,4 +378,4 @@ const NewOpenActivityFormMessage = ({
   );
 };
 
-export default NewOpenActivityFormMessage;
+export default OpenActivityFormMessage;

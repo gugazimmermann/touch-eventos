@@ -87,7 +87,6 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
       .executeTakeFirst();
 
     if (!lobbyResult) return error(401, "Unauthorized");
-    console.log(lobbyResult);
 
     const token = jwt.sign({ id: lobbyResult.lobbyId }, JWT_SECRET, {
       expiresIn: 86400, // expires in 1 day

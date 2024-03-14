@@ -21,7 +21,8 @@ import {
 } from "../../../../components/form";
 import { CircleCheckFilled, Search, XCircle } from "../../../../icons";
 
-const NewOpenActivityFormActivity = ({
+const OpenActivityFormActivity = ({
+  canChangePlan = true,
   activePlans,
   loading,
   setLoading,
@@ -125,7 +126,7 @@ const NewOpenActivityFormActivity = ({
           </label>
           <SelectField
             className="mt-0"
-            disabled={loading || state.subscription?.planId}
+            disabled={loading || state.subscription?.planId || !canChangePlan}
             required={true}
             value="planId"
             values={values}
@@ -491,4 +492,4 @@ const NewOpenActivityFormActivity = ({
   );
 };
 
-export default NewOpenActivityFormActivity;
+export default OpenActivityFormActivity;

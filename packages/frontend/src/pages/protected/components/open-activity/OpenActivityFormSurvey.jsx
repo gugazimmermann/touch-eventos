@@ -5,7 +5,8 @@ import { formatValue } from "../../../../helpers/format";
 import { FormButton, SelectField } from "../../../../components/form";
 import { useEffect, useState } from "react";
 
-const NewOpenActivityFormSurvey = ({
+const OpenActivityFormSurvey = ({
+  canChangeVerification = true,
   activeVerifications,
   loading,
   values,
@@ -67,7 +68,11 @@ const NewOpenActivityFormSurvey = ({
 
   useEffect(() => {
     if (values.raffleDay <= values.surveyLastDay) {
-      setValues({ ...values, raffleDay: new DateObject(values.surveyLastDay).add(1, "days").unix * 1000 });
+      setValues({
+        ...values,
+        raffleDay:
+          new DateObject(values.surveyLastDay).add(1, "days").unix * 1000,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.surveyLastDay]);
@@ -84,7 +89,7 @@ const NewOpenActivityFormSurvey = ({
           </label>
           {/* TODO: traduzir descrição */}
           <SelectField
-            disabled={loading}
+            disabled={loading || !canChangeVerification}
             required={false}
             value="verificationId"
             values={values}
@@ -247,11 +252,11 @@ const NewOpenActivityFormSurvey = ({
             value={
               !values["raffle"] || values["raffle"] === "NO"
                 ? ""
+                : typeof values.raffleDay === "string"
+                ? parseInt(values.raffleDay, 10)
                 : values.raffleDay
             }
-            onChange={(v) =>
-              setValues({ ...values, raffleDay: v.unix * 1000 })
-            }
+            onChange={(v) => setValues({ ...values, raffleDay: v.unix * 1000 })}
             minDate={new DateObject(values.surveyLastDay).add(1, "days")}
             maxDate={maxDay}
           />
@@ -271,25 +276,33 @@ const NewOpenActivityFormSurvey = ({
               id="automaticRaffle"
               type="checkbox"
               className="sr-only"
-              checked={!values["raffle"] || values["raffle"] === "NO" ? "" : values.raffleAutomatic}
+              checked={
+                !values["raffle"] || values["raffle"] === "NO"
+                  ? ""
+                  : values.raffleAutomatic
+              }
               onChange={(e) =>
                 setValues({ ...values, raffleAutomatic: e.target.checked })
               }
             />
             <div
               className={`w-6 h-6 inline-flex items-center justify-center border-primary-500 border-2 rounded-full ${
-                (values["raffle"] || values["raffle"] === "YES") && values.raffleAutomatic ? "bg-primary-500" : "bg-white"
+                (values["raffle"] || values["raffle"] === "YES") &&
+                values.raffleAutomatic
+                  ? "bg-primary-500"
+                  : "bg-white"
               }`}
             >
-              {(values["raffle"] || values["raffle"] === "YES") && values.raffleAutomatic && (
-                <svg
-                  className="fill-current w-8 h-8 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M7.629 14.571L3.146 10.088l-1.414 1.414 6.061 6.061 10.607-10.607-1.414-1.414L7.629 14.571z" />
-                </svg>
-              )}
+              {(values["raffle"] || values["raffle"] === "YES") &&
+                values.raffleAutomatic && (
+                  <svg
+                    className="fill-current w-8 h-8 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M7.629 14.571L3.146 10.088l-1.414 1.414 6.061 6.061 10.607-10.607-1.414-1.414L7.629 14.571z" />
+                  </svg>
+                )}
             </div>
           </div>
           <span className="-mt-3 ml-2">
@@ -328,4 +341,4 @@ const NewOpenActivityFormSurvey = ({
   );
 };
 
-export default NewOpenActivityFormSurvey;
+export default OpenActivityFormSurvey;

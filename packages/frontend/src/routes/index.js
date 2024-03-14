@@ -45,22 +45,39 @@ const NewOpenActivity = lazyLoad(
 );
 
 const OpenActivityDetails = lazyLoad(
-  import("../pages/protected/activity-details/open-activity/OpenActivityDetails")
+  import(
+    "../pages/protected/activity-details/open-activity/OpenActivityDetails"
+  )
+);
+const OpenActivityDetailsEdit = lazyLoad(
+  import(
+    "../pages/protected/activity-details/open-activity/OpenActivityDetailsEdit"
+  )
 );
 const OpenActivityDetailsRegisters = lazyLoad(
-  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsRegisters")
+  import(
+    "../pages/protected/activity-details/open-activity/OpenActivityDetailsRegisters"
+  )
 );
 const OpenActivityDetailsDesk = lazyLoad(
-  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsDesk")
+  import(
+    "../pages/protected/activity-details/open-activity/OpenActivityDetailsDesk"
+  )
 );
 const OpenActivityDetailsSurvey = lazyLoad(
-  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsSurvey")
+  import(
+    "../pages/protected/activity-details/open-activity/OpenActivityDetailsSurvey"
+  )
 );
 const OpenActivityDetailsDefaultSurvey = lazyLoad(
-  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsDefaultSurvey")
+  import(
+    "../pages/protected/activity-details/open-activity/OpenActivityDetailsDefaultSurvey"
+  )
 );
 const OpenActivityDetailsSurveyAnswers = lazyLoad(
-  import("../pages/protected/activity-details/open-activity/OpenActivityDetailsSurveyAnswers")
+  import(
+    "../pages/protected/activity-details/open-activity/OpenActivityDetailsSurveyAnswers"
+  )
 );
 
 export const router = createBrowserRouter(
@@ -115,10 +132,7 @@ export const router = createBrowserRouter(
           path={`/${ROUTES.ADMIN.ACCOUNTPAYMENT}`}
           element={<Account initialTab="payments" />}
         />
-        <Route
-          path={`/${ROUTES.ADMIN.CHOOSETYPE}`}
-          element={<ChooseType />}
-        />
+        <Route path={`/${ROUTES.ADMIN.CHOOSETYPE}`} element={<ChooseType />} />
         <Route
           path={`/${ROUTES.ADMIN.NEWOPENACTIVITY}`}
           element={<NewOpenActivity />}
@@ -126,6 +140,10 @@ export const router = createBrowserRouter(
         <Route
           path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/:payment?`}
           element={<OpenActivityDetails />}
+        />
+        <Route
+          path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/editar`}
+          element={<OpenActivityDetailsEdit />}
         />
         <Route
           path={`/${ROUTES.ADMIN.OPENACTIVITY}/:activityId/${ROUTES.ADMIN.REGISTERS}`}

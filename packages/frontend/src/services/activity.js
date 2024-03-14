@@ -44,6 +44,23 @@ export const saveActivity = async (data) => {
   }
 };
 
+export const editActivity = async (activityId, data) => {
+  try {
+    const { accessToken } = await handleFetchAuthSession();
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/activities/${activityId}/edit`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify(data),
+      }
+    );
+    return response.json();
+  } catch (err) {
+    return err;
+  }
+};
+
 export const getActivities = async (archived) => {
   try {
     const { accessToken } = await handleFetchAuthSession();

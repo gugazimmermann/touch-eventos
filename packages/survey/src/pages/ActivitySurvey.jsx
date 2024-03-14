@@ -119,7 +119,6 @@ const ActivitySurvey = () => {
     const defaultAnswers = transformAnwsers();
     localStorage.setItem("surveyFormValues", JSON.stringify(formValues));
     const required = verifyRequired(defaultAnswers);
-    console.log(required)
     if (!required) {
       const payload = {
         token: state.token,

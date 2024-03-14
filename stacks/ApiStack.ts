@@ -187,6 +187,15 @@ export function ApiStack({ stack }: StackContext) {
           bind: [database],
         },
       },
+      "PUT /activities/{activityId}/edit": {
+        function: {
+          handler: "packages/functions/src/activities/activity-edit.handler",
+          environment: {
+            ACTIVITIES_TABLE_NAME: activitiesTable.tableName,
+          },
+          permissions: [activitiesTable],
+        },
+      },
       "PUT /activities/{activityId}/archive": {
         function: {
           handler: "packages/functions/src/activities/activity-archive.handler",

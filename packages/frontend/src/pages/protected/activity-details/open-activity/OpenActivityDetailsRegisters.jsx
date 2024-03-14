@@ -121,7 +121,6 @@ const OpenActivityDetailsRegisters = () => {
       const indexOfLastItem = pageNum * itemsPerPage;
       const indexOfFirstItem = indexOfLastItem - itemsPerPage;
       const currentItems = currentData.slice(indexOfFirstItem, indexOfLastItem);
-      console.log(currentItems)
       setDataToPage(currentItems);
     },
     [itemsPerPage]

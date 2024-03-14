@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { format, isAfter, isBefore } from "date-fns";
+import ROUTES from "../../../../../constants/routes";
 import { maskCep } from "../../../../../helpers/mask";
 import { formatDate, formatValue } from "../../../../../helpers/format";
 import { Clipboard } from "../../../../../icons";
@@ -41,6 +43,7 @@ const showArchiveButton = (end, archived) => {
 
 const OpenActivityDetailsCard = ({ data, handleArchive, handleTogglePaymentView, validSubscription }) => {
   const { t } = useTranslation("activity_details");
+  const navigate = useNavigate();
   const [activityDate, setActivityDates] = useState([]);
   const showGiftText = (visitorGift) => {
     return visitorGift === "YES"
@@ -195,6 +198,7 @@ const OpenActivityDetailsCard = ({ data, handleArchive, handleTogglePaymentView,
             <button
               type="button"
               className="px-4 py-1 text-sm tracking-wide text-white bg-primary-500 capitalize rounded-lg"
+              onClick={() => navigate(`/${ROUTES.ADMIN.OPENACTIVITY}/${data.activityId}/editar`)}
             >
               {t("activity_details_card_details_button_edit")}
             </button>

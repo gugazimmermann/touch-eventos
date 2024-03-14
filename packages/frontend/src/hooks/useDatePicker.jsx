@@ -90,14 +90,11 @@ const useDatePicker = () => {
     [t]
   );
 
-  const datePickerFormat = useCallback(
-    (l = locale) => {
-      if (l === "pt-BR") return "DD/MM/YY";
+  const datePickerFormat = useCallback((l = locale) => {
+      if (l === "en") return "MM/DD/YY";
       if (l === "es") return "DD/MM/YY";
-      return "MM/DD/YY";
-    },
-    [locale]
-  );
+      return "DD/MM/YY";
+    }, [locale]);
 
   const datePickerConfig = {
     multiple: true,
@@ -142,15 +139,12 @@ const useDatePicker = () => {
     return JSON.stringify(formatedDates);
   }, []);
 
-  const stringToDateObject = useCallback(
-    (d, l) => {
+  const stringToDateObject = useCallback((d, l) => {
       return new DateObject({
         date: d,
         format: datePickerFormat(l),
       });
-    },
-    [datePickerFormat]
-  );
+    }, [datePickerFormat] );
 
   return {
     datePickerConfig,
